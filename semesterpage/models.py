@@ -17,7 +17,7 @@ class Semester(models.Model):
     study_program = models.ForeignKey(StudyProgram)
 
     def __str__(self):
-        return self.number + '. semester'
+        return str(self.number) + '. semester'
 
     class Meta:
         ordering = ['number']

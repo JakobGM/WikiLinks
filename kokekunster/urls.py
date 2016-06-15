@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from semesterpage.views import semester
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^(\w{3,6})/semester/([1-10])/$', semester),
 ]

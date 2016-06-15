@@ -20,7 +20,7 @@ class Semester(models.Model):
         return str(self.study_program) + " (" + str(self.number) + '. semester)'
 
     class Meta:
-        ordering = ['number']
+        ordering = ['study_program', 'number']
 
 
 class Course(models.Model):
@@ -28,7 +28,7 @@ class Course(models.Model):
     nickname = models.CharField(max_length=30)          # e.g. 'C++'
     course_code = models.CharField(max_length=10)       # e.g. 'TDT4102'
     semesters = models.ManyToManyField(Semester)
-    logo = models.ImageField(upload_to='static/courses') 
+    logo = models.ImageField(upload_to='static/courses')
     homepage = models.URLField()
 
     def __str__(self):

@@ -3,7 +3,7 @@ from django.db import models
 class StudyProgram(models.Model):
     full_name = models.CharField(max_length=30)                         # e.g. 'Fysikk og Matematikk'
     nickname = models.CharField(max_length=30)                          # e.g. 'Fysmat'
-    program_code = models.CharField(primary_key=True, max_length=10)     # e.g. 'MTFYMA'
+    program_code = models.CharField(primary_key=True, max_length=10)    # e.g. 'MTFYMA' TODO: Only upper case?
 
     def __str__(self):
         return self.nickname
@@ -14,7 +14,7 @@ class StudyProgram(models.Model):
 
 class Semester(models.Model):
     number = models.PositiveSmallIntegerField()     # e.g. 2
-    study_program = models.ForeignKey(StudyProgram)
+    study_program = models.ForeignKey(StudyProgram, related_name='semesters')
 
     def __str__(self):
         return str(self.study_program) + " (" + str(self.number) + '. semester)'
@@ -27,7 +27,7 @@ class Course(models.Model):
     full_name = models.CharField(max_length=50)         # e.g. 'Prosedyre- og Objektorientert Programmering'
     nickname = models.CharField(max_length=30)          # e.g. 'C++'
     course_code = models.CharField(max_length=10)       # e.g. 'TDT4102'
-    semesters = models.ManyToManyField(Semester)
+    semesters = models.ManyToManyField(Semester, related_name='courses')
     logo = models.ImageField(upload_to='static/courses')
     homepage = models.URLField()
 

@@ -68,7 +68,7 @@ class Link(models.Model):
     title = models.CharField(max_length=30)     # e.g. 'Gamle eksamenssett'
     url = models.URLField()                     # e.g. http://www.phys.ntnu.no/SomeCourse/OldExams.html
     category = models.ForeignKey(LinkCategory)  # e.g. 'Solutions' or 'Plan'
-    course = models.ForeignKey(Course)
+    course = models.ForeignKey(Course, related_name='links')
 
     def __str__(self):
         return self.title

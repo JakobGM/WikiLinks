@@ -1,1 +1,8 @@
 Semester number {{ semester_number }}
+{% for course in courses %}
+<a href={{ course.homepage }}>{{ course.nickname }}</a>
+
+{% for link in course.links.all %}
+  {{link.title}}
+{% endfor %}
+{% endfor %}

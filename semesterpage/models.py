@@ -13,9 +13,23 @@ class StudyProgram(models.Model):
         ordering = ['full_name']
 
 
+class MainProfile(models.Model):
+    full_name = models.CharField(max_length=40, default='Felles')  # e.g. 'Industruell matematikk'
+    nickname = models.CharField(max_length=30, default='Felles')   # e.g. 'InMat'
+    study_program = models.ForeignKey(StudyProgram, related_name='mainProfiles')
+
+    def __str__(self):
+        return self.full_name
+
+    class Meta:
+        ordering = ['full_name']
+        verbose_name_plural = 'main profiles'
+
+
 class Semester(models.Model):
     number = models.PositiveSmallIntegerField()     # e.g. 2
     study_program = models.ForeignKey(StudyProgram, related_name='semesters')
+    main_profile = models.ForeignKey(MainProfile, related_name='semesters')
 
     def __str__(self):
         return str(self.study_program) + " (" + str(self.number) + '. semester)'
@@ -25,9 +39,9 @@ class Semester(models.Model):
 
 
 class Course(models.Model):
-    full_name = models.CharField(max_length=50)         # e.g. 'Prosedyre- og Objektorientert Programmering'
-    nickname = models.CharField(max_length=30)          # e.g. 'C++'
-    course_code = models.CharField(max_length=10)       # e.g. 'TDT4102'
+    full_name = models.CharField(max_length=50)     # e.g. 'Prosedyre- og Objektorientert Programmering'
+    nickname = models.CharField(max_length=30)      # e.g. 'C++'
+    course_code = models.CharField(max_length=10)   # e.g. 'TDT4102'
     semesters = models.ManyToManyField(Semester, related_name='courses')
     logo = models.ImageField(upload_to='static/courses')
     homepage = models.URLField()
@@ -47,7 +61,7 @@ class LinkCategory(models.Model):
         return self.name
 
     class Meta:
-        verbose_name_plural = "link categories"
+        verbose_name_plural = 'link categories'
 
 
 class Link(models.Model):

@@ -1,9 +1,14 @@
 from django.contrib import admin
-from .models import StudyProgram, Semester, Course, Link, LinkCategory
+from .models import StudyProgram, MainProfile, Semester, Course, Link, LinkCategory
 
 
 class StudyProgramAdmin(admin.ModelAdmin):
     list_display = ('full_name', 'nickname', 'program_code',)
+
+
+class MainProfileAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'nickname',)
+    list_filter = ('study_program',)
 
 
 class SemesterAdmin(admin.ModelAdmin):
@@ -28,6 +33,7 @@ class LinkCategoryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(StudyProgram, StudyProgramAdmin)
+admin.site.register(MainProfile, MainProfileAdmin)
 admin.site.register(Semester, SemesterAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Link, LinkAdmin)

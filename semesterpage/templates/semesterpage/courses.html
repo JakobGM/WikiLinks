@@ -1,8 +1,21 @@
 Semester number {{ semester_number }}
+
+<div class="wrap content">
+
 {% for course in courses %}
-<a href={{ course.homepage }}>{{ course.nickname }}</a>
+<article>
+<a class="kategori" href="{{ course.homepage }}">
+  <img src="{# add correct static file path here #}">
+
+  <h2>{{ course.nickname }}</h2></a>
+<ul>
 
 {% for link in course.links.all %}
-  {{link.title}}
+  <li class="{{ link.category }}"><a href="{{ link.url }}">{{ link.title }}</a></li>
 {% endfor %}
+
+</ul>
+</article>
 {% endfor %}
+
+</div>

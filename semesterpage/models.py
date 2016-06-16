@@ -43,7 +43,7 @@ class Course(models.Model):
     nickname = models.CharField(max_length=30)      # e.g. 'C++'
     course_code = models.CharField(max_length=10)   # e.g. 'TDT4102'
     semesters = models.ManyToManyField(Semester, related_name='courses')
-    logo = models.ImageField(upload_to='static/courses')
+    logo = models.ImageField(upload_to='semesterpage/static/semesterpage/course_logos')
     homepage = models.URLField()
 
     def __str__(self):
@@ -55,7 +55,7 @@ class Course(models.Model):
 
 class LinkCategory(models.Model):
     name = models.CharField(max_length=30)
-    thumbnail = models.ImageField(upload_to='static/link_categories')
+    thumbnail = models.ImageField(upload_to='semesterpage/static/semesterpage/link_category_logos')
 
     def __str__(self):
         return self.name

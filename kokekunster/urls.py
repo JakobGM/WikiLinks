@@ -19,5 +19,5 @@ from semesterpage.views import semester
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^(\w{3,6})/semester/([1-10])/$', semester),
+    url(r'^(\w{3,6})/semester/([1-9]|10)/$', semester),
 ]

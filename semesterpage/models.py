@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class StudyProgram(models.Model):
     full_name = models.CharField(max_length=30)                         # e.g. 'Fysikk og Matematikk'
     nickname = models.CharField(max_length=30)                          # e.g. 'Fysmat'

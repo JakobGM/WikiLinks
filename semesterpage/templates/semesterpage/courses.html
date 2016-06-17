@@ -7,9 +7,9 @@
 {% for course in courses %}
 <article>
 <a class="kategori" href="{{ course.homepage }}">
-  <img src="{% static "semesterpage/courses/" %}{{ course.nickname }}_logo.svg">
+  <img src="{% static "semesterpage/courses/" %}{{ course.display_name }}_logo.svg">
 
-  <h2>{{ course.nickname }}</h2></a>
+  <h2>{{ course.display_name }}</h2></a>
 <ul>
 
 {% for link in course.links.all %}

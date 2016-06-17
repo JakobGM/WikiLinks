@@ -3,11 +3,11 @@ from .models import StudyProgram, MainProfile, Semester, Course, Link, LinkCateg
 
 
 class StudyProgramAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'nickname', 'program_code',)
+    list_display = ('full_name', 'display_name', 'program_code',)
 
 
 class MainProfileAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'nickname',)
+    list_display = ('full_name', 'display_name',)
     list_filter = ('study_program',)
 
 
@@ -16,9 +16,9 @@ class SemesterAdmin(admin.ModelAdmin):
 
 
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'nickname', 'course_code',)
+    list_display = ('full_name', 'display_name', 'course_code',)
     list_filter = ('semesters',)
-    search_fields = ('full_name', 'nickname', 'program_code',)
+    search_fields = ('full_name', 'display_name', 'program_code',)
     filter_horizontal = ('semesters',)
 
 

@@ -1,5 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
 Semester number {{ semester_number }}
-
+{{ domain }}
 <div class="wrap content">
 
 {% for course in courses %}
@@ -19,3 +21,4 @@ Semester number {{ semester_number }}
 {% endfor %}
 
 </div>
+{% endblock %}

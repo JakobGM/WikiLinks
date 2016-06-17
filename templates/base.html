@@ -1,0 +1,35 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+<script src="{% static "js/linktracker.js" %}"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kokekunster - Lenkeportalen for FYSMATere</title>
+
+<!-- Specifies which css file to use -->
+<link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,400italic' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="{% static "css/style.css" %}">
+
+<!-- Favicon import -->
+{% include "favicon.html" %}
+
+<!-- Analytics, inkluderer </head> og <body> -->
+{% include "analytics.html" %}
+
+<!-- The logo and the site name -->
+{% include "header.html" %}
+
+<!-- Site navigation -->
+{% include "navbar.html" %}
+
+<!-- The main content. Consists of images, headlines and paragraphs -->
+{% block content %}
+
+{% endblock %}
+
+<!-- Disclaimer -->
+{% include "disclaimer.html" %}
+
+</body>
+</html>

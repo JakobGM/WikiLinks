@@ -1,19 +1,19 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {# TODO: Need to add link category and course static images based on model #}
+{% load static %}
 {% block content %}
-Semester number {{ semester_number }}
 {{ domain }}
 <div class="wrap content">
 
 {% for course in courses %}
 <article>
 <a class="kategori" href="{{ course.homepage }}">
-  <img src="{# add correct static file path here #}">
+  <img src="{% static "semesterpage/courses/" %}{{ course.nickname }}_logo.svg">
 
   <h2>{{ course.nickname }}</h2></a>
 <ul>
 
 {% for link in course.links.all %}
-  <li class="{{ link.category }}"><a href="{{ link.url }}">{{ link.title }}</a></li>
+  <li class="{{ link.category }}" style="list-style-image: url('{% static "semesterpage/link_categories/" %}{{ link.category }}_link.svg');"><a href="{{ link.url }}">{{ link.title }}</a></li>
 {% endfor %}
 
 </ul>

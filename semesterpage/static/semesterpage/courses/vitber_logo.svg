@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   width="79.9967px"
+   height="79.9967px"
+   viewBox="0 0 420 420"
+   id="svg2">
+  <title
+     id="title4">Integral approximations</title>
+  <desc
+     id="desc6">Plot of approximations to integral of sqrt(x) from 0 to 1, with 5 right samples (above) and 12 left samples (below)</desc>
+  <metadata
+     id="metadata118">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <g
+     id="g24"
+     style="color:#ffffff;fill:none;stroke:currentColor;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter">
+    <path
+       d="m 58.8,368.1 -9,0 m 344.6,0 9,0"
+       inkscape:connector-curvature="0"
+       id="path26" />
+    <path
+       d="m 58.8,368.1 0,9 m 0,-344.6 0,-9"
+       inkscape:connector-curvature="0"
+       id="path62" />
+    <path
+       d="m 394.4,368.1 0,9 m 0,-344.6 0,-9"
+       inkscape:connector-curvature="0"
+       id="path92" />
+    <g
+       transform="translate(394.4,399.6)"
+       id="g94"
+       style="font-size:20px;text-anchor:middle;fill:#ffffff;stroke:none;font-family:Bitstream Vera Sans">
+    </g>
+    <path
+       d="m 58.8,32.5 0,335.6 335.6,0 0,-335.6 -335.6,0 z"
+       inkscape:connector-curvature="0"
+       id="path98" />
+  </g>
+  <g
+     id="g100"
+     style="color:#ffffff;fill:currentColor;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter">
+    <path
+       d="m 58.8,368.1 h 67.12 V 218.02 H 58.8 z m 67.12,0 h 67.12 V 155.85 h -67.12 z m 67.12,0 h 67.12 V 108.15 h -67.12 z m 67.12,0 h 67.12 V 67.93 h -67.12 z m 67.12,0 H 394.4 V 32.5 h -67.12 z"
+       inkscape:connector-curvature="0"
+       id="path102" />
+  </g>
+  <g
+     id="g104"
+     style="color:#000000;fill:currentColor;stroke:#ffffff;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter">
+    <path
+       d="m 58.8,368.1 h 27.967 v 0 H 58.8 z m 27.967,0 H 114.73 V 271.22 H 86.767 z m 27.963,0 H 142.7 V 231.09 h -27.97 z m 27.97,0 h 27.97 V 200.3 H 142.7 z m 27.97,0 h 27.96 V 174.34 h -27.96 z m 27.96,0 H 226.6 V 151.47 h -27.97 z m 27.97,0 h 27.97 V 130.79 H 226.6 z m 27.97,0 h 27.96 V 111.78 h -27.96 z m 27.96,0 H 310.5 V 94.084 h -27.97 z m 27.97,0 h 27.97 V 77.462 H 310.5 z m 27.97,0 h 27.96 V 61.741 h -27.96 z m 27.96,0 H 394.4 V 46.787 h -27.97 z"
+       inkscape:connector-curvature="0"
+       id="path106" />
+  </g>
+  <g
+     id="g108"
+     style="color:#000000;fill:none;stroke:currentColor;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter">
+    <path
+       d="M 58.8,368.1 Q 58.8,200.3 394.4,32.5"
+       inkscape:connector-curvature="0"
+       id="path110" />
+  </g>
+  <g
+     id="g112"
+     style="color:#ffffff;fill:none;stroke:currentColor;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter">
+    <path
+       d="m 58.8,32.5 0,335.6 335.6,0 0,-335.6 -335.6,0 z"
+       inkscape:connector-curvature="0"
+       id="path114" />
+  </g>
+</svg>

@@ -1,0 +1,538 @@
+/* Resets & basic page setup */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Lato', sans-serif;
+}
+
+/* Header (logo & site name) */
+header {
+	background: #333333;
+}
+
+header a {
+	color: white;
+}
+
+.wrap {
+	max-width: 1600px;
+	margin: 0 auto;
+	padding: 1em;
+	padding-left: 9%;
+}
+
+header .wrap {
+	display: -webkit-flex;
+	display: flex;
+	align-items: center;
+}
+
+header .logo {
+	width: 60px;
+	margin-right: 0.5em;
+	margin-bottom: 1em;
+}
+
+header #mist {
+	fill: white;
+}
+
+header a:hover #pot {
+	fill: silver;
+}
+
+header a:hover #stove {
+	fill: silver;
+}
+
+header a:hover {
+	color: silver;
+}
+
+.thin {
+	font-weight: 300;
+}
+
+header p {
+	font-weight: 300;
+}
+
+body header .wrap {
+	padding-top: .7em;
+	padding-bottom: .7em;
+}
+
+/* Navigation */
+nav {
+	background: #7a7a7a;
+	color: white;
+	font-weight: 300;
+}
+
+nav .wrap {
+	padding: 0.5em 0;
+	padding-left: 7%;
+}
+
+nav li {
+	display: inline-block;
+	padding-left: 1em;
+	white-space: nowrap;
+	position: relative;
+	top: -0.2em;
+}
+
+nav a {
+	color: white;
+	text-decoration: none;
+	display: block;
+}
+
+.arkiv img {
+	padding-left: 0.3em;
+}
+
+.tannhjul {
+	position: relative;
+	top: 0.25em;
+}
+
+/* Content */
+.content {
+	display: flex;
+	margin-top: 1em;
+	display: -webkit-flex;
+	flex-wrap: wrap;
+	-webkit-flex-wrap: wrap;
+	flex-wrap: wrap;
+	justify-content: center;
+	zoom: 0.935; /* Scaling to fit page on MacBook Pro */
+	-moz-transform: scale(0.935);
+	-moz-transform-origin: 50% 50% 0
+}
+
+div.wrap.content {
+	margin-top: 0;
+}
+
+.content article {
+	/*text-align: center;*/
+	padding: 1em;
+	width: 33.3333%;
+	padding-top: 1%;
+	white-space: nowrap; /* Ingen line break i list items under fag */
+}
+
+.content article ul {
+	margin-top: 1em;
+	font-size: 1.1em;
+	line-height: 1.5;
+	color: #666;
+}
+
+.content article ul li {
+	font-size: 88%;
+	margin: -0.18em 0 0 0;
+	text-indent: -25px;
+}
+
+/* Extender linkarealet mot venstre for å inkludere bulletpointsa */
+.content article ul li a {
+	display: block;
+	padding-left: 25px;
+}
+
+.content article img {
+	width: 5em;
+	height: 5em;
+	text-align: center;
+}
+
+a {
+	text-decoration: none;
+	color: black;
+}
+
+.content a:visited {
+	color: black;
+}
+
+p.underkonstruksjon {
+	padding-top: 2em;
+	text-align: center;
+}
+
+/* Styling for semestervalg */
+div.wrap.content.semester {
+	padding-left: 14%;
+	padding-top: 3%;
+	padding-bottom: 3%;
+}
+
+.content article .semester {
+	padding-left: 1.5em;
+}
+
+h1.semester {
+	text-align: center;
+	padding-top: 1em;
+	font-size: 175%;
+}
+
+p.semester {
+	text-align: center;
+}
+
+/* Hover effect for diverse elementer på nettsiden */
+nav a:hover {
+	color: silver;
+}
+
+.content article .kategori:hover {
+	opacity: 0.4;
+	filter: alpha(opacity=40);
+	color: grey;
+}
+
+
+.content li a:hover {
+	color: black;
+	background: #eee;
+}
+
+.arkiv:hover {
+	opacity: 0.4;
+	filter: alpha(opacity=40);
+}
+
+/*Gear icon rotation on hover*/
+.tannhjul:hover {
+	-webkit-animation-name: rotate;
+	-webkit-animation-duration: 4s;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: linear;
+	-moz-animation-name: rotate;
+	-moz-animation-duration: 4s;
+	-moz-animation-iteration-count: infinite;
+	-moz-animation-timing-function: linear;
+	animation-name: rotate;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+}
+@-webkit-keyframes rotate {
+    from {
+			-webkit-transform: rotate(0deg);
+			-webkit-transform-origin: 59% 50%;
+		}
+    to {
+			-webkit-transform: rotate(360deg);
+			-webkit-transform-origin: 59% 50%;
+		}
+}
+@keyframes rotate {
+	from {
+		-moz-transform: rotate(0deg);
+		-moz-transform-origin: 59% 50%;
+		transform: rotate(0deg);
+		transform-origin: 59% 50%;
+	}
+	to {
+		-moz-transform: rotate(360deg);
+		-moz-transform-origin: 59% 50%;
+		transform: rotate(360deg);
+		transform-origin: 59% 50%;
+	}
+}
+
+/* Brukes for nabla-ikonet under fritid */
+img.desaturate{
+	-webkit-filter: grayscale(1);
+	-webkit-filter: grayscale(100%);
+	filter: gray;
+	filter: grayscale(100%);
+	filter: url(desaturate.svg#greyscale);
+}
+
+/* Stil på punktlistene */
+
+.fp {
+	list-style-image: url('/img/fp_link.svg');
+}
+
+.ov {
+	list-style-image: url('/img/ov_link.svg');
+}
+
+.lf {
+	list-style-image: url('/img/lf_link.svg');
+}
+
+.eks {
+	list-style-image: url('/img/eks_link.svg');
+}
+
+.itl {
+	list-style-image: url('/img/itl_link.svg');
+}
+
+.epost {
+	list-style-image: url('/img/epost_link.svg');
+}
+
+.middag {
+	list-style-image: url('/img/middag_link.svg');
+}
+
+.software {
+	list-style-image: url('/img/software_link.svg');
+}
+
+.ibok {
+	list-style-image: url('/img/ibok_link.svg');
+}
+
+.nabla {
+	list-style-image: url('/img/nabla_link.svg');
+}
+
+.fb {
+	list-style-image: url('/img/fb_link.svg');
+}
+
+.samfundet {
+	list-style-image: url('/img/samfundet_link.svg');
+}
+
+.bartebuss {
+	list-style-image: url('/img/bartebuss_link.svg');
+}
+
+.pensum {
+	list-style-image: url('/img/pensum_link.svg');
+}
+
+.stoffkartotek {
+	list-style-image: url('/img/stoffkartotek_link.svg');
+}
+
+.bok {
+	list-style-image: url('/img/bok_link.svg');
+}
+
+.info {
+	list-style-image: url('/img/info_link.svg');
+}
+
+.viktiginfo {
+	list-style-image: url('/img/viktiginfo_link.svg');
+}
+
+.video {
+	list-style-image: url('/img/video_link.svg');
+}
+
+.formelark {
+	list-style-image: url('/img/formelark_link.svg');
+}
+
+.quiz {
+	list-style-image: url('/img/quiz_link.svg');
+}
+
+.wolframalpha {
+	list-style-image: url('/img/wolframalpha_link.svg');
+}
+
+.symbolab {
+	list-style-image: url('/img/symbolab_link.svg');
+}
+
+.request {
+	list-style-image: url('/img/request_link.svg');
+}
+
+.ntnu {
+	list-style-image: url('/img/ntnu_link.svg');
+}
+
+.wikipendium {
+	list-style-image: url('/img/wikipendium_link.svg');
+}
+
+/* Footer */
+
+footer {
+	color: grey;
+	font-size: 75%;
+	text-align: center;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+.footer .navn {
+	color: black;
+}
+
+/* Link request page */
+article form p {
+	padding-bottom: 0.6em;
+}
+
+.linkform article h2 {
+	padding-bottom: 0.2em;
+}
+
+.mandatory-notice {
+	color: grey;
+	font-size: smaller;
+}
+
+/* Zoom to fit page on large resolutions */
+@media (min-width: 1580px) {
+	.wrap {
+		zoom: 1.07;
+	}
+}
+
+@media (min-width: 1900px) {
+	.wrap {
+		zoom: 1.15;
+	}
+}
+
+/* Responsive design (break points) */
+@media (max-width: 900px) {
+	.content article {
+		width: 50%;
+	}
+
+	footer {
+		position:relative;
+	}
+
+}
+
+@media (max-width: 500px) {
+	.wrap {
+		padding-left: 0%; /* For correct center allignment on mobile screens */
+	}
+
+	div.wrap.content.semester {
+		padding-left: 0%; /* For correct center allignment on mobile screens on the semester choice screen */
+	}
+
+	header .logo {
+		width: 40px;
+	}
+
+	header h1 {
+		font-size: 1.5em;
+	}
+
+	nav li {
+		display: block;
+		text-align: center;
+		padding: 0.35em;
+		position: relative;
+		left: -4%;
+		font-size: 140%;
+		border-bottom: 0.1em solid grey;
+	}
+
+	nav li:last-child {
+		border-bottom: none;
+	}
+
+	.content article {
+		width: 100%;
+		padding: 0.3em;
+	}
+
+	.content article ul a {
+		display: inline-block;
+		padding-right: 160%;
+	}
+
+	#site { overflow-x: hidden; }
+
+	header .logo {
+		width: 60px;
+		margin-right: 1em;
+		margin-left: 20%;
+		margin-bottom: auto;
+		text-align: center;
+	}
+
+	.content {
+		width:200px;
+		margin:0 auto;
+		text-align:left;
+		font-size: 150%;
+	}
+
+	.content img {
+		margin-top: 1.5em; /* Litt spacing mellom fagene på mobilversjon */
+	}
+
+	.content article ul {
+		margin-top: 0.3em;
+		margin-top: 0.3em;
+	}
+}
+
+/* Hover effect on kvantefysikk article
+Source: http://stackoverflow.com/questions/23723060/speech-bubble-tooltip-for-images-instead-of-links
+*/
+div.hoverbubble span {display: none;}
+@media (min-width: 500px) {
+	div.hoverbubble {
+	  position: relative;
+	  text-decoration: none;
+	  width:50px;
+	  height:50px;
+	}
+
+	#kvante-list {
+		padding-top: 3.6em;
+	}
+
+	div.hoverbubble:hover span {
+		display: block;
+		position: absolute;
+		padding: .5em;
+		content: attr(title);
+		min-width: px;
+		text-align: center;
+		width: auto;
+		height: auto;
+		white-space: nowrap;
+		top: -15px;
+		left: -28em;
+		background: rgba(154,153,154,1);
+		-moz-border-radius: 10px;
+		-webkit-border-radius: 10px;
+		border-radius: 10px;
+		color: #fff;
+		font-size: 0.86em;
+	}
+	div.hoverbubble:hover span:after {
+		position: absolute;
+		display: block;
+		content: "";
+		border-color: rgba(154,153,154,1) transparent transparent transparent;
+		border-style: solid;
+		border-width: 10px;
+		height: 0;
+		width: 0;
+		position: absolute;
+		bottom: -19px;
+		left: 28em;
+	}
+}

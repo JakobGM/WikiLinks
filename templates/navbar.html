@@ -1,7 +1,8 @@
+{% load static %}
 <nav>
   <div class="wrap">
     <ul>
-      <li class="arkiv semestervalg"><a onclick="deleteCookie('semester')" title="Bytt standard semester" href="#"><img class="tannhjul" src="/img/semestervalg_nav.svg" alt="semestervalg"></a></li>
+      <li class="arkiv semestervalg"><a onclick="deleteCookie('semester')" title="Bytt standard semester" href="#"><img class="tannhjul" src="{% static "img/semestervalg_nav.svg" %}" alt="semestervalg"></a></li>
         {% for semester in semesters %}
         <li><a onclick="semesterChoice({{ semester.number }})" href="#">
           {% if semester.number == semester_number %}
@@ -11,7 +12,7 @@
           {% endif %}
         </a></li>
         {% endfor %}
-      <li class="arkiv"><a id="arkiv" href="/arkiv/{{ semester_number }}.Semester"><img src="/img/arkiv_nav.svg" alt="arkiv">  Arkiv</a></li>
+      <li class="arkiv"><a id="arkiv" href="/arkiv/{{ semester_number }}.Semester"><img src="{% static "img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv</a></li>
     </ul>
   </div>
 </nav>

@@ -14,8 +14,8 @@ class StudyProgram(models.Model):
 
 
 class MainProfile(models.Model):
-    full_name = models.CharField(max_length=40, default='Felles')  # e.g. 'Industruell matematikk'
-    display_name = models.CharField(max_length=30, default='Felles')   # e.g. 'InMat'
+    full_name = models.CharField(max_length=40, default='Felles')       # e.g. 'Industruell matematikk'
+    display_name = models.CharField(max_length=30, default='Felles')    # e.g. 'InMat'
     study_program = models.ForeignKey(StudyProgram, related_name='mainProfiles')
 
     def __str__(self):
@@ -39,11 +39,11 @@ class Semester(models.Model):
 
 
 class Course(models.Model):
-    full_name = models.CharField(max_length=50)     # e.g. 'Prosedyre- og Objektorientert Programmering'
-    display_name = models.CharField(max_length=30)  # e.g. 'C++'
-    course_code = models.CharField(max_length=10)   # e.g. 'TDT4102'
+    full_name = models.CharField(unique=True, max_length=50)                         # e.g. 'Prosedyre- og Objektorientert Programmering'
+    display_name = models.CharField(max_length=30)                      # e.g. 'C++'
+    course_code = models.CharField(primary_key=True, max_length=10)     # e.g. 'TDT4102'
     semesters = models.ManyToManyField(Semester, related_name='courses')
-    logo = models.ImageField(upload_to='semesterpage/static/semesterpage/course_logos')
+    logo = models.ImageField(upload_to='semesterpage/static/semesterpage/courses')
     homepage = models.URLField()
 
     def __str__(self):
@@ -54,8 +54,8 @@ class Course(models.Model):
 
 
 class LinkCategory(models.Model):
-    name = models.CharField(max_length=30)
-    thumbnail = models.ImageField(upload_to='semesterpage/static/semesterpage/link_category_logos')
+    name = models.CharField(primary_key=True, max_length=30)
+    thumbnail = models.ImageField(upload_to='semesterpage/static/semesterpage/link_categories', blank=True)
 
     def __str__(self):
         return self.name

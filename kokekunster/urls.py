@@ -18,6 +18,7 @@ from django.contrib import admin
 from semesterpage.views import semester
 
 urlpatterns = [
+    url(r'^$', semester, {'program_code': 'mtfyma', 'semester_number': 1}),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^(\w{3,6})/semester/([1-9]|10)/$', semester),
 ]

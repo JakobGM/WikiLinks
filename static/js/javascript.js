@@ -87,34 +87,3 @@ function changeCalendarName() {
     location.reload();
   }
 }
-
-// Returns true if fysmat.no is the URL in the address bar
-function isFysmat() {
-  var domain = window.location.href;
-
-  // Find & remove protocol (http, ftp, etc.) and get domain
-  if (domain.indexOf("://") > -1) {
-    domain = domain.split('/')[2];
-  }
-  else {
-    domain = domain.split('/')[0];
-  }
-
-  // Checks if fysmat.no is the URL
-  if (domain.toLowerCase() == "fysmat.no" || domain.toLowerCase() == "www.fysmat.no") {
-    return Boolean(true);
-  }
-  else {
-    return Boolean(false);
-  }
-}
-
-// Returns the proper HTML logo header based on the URL detection of isFysmat()
-function logoHeaderText(isFysmat) {
-  if (isFysmat) {
-    return "FYS<span class='thin'>MAT.no</span>"
-  }
-  else {
-    return "KOKE<span class='thin'>kunster</span>"
-  }
-}

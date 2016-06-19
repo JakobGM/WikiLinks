@@ -55,7 +55,11 @@
       </svg>
     <!-- Correct logo header text based on URL of browser -->
     <h1>
-    <script>document.write(logoHeaderText(isFysmat()))</script>
+      {% if is_fysmat %}
+        FYS<span class='thin'>MAT.no</span>
+      {% else %}
+        KOKE<span class='thin'>kunster</span>
+      {% endif %}
     </h1>
   </div></a>
 

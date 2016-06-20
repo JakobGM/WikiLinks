@@ -5,6 +5,10 @@ from .forms import LinkForm, FileForm
 
 
 def getSemesterData(program_code, semester_number):
+    """
+    Retrieve relevant data related to a given semester at a given study program
+    TODO: Add compatibility for semesters with several main profiles
+    """
     SemesterData = namedtuple('SemesterData',
                               ['study_program',
                                'all_semesters',
@@ -38,7 +42,9 @@ def semester(request, program_code, semester_number):
 def user_request(request, program_code, semester_number):
     """
     Portrays two forms, one for uploading files and another one for sending
-    link requests
+    link requests. Sends an email to the admin email address 
+    TODO: Handle these requests with a "admin accept proposal" feature and
+    then automatic inclusion in the database
     """
     semester_data = getSemesterData(program_code, semester_number)
     all_semesters = semester_data.all_semesters

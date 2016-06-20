@@ -2,6 +2,9 @@ from django.db import models
 
 
 class StudyProgram(models.Model):
+    """
+    Contains top level information for a specific study program.
+    """
     full_name = models.CharField('fullt navn',
                                  max_length=60,
                                  help_text='F.eks. \"Fysikk og matematikk\"'
@@ -24,6 +27,10 @@ class StudyProgram(models.Model):
 
 
 class MainProfile(models.Model):
+    """
+    Contains top level information about a main profile within a given study
+    program.
+    """
     full_name = models.CharField('fullt navn',
                                  max_length=60,
                                  default='felles',
@@ -47,6 +54,9 @@ class MainProfile(models.Model):
 
 
 class Semester(models.Model):
+    """
+    Contains an instance of a specific semester connected to a main profile.
+    """
     number = models.PositiveSmallIntegerField('semester (nummer)',
                                               help_text='F.eks. \"2\"'
                                               )
@@ -65,6 +75,10 @@ class Semester(models.Model):
 
 
 class Course(models.Model):
+    """
+    Contains a specific course with a logo for display on the semesterpage.
+    Can be connected to several different semesters.
+    """
     full_name = models.CharField('fullt navn',
                                  unique=True,
                                  max_length=60,
@@ -95,6 +109,11 @@ class Course(models.Model):
 
 
 class LinkCategory(models.Model):
+    """
+    Contains a category for the link model, including a thumbnail. The
+    thumbnail is used on the semester page for styling the list item containig
+    the link.
+    """
     name = models.CharField('kategorinavn',
                             primary_key=True,
                             max_length=60
@@ -112,6 +131,9 @@ class LinkCategory(models.Model):
 
 
 class Link(models.Model):
+    """
+    Contains a URL link connected to a specific course.
+    """
     title = models.CharField('tittel',
                              max_length=60,
                              help_text='F.eks \"Gamle eksamenssett\"'

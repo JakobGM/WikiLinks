@@ -3,11 +3,11 @@ from django.db import models
 
 class StudyProgram(models.Model):
     full_name = models.CharField('fullt navn',
-                                 max_length=30,
+                                 max_length=60,
                                  help_text='F.eks. \"Fysikk og matematikk\"'
                                  )
     display_name = models.CharField('visningsnavn / kallenavn',
-                                    max_length=30,
+                                    max_length=60,
                                     help_text='F.eks. \"Fysmat\"'
                                     )
     program_code = models.CharField('programkode',
@@ -25,12 +25,12 @@ class StudyProgram(models.Model):
 
 class MainProfile(models.Model):
     full_name = models.CharField('fullt navn',
-                                 max_length=40,
+                                 max_length=60,
                                  default='felles',
                                  help_text='F.eks. \"Industriell matematikk\"'
                                  )
     display_name = models.CharField('visningsnavn / kallenavn',
-                                    max_length=30,
+                                    max_length=60,
                                     default='Felles',
                                     help_text='F.eks. \"InMat\"'
                                     )
@@ -67,11 +67,11 @@ class Semester(models.Model):
 class Course(models.Model):
     full_name = models.CharField('fullt navn',
                                  unique=True,
-                                 max_length=50,
+                                 max_length=60,
                                  help_text='F.eks. \"Prosedyre- og Objektorientert Programmering\"'
                                  )
     display_name = models.CharField('visningsnavn',
-                                    max_length=30,
+                                    max_length=60,
                                     help_text='F.eks. \"C++\"'
                                     )
     course_code = models.CharField('emnekode',
@@ -97,7 +97,7 @@ class Course(models.Model):
 class LinkCategory(models.Model):
     name = models.CharField('kategorinavn',
                             primary_key=True,
-                            max_length=30
+                            max_length=60
                             )
     thumbnail = models.ImageField('ikon for kategori',
                                   upload_to='semesterpage/static/semesterpage/link_categories',
@@ -113,7 +113,7 @@ class LinkCategory(models.Model):
 
 class Link(models.Model):
     title = models.CharField('tittel',
-                             max_length=30,
+                             max_length=60,
                              help_text='F.eks \"Gamle eksamenssett\"'
                              )
     url = models.URLField('URL',

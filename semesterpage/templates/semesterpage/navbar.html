@@ -1,10 +1,11 @@
 {% load static %}
+<!-- Site navigation -->
 <nav>
   <div class="wrap">
     <ul>
       <li class="arkiv semestervalg"><a onclick="deleteCookie('semester')" title="Bytt standard semester" href="#"><img class="tannhjul" src="{% static "img/semestervalg_nav.svg" %}" alt="semestervalg"></a></li>
         {% for semester in semesters %}
-        <li><a onclick="semesterChoice({{ semester.number }})" href="/{{ semester.study_program.program_code.lower }}/semester/{{ semester.number }}">
+        <li><a onclick="semesterChoice({{ semester.number }})" href="{% url 'semesterpage-semester' semester.study_program.program_code semester.number %}">
           {% if semester.number == semester_number %}
           <b>{{ semester.number }}. Semester</b>
           {% else %}

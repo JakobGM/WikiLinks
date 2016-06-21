@@ -19,6 +19,6 @@ from semesterpage.views import semester, user_request
 
 urlpatterns = [
     url(r'^$', include('semesterpage.urls')),
-    url(r'^(?P<program_code>\w{3,6})/', include('semesterpage.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^(?P<program_code>\w{3,6})/', include('semesterpage.urls')),
 ]

@@ -5,7 +5,7 @@ from gettext import gettext as _
 from collections import namedtuple
 from .models import StudyProgram, Semester, Course
 from .forms import LinkForm, FileForm
-from kokekunster.settings import ADMINS, SERVER_EMAIL
+from kokekunster.settings import ADMINS, SERVER_EMAIL, DEFAULT_STUDY_PROGRAM
 
 
 def getSemesterData(program_code, semester_number):
@@ -26,7 +26,7 @@ def getSemesterData(program_code, semester_number):
     return SemesterData(study_program, all_semesters, semester, courses)
 
 
-def semester(request, program_code, semester_number='1'):
+def semester(request, program_code=DEFAULT_STUDY_PROGRAM, semester_number='1'):
     """
     Generates the link portal for a given semester in a given program code
     """

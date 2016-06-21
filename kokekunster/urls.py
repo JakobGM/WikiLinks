@@ -19,7 +19,8 @@ from semesterpage.views import semester, user_request
 
 urlpatterns = [
     url(r'^$', semester, {'program_code': 'mtfyma', 'semester_number': 1}),
+    url(r'^(?P<program_code>\w{3,6})/$', semester),
+    url(r'^(?P<program_code>\w{3,6})/semester/(?P<semester_number>[1-9]|10)/$', semester),
+    url(r'^(?P<program_code>\w{3,6})/semester/(?P<semester_number>[1-9]|10)/request$', user_request),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^(\w{3,6})/semester/([1-9]|10)/$', semester),
-    url(r'^(\w{3,6})/semester/([1-9]|10)/request$', user_request),
 ]

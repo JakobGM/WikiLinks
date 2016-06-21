@@ -26,11 +26,11 @@ def getSemesterData(program_code, semester_number):
     return SemesterData(study_program, all_semesters, semester, courses)
 
 
-def semester(request, program_code, semester_number):
+def semester(request, program_code, semester_number='1'):
     """
     Generates the link portal for a given semester in a given program code
     """
-    study_program, all_semesters, semester, courses = getSemesterData(program_code, semester_number)
+    study_program, all_semesters, semester, courses = getSemesterData(program_code, int(semester_number))
 
     # Boolean for changing the logo if the domain is fysmat.xxx
     is_fysmat = 'fysmat' in request.get_host().lower()

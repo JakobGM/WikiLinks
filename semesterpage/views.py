@@ -3,8 +3,6 @@ from django.core.exceptions import ValidationError
 from django.core.mail import mail_admins, send_mail, EmailMessage
 from gettext import gettext as _
 from collections import namedtuple
-from tempfile import NamedTemporaryFile
-from os import fdopen
 from .models import StudyProgram, Semester, Course
 from .forms import LinkForm, FileForm
 from kokekunster.settings import ADMINS, SERVER_EMAIL

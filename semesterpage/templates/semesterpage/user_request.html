@@ -20,6 +20,7 @@
   {% endif %}
 
   <form method="post" name="content-request" action="">
+    <input type='hidden' name='request_type' value='link'>
     <p>
       <label for='title'>Tittel<span style="color: grey; font-size: 80%;">*</span>: </label><br>
       {{ link_form.title|attr:'required:true' }}
@@ -31,8 +32,13 @@
     </p>
 
     <p>
-      <label for='category'>Fag<span style="color: grey; font-size: 80%;">*</span>: </label><br>
+      <label for='course'>Fag<span style="color: grey; font-size: 80%;">*</span>: </label><br>
       {{ link_form.course|attr:'required:true' }}
+    </p>
+
+    <p>
+      <label for='course'>Kategori<span style="color: grey; font-size: 80%;">*</span>: </label><br>
+      {{ link_form.category|attr:'required:true' }}
     </p>
 
     <p>
@@ -61,7 +67,8 @@
     </ul>
   {% endif %}
 
-  <form method="post" name="file-request" action="">
+  <form enctype="multipart/form-data" method="post" name="file-request" action="">
+    <input type='hidden' name='request_type' value='file'>
     <p>
       <label for='title'>Tittel<span style="color: grey; font-size: 80%;">*</span>: </label><br>
       {{ file_form.title|attr:'required:true' }}
@@ -77,6 +84,10 @@
       <label for='category'>Fag<span style="color: grey; font-size: 80%;">*</span>: </label><br>
       {{ file_form.course|attr:'required:true' }}
     </p>
+
+    <br>
+    <br>
+    <hr style="height:8px; visibility:hidden;" />
 
     <p>
       <label for='description'>Beskrivelse: </label><br>

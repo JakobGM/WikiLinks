@@ -20,7 +20,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '7tl(yi@uo3=yyuhi+qn&ax1h7kehy7#=j4hxpn$6l(!hcw7==9'
+# Insert proper secret key here, or in settings_local.py
+SECRET_KEY = 'MUST_BE_REPLACED'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -106,3 +107,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+# Import local settings
+try:
+    from kokekunster.settings_local import *
+except ImportError as e:
+    pass

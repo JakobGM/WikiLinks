@@ -2,6 +2,7 @@
 # $GIT_DIR/info/exclude or the core.excludesFile configuration variable as
 # described in https://git-scm.com/docs/gitignore
 
+# Standatd django gitignore
 *.egg-info
 *.pot
 *.py[co]
@@ -19,3 +20,6 @@ db.sqlite3
 
 # MacOS specific
 .DS_Store
+
+# Repository specific
+settings_local.py

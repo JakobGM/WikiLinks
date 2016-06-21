@@ -26,6 +26,8 @@ class StudyProgram(models.Model):
 
     class Meta:
         ordering = ['full_name']
+        verbose_name = _('studieprogram')
+        verbose_name_plural = _('studieprogram')
 
 
 class MainProfile(models.Model):
@@ -52,7 +54,8 @@ class MainProfile(models.Model):
 
     class Meta:
         ordering = ['full_name']
-        verbose_name_plural = 'main profiles'
+        verbose_name = _('hovedprofil')
+        verbose_name_plural = _('hovedprofiler')
 
 
 class Semester(models.Model):
@@ -74,6 +77,8 @@ class Semester(models.Model):
 
     class Meta:
         ordering = ['study_program', 'number']
+        verbose_name = _('semester')
+        verbose_name_plural = _('semestere')
 
 
 class Course(models.Model):
@@ -108,6 +113,8 @@ class Course(models.Model):
 
     class Meta:
         ordering = ['full_name']
+        verbose_name = _('fag')
+        verbose_name_plural = _('fag')
 
 
 class LinkCategory(models.Model):
@@ -129,7 +136,8 @@ class LinkCategory(models.Model):
         return self.name
 
     class Meta:
-        verbose_name_plural = 'link categories'
+        verbose_name = _('lenkekategori')
+        verbose_name_plural = _('lenkekategorier')
 
 
 class Link(models.Model):
@@ -148,3 +156,7 @@ class Link(models.Model):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        verbose_name = _('lenke')
+        verbose_name_plural = _('lenker')

@@ -177,7 +177,12 @@ class Link(models.Model):
                                  )  # e.g. 'Solutions' or 'Plan'
     course = models.ForeignKey(Course,
                                on_delete=models.CASCADE,
-                               related_name='links')
+                               related_name='links'
+                               )
+    order = models.PositiveSmallIntegerField(default=0,
+                                             blank=False,
+                                             null=False
+                                             )
 
     def __str__(self):
         return self.title
@@ -185,3 +190,4 @@ class Link(models.Model):
     class Meta:
         verbose_name = _('lenke')
         verbose_name_plural = _('lenker')
+        ordering = ('order',)

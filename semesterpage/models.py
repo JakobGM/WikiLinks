@@ -58,6 +58,7 @@ class MainProfile(models.Model):
                                     help_text=_('F.eks. \"InMat\"')
                                     )
     study_program = models.ForeignKey(StudyProgram,
+                                      on_delete=models.CASCADE,
                                       related_name='mainProfiles'
                                       )
 
@@ -78,9 +79,14 @@ class Semester(models.Model):
                                               help_text='F.eks. \"2\"'
                                               )
     study_program = models.ForeignKey(StudyProgram,
+                                      on_delete=models.CASCADE,
                                       related_name='semesters'
                                       )
     main_profile = models.ForeignKey(MainProfile,
+                                     on_delete=models.SET_NULL,
+                                     blank=True,
+                                     null=True,
+                                     default=None,
                                      related_name='semesters'
                                      )
 
@@ -163,8 +169,15 @@ class Link(models.Model):
     url = models.URLField('URL',
                           help_text=_('F.eks. \"http://www.phys.ntnu.no/fysikkfag/gamleeksamener.html\"')
                           )
-    category = models.ForeignKey(LinkCategory)  # e.g. 'Solutions' or 'Plan'
-    course = models.ForeignKey(Course, related_name='links')
+    category = models.ForeignKey(LinkCategory,
+                                 on_delete=models.SET_NULL,
+                                 blank=True,
+                                 null=True,
+                                 related_name='links'
+                                 )  # e.g. 'Solutions' or 'Plan'
+    course = models.ForeignKey(Course,
+                               on_delete=models.CASCADE,
+                               related_name='links')
 
     def __str__(self):
         return self.title

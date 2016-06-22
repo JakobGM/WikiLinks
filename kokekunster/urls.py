@@ -15,10 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 from semesterpage.views import semester, user_request
+
 
 urlpatterns = [
     url(r'^$', include('semesterpage.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^(?P<program_code>\w{3,6})/', include('semesterpage.urls')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

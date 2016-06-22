@@ -108,13 +108,22 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
+# Media files (User-uploaded course logos)
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = '/var/www/kokekunster.no/media/'
+
+
 
 # Which study program should be defaulted to in url handling when the study
 # program code is not specified?
+
 DEFAULT_STUDY_PROGRAM = 'MTFYMA'
 
 
 # Import local settings
+
 try:
     from kokekunster.settings_local import *
 except ImportError as e:

@@ -1,6 +1,18 @@
 from django.db import models
 
 from gettext import gettext as _
+import os
+
+
+def upload_path(instance, filename):
+    """
+    For setting the upload_to parameter of FileFields and ImageFields,
+        e.g. field_name = FileField(upload_to=upload_path)
+    Returns a MEDIA_ROOT file path that is guaranteed to not collide with
+    excisting model instances, as it uses the model class name and the
+    model instance's primary key
+    """
+    return os.path.join(instance.__class__.__name__, instance.pk, filename)
 
 
 class StudyProgram(models.Model):
@@ -103,7 +115,7 @@ class Course(models.Model):
     semesters = models.ManyToManyField(Semester,
                                        related_name='courses'
                                        )
-    logo = models.ImageField(upload_to='semesterpage/static/semesterpage/courses')
+    logo = models.ImageField(upload_to=upload_path)
     homepage = models.URLField(_('Fagets hjemmeside'),
                                help_text=_('F.eks. \"http://home.phys.ntnu.no/fysikkfag/eksamensoppgaver\"')
                                )
@@ -152,7 +164,7 @@ class Link(models.Model):
                           help_text=_('F.eks. \"http://www.phys.ntnu.no/fysikkfag/gamleeksamener.html\"')
                           )
     category = models.ForeignKey(LinkCategory)  # e.g. 'Solutions' or 'Plan'
-    course = models.ForeignKey(Course,related_name='links')
+    course = models.ForeignKey(Course, related_name='links')
 
     def __str__(self):
         return self.title

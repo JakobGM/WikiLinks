@@ -11,7 +11,7 @@
 {% for course in courses %}
 <article>
 <a class="kategori" href="{{ course.homepage }}">
-  <img src="{% static "semesterpage/courses/" %}{{ course.display_name }}_logo.svg">
+  <img src="{{ course.logo.url }}">
 
   <h2>{{ course.display_name }}</h2></a>
 <ul>

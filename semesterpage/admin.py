@@ -15,11 +15,16 @@ class SemesterAdmin(admin.ModelAdmin):
     list_filter = ('study_program',)
 
 
+class LinkInline(admin.TabularInline):
+    model = Link
+
+
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('full_name', 'display_name', 'course_code',)
     list_filter = ('semesters',)
     search_fields = ('full_name', 'display_name', 'program_code',)
     filter_horizontal = ('semesters',)
+    inlines = [LinkInline]
 
 
 class LinkAdmin(admin.ModelAdmin):

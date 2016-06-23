@@ -23,18 +23,18 @@ class StudyProgram(models.Model):
     full_name = models.CharField(
         _('fullt navn'),
         max_length=60,
-        help_text=_('F.eks. \"Fysikk og matematikk\"')
+        help_text=_('F.eks. "Fysikk og matematikk"')
     )
     display_name = models.CharField(
         _('visningsnavn / kallenavn'),
         max_length=60,
-        help_text=_('F.eks. \"Fysmat\"')
+        help_text=_('F.eks. "Fysmat"')
     )
     program_code = models.CharField(
         _('programkode'),
         primary_key=True,
         max_length=10,
-        help_text=_('F.eks. \"MTFYMA\"')
+        help_text=_('F.eks. "MTFYMA"')
     )  # TODO: Only upper case?
 
     def __str__(self):
@@ -55,13 +55,13 @@ class MainProfile(models.Model):
         _('fullt navn'),
         max_length=60,
         default=_('felles'),
-        help_text=_('F.eks. \"Industriell matematikk\"')
+        help_text=_('F.eks. "Industriell matematikk"')
     )
     display_name = models.CharField(
         _('visningsnavn / kallenavn'),
         max_length=60,
         default=_('Felles'),
-        help_text=_('F.eks. \"InMat\"')
+        help_text=_('F.eks. "InMat"')
     )
     study_program = models.ForeignKey(
         StudyProgram,
@@ -84,7 +84,7 @@ class Semester(models.Model):
     """
     number = models.PositiveSmallIntegerField(
         _('semester (nummer)'),
-        help_text='F.eks. \"2\"'
+        help_text='F.eks. "2"'
     )
     study_program = models.ForeignKey(
         StudyProgram,
@@ -118,18 +118,18 @@ class Course(models.Model):
         _('fullt navn'),
         unique=True,
         max_length=60,
-        help_text=_('F.eks. \"Prosedyre- og Objektorientert Programmering\"')
+        help_text=_('F.eks. "Prosedyre- og Objektorientert Programmering"')
     )
     display_name = models.CharField(
         _('visningsnavn'),
         max_length=60,
-        help_text=_('F.eks. \"C++\"')
+        help_text=_('F.eks. "C++"')
     )
     course_code = models.CharField(
         'emnekode',
         primary_key=True,
         max_length=10,
-        help_text=_('F.eks. \"TDT4102\"')
+        help_text=_('F.eks. "TDT4102"')
     )
     semesters = models.ManyToManyField(
         Semester,
@@ -142,7 +142,7 @@ class Course(models.Model):
     )
     homepage = models.URLField(
         _('Fagets hjemmeside'),
-        help_text=_('F.eks. \"http://home.phys.ntnu.no/fysikkfag/eksamensoppgaver\"')
+        help_text=_('F.eks. "http://home.phys.ntnu.no/fysikkfag/eksamensoppgaver"')
     )
 
     def __str__(self):
@@ -228,11 +228,11 @@ class Link(models.Model):
     title = models.CharField(
         _('tittel'),
         max_length=60,
-        help_text=_('F.eks \"Gamle eksamenssett\"')
+        help_text=_('F.eks "Gamle eksamenssett"')
     )
     url = models.URLField(
         'URL',
-        help_text=_('F.eks. \"http://www.phys.ntnu.no/fysikkfag/gamleeksamener.html\"')
+        help_text=_('F.eks. "http://www.phys.ntnu.no/fysikkfag/gamleeksamener.html"')
     )
     course = models.ForeignKey(
         Course,

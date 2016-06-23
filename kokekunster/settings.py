@@ -116,11 +116,16 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = '/var/www/kokekunster.no/media/'
 
 
+# Cookie-based sessions
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_HTTPONLY = True
+
 
 # Which study program should be defaulted to in url handling when the study
 # program code is not specified?
 
-DEFAULT_STUDY_PROGRAM = 'MTFYMA'
+DEFAULT_PROGRAM_CODE = 'MTFYMA'
 
 
 # Import local settings

@@ -5,7 +5,7 @@ from gettext import gettext as _
 from collections import namedtuple
 from .models import StudyProgram, Semester, Course
 from .forms import LinkForm, FileForm
-from kokekunster.settings import ADMINS, SERVER_EMAIL, DEFAULT_STUDY_PROGRAM
+from kokekunster.settings import ADMINS, SERVER_EMAIL, DEFAULT_PROGRAM_CODE
 
 
 def getSemesterData(program_code, semester_number):
@@ -26,13 +26,31 @@ def getSemesterData(program_code, semester_number):
     return SemesterData(study_program, all_semesters, semester, courses)
 
 
-def semester(request, program_code=DEFAULT_STUDY_PROGRAM, semester_number='1'):
+def homepage(request):
+    """
+    Homepage view for when the URL does not specify a specific semester.
+    Looks at session data to see the user's last visited semester.
+    If no data is given, the homepage defaults to the 1st semester
+    of the study program given by DEFAULT_PROGRAM_CODE
+    """
+    program_code = request.session.get('program_code', DEFAULT_PROGRAM_CODE)
+    semester_number = request.session.get('semester_number', '1')
+    return semester(request, program_code, semester_number, save_location=False)
+
+
+def semester(request, program_code=DEFAULT_PROGRAM_CODE, semester_number='1', save_location=True):
     """
     Generates the link portal for a given semester in a given program code
     """
+    if save_location:
+        # Save the deliberate change of location by user in the session
+        request.session['program_code'] = program_code
+        request.session['semester_number'] = semester_number
+
+    # Query database for all the data required by the template
     study_program, all_semesters, semester, courses = getSemesterData(program_code, int(semester_number))
 
-    # Boolean for changing the logo if the domain is fysmat.xxx
+    # Boolean for changing the logo if the domain is fysmat.no
     is_fysmat = 'fysmat' in request.get_host().lower()
 
     return render(request, 'semesterpage/courses.html',

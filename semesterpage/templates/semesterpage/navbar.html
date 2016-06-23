@@ -3,9 +3,9 @@
 <nav>
   <div class="wrap">
     <ul>
-      <li class="arkiv semestervalg"><a onclick="deleteCookie('semester')" title="Bytt standard semester" href="#"><img class="tannhjul" src="{% static "img/semestervalg_nav.svg" %}" alt="semestervalg"></a></li>
+      <li class="arkiv semestervalg"><a title="Bytt standard semester" href="#"><img class="tannhjul" src="{% static "img/semestervalg_nav.svg" %}" alt="semestervalg"></a></li>
         {% for semester in semesters %}
-        <li><a onclick="semesterChoice({{ semester.number }})" href="{% url 'semesterpage-semester' semester.study_program.program_code semester.number %}">
+        <li><a href="{% url 'semesterpage-semester' semester.study_program.program_code semester.number %}">
           {% if semester.number == semester_number %}
           <b>{{ semester.number }}. Semester</b>
           {% else %}

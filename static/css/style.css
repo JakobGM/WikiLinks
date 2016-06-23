@@ -124,7 +124,7 @@ div.wrap.content {
 	padding: 1em;
 	width: 33.3333%;
 	padding-top: 1%;
-	white-space: nowrap; /* Ingen line break i list items under fag */
+	white-space: nowrap; /* No line breaks in list items in a course element */
 }
 
 .content article ul {
@@ -140,7 +140,8 @@ div.wrap.content {
 	text-indent: -25px;
 }
 
-/* Extender linkarealet mot venstre for å inkludere bulletpointsa */
+/* Extending the clickable link area towards the left in order to include
+	 the bullet points */
 .content article ul li a {
 	display: block;
 	padding-left: 25px;
@@ -166,7 +167,7 @@ p.underkonstruksjon {
 	text-align: center;
 }
 
-/* Styling for semestervalg */
+/* Styling for semester choice page */
 div.wrap.content.semester {
 	padding-left: 14%;
 	padding-top: 3%;
@@ -187,7 +188,7 @@ p.semester {
 	text-align: center;
 }
 
-/* Hover effect for diverse elementer på nettsiden */
+/* On-hover effects for various elements */
 nav a:hover {
 	color: silver;
 }
@@ -249,14 +250,6 @@ nav a:hover {
 	}
 }
 
-/* Brukes for nabla-ikonet under fritid */
-img.desaturate{
-	-webkit-filter: grayscale(1);
-	-webkit-filter: grayscale(100%);
-	filter: gray;
-	filter: grayscale(100%);
-	filter: url(desaturate.svg#greyscale);
-}
 
 /* Footer */
 
@@ -372,61 +365,11 @@ article form p {
 	}
 
 	.content img {
-		margin-top: 1.5em; /* Litt spacing mellom fagene på mobilversjon */
+		margin-top: 1.5em; /* A bit more spacing between the courses on mobile */
 	}
 
 	.content article ul {
 		margin-top: 0.3em;
 		margin-top: 0.3em;
-	}
-}
-
-/* Hover effect on kvantefysikk article
-Source: http://stackoverflow.com/questions/23723060/speech-bubble-tooltip-for-images-instead-of-links
-*/
-div.hoverbubble span {display: none;}
-@media (min-width: 500px) {
-	div.hoverbubble {
-	  position: relative;
-	  text-decoration: none;
-	  width:50px;
-	  height:50px;
-	}
-
-	#kvante-list {
-		padding-top: 3.6em;
-	}
-
-	div.hoverbubble:hover span {
-		display: block;
-		position: absolute;
-		padding: .5em;
-		content: attr(title);
-		min-width: px;
-		text-align: center;
-		width: auto;
-		height: auto;
-		white-space: nowrap;
-		top: -15px;
-		left: -28em;
-		background: rgba(154,153,154,1);
-		-moz-border-radius: 10px;
-		-webkit-border-radius: 10px;
-		border-radius: 10px;
-		color: #fff;
-		font-size: 0.86em;
-	}
-	div.hoverbubble:hover span:after {
-		position: absolute;
-		display: block;
-		content: "";
-		border-color: rgba(154,153,154,1) transparent transparent transparent;
-		border-style: solid;
-		border-width: 10px;
-		height: 0;
-		width: 0;
-		position: absolute;
-		bottom: -19px;
-		left: 28em;
 	}
 }

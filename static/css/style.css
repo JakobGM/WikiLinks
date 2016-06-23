@@ -148,9 +148,14 @@ div.wrap.content {
 }
 
 .content article img {
-	width: 5em;
-	height: 5em;
+	height: 80px;
+	width: 80px;
 	text-align: center;
+	-webkit-filter: grayscale(1);
+	-webkit-filter: grayscale(100%);
+	filter: gray;
+	filter: grayscale(100%);
+	filter: url(desaturate.svg#greyscale);
 }
 
 a {

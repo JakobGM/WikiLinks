@@ -135,7 +135,11 @@ class Course(models.Model):
         Semester,
         related_name='courses'
     )
-    logo = models.FileField(upload_to=upload_path)
+    logo = models.FileField(
+        upload_to=upload_path,
+        help_text=_('Bildet vises over alle lenkene knyttet til faget. '
+                    'Bør være kvadratisk for å unngå uheldige skaleringseffekter.')
+    )
     homepage = models.URLField(
         _('Fagets hjemmeside'),
         help_text=_('F.eks. \"http://home.phys.ntnu.no/fysikkfag/eksamensoppgaver\"')

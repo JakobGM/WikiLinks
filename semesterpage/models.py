@@ -135,7 +135,7 @@ class Course(models.Model):
         Semester,
         related_name='courses'
     )
-    logo = models.ImageField(upload_to=upload_path)
+    logo = models.FileField(upload_to=upload_path)
     homepage = models.URLField(
         _('Fagets hjemmeside'),
         help_text=_('F.eks. \"http://home.phys.ntnu.no/fysikkfag/eksamensoppgaver\"')

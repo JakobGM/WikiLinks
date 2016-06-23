@@ -20,19 +20,22 @@ class StudyProgram(models.Model):
     """
     Contains top level information for a specific study program.
     """
-    full_name = models.CharField(_('fullt navn'),
-                                 max_length=60,
-                                 help_text=_('F.eks. \"Fysikk og matematikk\"')
-                                 )
-    display_name = models.CharField(_('visningsnavn / kallenavn'),
-                                    max_length=60,
-                                    help_text=_('F.eks. \"Fysmat\"')
-                                    )
-    program_code = models.CharField(_('programkode'),
-                                    primary_key=True,
-                                    max_length=10,
-                                    help_text=_('F.eks. \"MTFYMA\"')
-                                    )  # TODO: Only upper case?
+    full_name = models.CharField(
+        _('fullt navn'),
+        max_length=60,
+        help_text=_('F.eks. \"Fysikk og matematikk\"')
+    )
+    display_name = models.CharField(
+        _('visningsnavn / kallenavn'),
+        max_length=60,
+        help_text=_('F.eks. \"Fysmat\"')
+    )
+    program_code = models.CharField(
+        _('programkode'),
+        primary_key=True,
+        max_length=10,
+        help_text=_('F.eks. \"MTFYMA\"')
+    )  # TODO: Only upper case?
 
     def __str__(self):
         return self.display_name
@@ -48,20 +51,23 @@ class MainProfile(models.Model):
     Contains top level information about a main profile within a given study
     program.
     """
-    full_name = models.CharField(_('fullt navn'),
-                                 max_length=60,
-                                 default=_('felles'),
-                                 help_text=_('F.eks. \"Industriell matematikk\"')
-                                 )
-    display_name = models.CharField(_('visningsnavn / kallenavn'),
-                                    max_length=60,
-                                    default=_('Felles'),
-                                    help_text=_('F.eks. \"InMat\"')
-                                    )
-    study_program = models.ForeignKey(StudyProgram,
-                                      on_delete=models.CASCADE,
-                                      related_name='mainProfiles'
-                                      )
+    full_name = models.CharField(
+        _('fullt navn'),
+        max_length=60,
+        default=_('felles'),
+        help_text=_('F.eks. \"Industriell matematikk\"')
+    )
+    display_name = models.CharField(
+        _('visningsnavn / kallenavn'),
+        max_length=60,
+        default=_('Felles'),
+        help_text=_('F.eks. \"InMat\"')
+    )
+    study_program = models.ForeignKey(
+        StudyProgram,
+        on_delete=models.CASCADE,
+        related_name='mainProfiles'
+    )
 
     def __str__(self):
         return self.full_name
@@ -76,20 +82,23 @@ class Semester(models.Model):
     """
     Contains an instance of a specific semester connected to a main profile.
     """
-    number = models.PositiveSmallIntegerField(_('semester (nummer)'),
-                                              help_text='F.eks. \"2\"'
-                                              )
-    study_program = models.ForeignKey(StudyProgram,
-                                      on_delete=models.CASCADE,
-                                      related_name='semesters'
-                                      )
-    main_profile = models.ForeignKey(MainProfile,
-                                     on_delete=models.SET_NULL,
-                                     blank=True,
-                                     null=True,
-                                     default=None,
-                                     related_name='semesters'
-                                     )
+    number = models.PositiveSmallIntegerField(
+        _('semester (nummer)'),
+        help_text='F.eks. \"2\"'
+    )
+    study_program = models.ForeignKey(
+        StudyProgram,
+        on_delete=models.CASCADE,
+        related_name='semesters'
+    )
+    main_profile = models.ForeignKey(
+        MainProfile,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        default=None,
+        related_name='semesters'
+    )
 
     def __str__(self):
         return str(self.study_program) + " (" + str(self.number) + '. semester)'
@@ -105,27 +114,32 @@ class Course(models.Model):
     Contains a specific course with a logo for display on the semesterpage.
     Can be connected to several different semesters.
     """
-    full_name = models.CharField(_('fullt navn'),
-                                 unique=True,
-                                 max_length=60,
-                                 help_text=_('F.eks. \"Prosedyre- og Objektorientert Programmering\"')
-                                 )
-    display_name = models.CharField(_('visningsnavn'),
-                                    max_length=60,
-                                    help_text=_('F.eks. \"C++\"')
-                                    )
-    course_code = models.CharField('emnekode',
-                                   primary_key=True,
-                                   max_length=10,
-                                   help_text=_('F.eks. \"TDT4102\"')
-                                   )
-    semesters = models.ManyToManyField(Semester,
-                                       related_name='courses'
-                                       )
+    full_name = models.CharField(
+        _('fullt navn'),
+        unique=True,
+        max_length=60,
+        help_text=_('F.eks. \"Prosedyre- og Objektorientert Programmering\"')
+    )
+    display_name = models.CharField(
+        _('visningsnavn'),
+        max_length=60,
+        help_text=_('F.eks. \"C++\"')
+    )
+    course_code = models.CharField(
+        'emnekode',
+        primary_key=True,
+        max_length=10,
+        help_text=_('F.eks. \"TDT4102\"')
+    )
+    semesters = models.ManyToManyField(
+        Semester,
+        related_name='courses'
+    )
     logo = models.ImageField(upload_to=upload_path)
-    homepage = models.URLField(_('Fagets hjemmeside'),
-                               help_text=_('F.eks. \"http://home.phys.ntnu.no/fysikkfag/eksamensoppgaver\"')
-                               )
+    homepage = models.URLField(
+        _('Fagets hjemmeside'),
+        help_text=_('F.eks. \"http://home.phys.ntnu.no/fysikkfag/eksamensoppgaver\"')
+    )
 
     def __str__(self):
         return self.full_name
@@ -142,14 +156,16 @@ class LinkCategory(models.Model):
     thumbnail is used on the semester page for styling the list item containig
     the link.
     """
-    name = models.CharField(_('Egendefinert kategori'),
-                            primary_key=True,
-                            max_length=60
-                            )
-    thumbnail = models.FileField(_('ikon for kategori'),
-                                  upload_to=upload_path,
-                                  blank=True
-                                  )
+    name = models.CharField(
+        _('Egendefinert kategori'),
+        primary_key=True,
+        max_length=60
+    )
+    thumbnail = models.FileField(
+        _('ikon for kategori'),
+        upload_to=upload_path,
+        blank=True
+    )
 
     def __str__(self):
         return self.name
@@ -205,41 +221,45 @@ class Link(models.Model):
     field determines the mini-icon used when portraying the link as a part
     of a list with custom bullet-point thumbnails
     """
-    title = models.CharField(_('tittel'),
-                             max_length=60,
-                             help_text=_('F.eks \"Gamle eksamenssett\"')
-                             )
-    url = models.URLField('URL',
-                          help_text=_('F.eks. \"http://www.phys.ntnu.no/fysikkfag/gamleeksamener.html\"')
-                          )
-    course = models.ForeignKey(Course,
-                               on_delete=models.CASCADE,
-                               related_name='links'
-                               )
-    category = models.CharField(_('Kateogri'),
-                                blank=True,
-                                null=True,
-                                default=None,
-                                max_length=60,
-                                choices=DEFAULT_LINK_CATEGORIES,
-                                help_text=_('F.eks. "Løsningsforslag". '
-                                            'Valget bestemmer hvilket '
-                                            '"mini-ikon" som plasseres ved '
-                                            'siden av lenken.')
-                                )
-    custom_category = models.ForeignKey(LinkCategory,
-                                        default=None,
-                                        on_delete=models.SET_NULL,
-                                        blank=True,
-                                        null=True,
-                                        related_name='links',
-                                        verbose_name=_('(Egendefinert kategori)'),
-                                        help_text=_('Hvis du ønsker å bruke et egendefinert "mini-ikon".')
-                                        )
-    order = models.PositiveSmallIntegerField(default=0,
-                                             blank=False,
-                                             null=False
-                                             )
+    title = models.CharField(
+        _('tittel'),
+        max_length=60,
+        help_text=_('F.eks \"Gamle eksamenssett\"')
+    )
+    url = models.URLField(
+        'URL',
+        help_text=_('F.eks. \"http://www.phys.ntnu.no/fysikkfag/gamleeksamener.html\"')
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='links'
+    )
+    category = models.CharField(
+        _('Kateogri'),
+        blank=True,
+        null=True,
+        default=None,
+        max_length=60,
+        choices=DEFAULT_LINK_CATEGORIES,
+        help_text=_('F.eks. "Løsningsforslag". Valget bestemmer hvilket '
+                    '"mini-ikon" som plasseres ved siden av lenken.')
+    )
+    custom_category = models.ForeignKey(
+        LinkCategory,
+        default=None,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='links',
+        verbose_name=_('(Egendefinert kategori)'),
+        help_text=_('Hvis du ønsker å bruke et egendefinert "mini-ikon".')
+    )
+    order = models.PositiveSmallIntegerField(
+        default=0,
+        blank=False,
+        null=False
+    )
 
     def clean(self):
         # Can't allow selection of both a category and a custom category at the

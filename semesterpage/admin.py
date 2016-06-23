@@ -35,7 +35,7 @@ class CourseAdmin(admin.ModelAdmin):
 
 
 class LinkAdmin(admin.ModelAdmin):
-    list_display = ('title', 'url', 'course', 'category',)
+    list_display = ('title', 'url', 'course', 'category', 'custom_category',)
     list_filter = ('course',)
     search_fields = ('title', 'url', 'course',)
     exclude = ('order',)

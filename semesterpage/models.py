@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 from gettext import gettext as _
 import os
@@ -141,12 +142,12 @@ class LinkCategory(models.Model):
     thumbnail is used on the semester page for styling the list item containig
     the link.
     """
-    name = models.CharField(_('kategorinavn'),
+    name = models.CharField(_('Egendefinert kategori'),
                             primary_key=True,
                             max_length=60
                             )
-    thumbnail = models.ImageField(_('ikon for kategori'),
-                                  upload_to='semesterpage/static/semesterpage/link_categories',
+    thumbnail = models.FileField(_('ikon for kategori'),
+                                  upload_to=upload_path,
                                   blank=True
                                   )
 
@@ -158,9 +159,51 @@ class LinkCategory(models.Model):
         verbose_name_plural = _('lenkekategorier')
 
 
+# Filenames for static thumbnails for the default link categories
+# The thumbnails must be stored in:
+#       semesterpage/static/semesterpage/link_categories/
+TASKS = 'tasks.svg'
+SOLUTIONS = 'solutions.svg'
+VIDEOS = 'videos.svg'
+TIMETABLE = 'timetable.svg'
+SYLLABUS = 'syllabus.svg'
+FORMULAS = 'formulas.svg'
+EXAMS = 'exams.svg'
+INFO = 'info.svg'
+IMPORTANT_INFO = 'important_info.svg'
+NTNU = 'ntnu.svg'
+WIKIPENDIUM = 'wikipendium.svg'
+BOOK = 'book.svg'
+QUIZ = 'quiz.svg'
+FACEBOOK = 'facebook.svg'
+SOFTWARE = 'software.svg'
+CHEMISTRY = 'chemistry.svg'
+
+# Descriptive text of the link category choices
+DEFAULT_LINK_CATEGORIES = (
+    (TASKS, _('Øvinger og prosjekter')),
+    (SOLUTIONS, _('Løsningsforslag')),
+    (VIDEOS, _('Videoforelesninger')),
+    (TIMETABLE, _('Framdrifts- og timeplaner')),
+    (SYLLABUS, _('Pensum')),
+    (FORMULAS, _('Formelark')),
+    (EXAMS, _('Eksamener')),
+    (FACEBOOK, _('Facebook')),
+    (INFO, _('Informasjon')),
+    (IMPORTANT_INFO, _('Viktig informasjon')),
+    (NTNU, _('NTNU-lenker')),
+    (WIKIPENDIUM, _('Wikipendium')),
+    (BOOK, _('Pensumbok')),
+    (QUIZ, _('Quiz og punktlister')),
+    (SOFTWARE, _('Programvare')),
+)
+
+
 class Link(models.Model):
     """
-    Contains a URL link connected to a specific course.
+    Contains a URL link connected to a specific course. The link category
+    field determines the mini-icon used when portraying the link as a part
+    of a list with custom bullet-point thumbnails
     """
     title = models.CharField(_('tittel'),
                              max_length=60,
@@ -169,20 +212,43 @@ class Link(models.Model):
     url = models.URLField('URL',
                           help_text=_('F.eks. \"http://www.phys.ntnu.no/fysikkfag/gamleeksamener.html\"')
                           )
-    category = models.ForeignKey(LinkCategory,
-                                 on_delete=models.SET_NULL,
-                                 blank=True,
-                                 null=True,
-                                 related_name='links'
-                                 )  # e.g. 'Solutions' or 'Plan'
     course = models.ForeignKey(Course,
                                on_delete=models.CASCADE,
                                related_name='links'
                                )
+    category = models.CharField(_('Kateogri'),
+                                blank=True,
+                                null=True,
+                                default=None,
+                                max_length=60,
+                                choices=DEFAULT_LINK_CATEGORIES,
+                                help_text=_('F.eks. "Løsningsforslag". '
+                                            'Valget bestemmer hvilket '
+                                            '"mini-ikon" som plasseres ved '
+                                            'siden av lenken.')
+                                )
+    custom_category = models.ForeignKey(LinkCategory,
+                                        default=None,
+                                        on_delete=models.SET_NULL,
+                                        blank=True,
+                                        null=True,
+                                        related_name='links',
+                                        verbose_name=_('(Egendefinert kategori)'),
+                                        help_text=_('Hvis du ønsker å bruke et egendefinert "mini-ikon".')
+                                        )
     order = models.PositiveSmallIntegerField(default=0,
                                              blank=False,
                                              null=False
                                              )
+
+    def clean(self):
+        # Can't allow selection of both a category and a custom category at the
+        # same time
+        if self.category is not None and self.custom_category is not None:
+            raise ValidationError(_('Kan ikke velge både en kateogri '
+                                    'og en egendefinert kateogri for en lenke '
+                                    'samtidig. Du kan kun velge én av delene, '
+                                    'eller ingen av delene.'))
 
     def __str__(self):
         return self.title

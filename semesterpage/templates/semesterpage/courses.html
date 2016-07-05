@@ -17,6 +17,22 @@
 <ul>
 
 {% for link in course.links.all %}
+  <li style="list-style-image: url('{% static "semesterpage/link_categories/" %}{{ link.category }}');"><a href="{{ link.url }}">{{ link.title }}</a></li>
+{% endfor %}
+
+</ul>
+</article>
+{% endfor %}
+
+{% for rll in resource_link_lists %}
+<article>
+<a class="kategori" href="{{ rll.homepage }}">
+  <img src="{{ rll.logo.url }}">
+
+  <h2>{{ rll.display_name }}</h2></a>
+<ul>
+
+{% for link in rll.links.all %}
   <li style="list-style-image: url('{% if link.category != None %}{% static "semesterpage/link_categories/" %}{{ link.category }}{% else %}{{ link.custom_category.thumbnail.url }}{% endif %}');"><a href="{{ link.url }}">{{ link.title }}</a></li>
 {% endfor %}
 

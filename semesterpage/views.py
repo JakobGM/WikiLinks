@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.core.mail import mail_admins, send_mail, EmailMessage
 from gettext import gettext as _
 from collections import namedtuple
-from .models import StudyProgram, Semester, Course
+from .models import StudyProgram, Semester, Course, ResourceLinkList
 from .forms import LinkForm, FileForm
 from kokekunster.settings import ADMINS, SERVER_EMAIL, DEFAULT_PROGRAM_CODE
 
@@ -50,12 +50,16 @@ def semester(request, program_code=DEFAULT_PROGRAM_CODE, semester_number='1', sa
     # Query database for all the data required by the template
     study_program, all_semesters, semester, courses = getSemesterData(program_code, int(semester_number))
 
+    # Query database for miscellaneous resource links common to all semesters
+    resource_link_lists = ResourceLinkList.objects.all()[0:1]
+
     # Boolean for changing the logo if the domain is fysmat.no
     is_fysmat = 'fysmat' in request.get_host().lower()
 
     return render(request, 'semesterpage/courses.html',
                   {'semester_number': semester.number,
                    'courses': courses,
+                   'resource_link_lists': resource_link_lists,
                    'semesters': all_semesters,
                    'is_fysmat': is_fysmat}
                   )

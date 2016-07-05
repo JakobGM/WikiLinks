@@ -13,7 +13,11 @@ def upload_path(instance, filename):
     excisting model instances, as it uses the model class name and the
     model instance's primary key
     """
-    return os.path.join(instance.__class__.__name__, instance.pk, filename)
+    if instance.pk:
+        return os.path.join(instance.__class__.__name__, instance.pk, filename)
+    else:
+        # When ResourceLinkList instance doesn't have a primary key at invocation
+        return os.path.join(instance.__class__.__name__, instance.full_name, filename)
 
 
 class StudyProgram(models.Model):
@@ -109,10 +113,10 @@ class Semester(models.Model):
         verbose_name_plural = _('semestere')
 
 
-class Course(models.Model):
+class LinkList(models.Model):
     """
-    Contains a specific course with a logo for display on the semesterpage.
-    Can be connected to several different semesters.
+    An abstract model which Course and ResourceLinkList derive from. It is
+    displayed as an article element on the semesterpage view / courses template.
     """
     full_name = models.CharField(
         _('fullt navn'),
@@ -125,8 +129,29 @@ class Course(models.Model):
         max_length=60,
         help_text=_('F.eks. "C++"')
     )
+    logo = models.FileField(
+        upload_to=upload_path,
+        help_text=_('Bildet vises over alle lenkene knyttet til faget. '
+                    'Bør være kvadratisk for å unngå uheldige skaleringseffekter.')
+    )
+    homepage = models.URLField(
+        _('Fagets hjemmeside'),
+        help_text=_('F.eks. "http://www.phys.ntnu.no/fysikkfag/"')
+    )
+
+    def __str__(self):
+        return self.full_name
+
+    class Meta:
+        abstract = True
+
+class Course(LinkList):
+    """
+    Contains a specific course with a logo for display on the semesterpage.
+    Can be connected to several different semesters.
+    """
     course_code = models.CharField(
-        'emnekode',
+        _('emnekode'),
         primary_key=True,
         max_length=10,
         help_text=_('F.eks. "TDT4102"')
@@ -135,18 +160,6 @@ class Course(models.Model):
         Semester,
         related_name='courses'
     )
-    logo = models.FileField(
-        upload_to=upload_path,
-        help_text=_('Bildet vises over alle lenkene knyttet til faget. '
-                    'Bør være kvadratisk for å unngå uheldige skaleringseffekter.')
-    )
-    homepage = models.URLField(
-        _('Fagets hjemmeside'),
-        help_text=_('F.eks. "http://home.phys.ntnu.no/fysikkfag/eksamensoppgaver"')
-    )
-
-    def __str__(self):
-        return self.full_name
 
     class Meta:
         ordering = ['full_name']
@@ -154,11 +167,30 @@ class Course(models.Model):
         verbose_name_plural = _('fag')
 
 
-class LinkCategory(models.Model):
+class ResourceLinkList(LinkList):
+    """
+    Used to portray resource links which are common across all the semesters.
+    Almost identical to Course, except for not being connected to any specific
+    semester, and not having a course code.
+    """
+    order = models.PositiveSmallIntegerField(
+        default=0,
+        blank=False,
+        null=False
+    )
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = _('Ressurslenkeliste')
+        verbose_name_plural = _('Ressurslenkelister')
+
+
+class CustomLinkCategory(models.Model):
     """
     Contains a category for the link model, including a thumbnail. The
     thumbnail is used on the semester page for styling the list item containig
-    the link.
+    the link. Allows a custom thumbnail when none of the defaults will do.
+    Only available in ResourceLinkList.
     """
     name = models.CharField(
         _('Egendefinert kategori'),
@@ -234,11 +266,6 @@ class Link(models.Model):
         'URL',
         help_text=_('F.eks. "http://www.phys.ntnu.no/fysikkfag/gamleeksamener.html"')
     )
-    course = models.ForeignKey(
-        Course,
-        on_delete=models.CASCADE,
-        related_name='links'
-    )
     category = models.CharField(
         _('Kateogri'),
         blank=True,
@@ -249,8 +276,47 @@ class Link(models.Model):
         help_text=_('F.eks. "Løsningsforslag". Valget bestemmer hvilket '
                     '"mini-ikon" som plasseres ved siden av lenken.')
     )
+    order = models.PositiveSmallIntegerField(
+        default=0,
+        blank=False,
+        null=False
+    )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        abstract = True
+        ordering = ('order',)
+
+
+class CourseLink(Link):
+    """
+    A link connected to a course, without the ability to add custom thumbnails.
+    """
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='links'
+    )
+
+    class Meta(Link.Meta):
+        verbose_name = _('lenke')
+        verbose_name_plural = _('lenker')
+
+
+class ResourceLink(Link):
+    """
+    A link connected to one of the two ResourceLinkList elements displayed on
+    each semesterpage, with the ability to add custom thumbnails.
+    """
+    resource_link_list = models.ForeignKey(
+        ResourceLinkList,
+        on_delete=models.CASCADE,
+        related_name='links'
+    )
     custom_category = models.ForeignKey(
-        LinkCategory,
+        CustomLinkCategory,
         default=None,
         on_delete=models.SET_NULL,
         blank=True,
@@ -258,11 +324,6 @@ class Link(models.Model):
         related_name='links',
         verbose_name=_('(Egendefinert kategori)'),
         help_text=_('Hvis du ønsker å bruke et egendefinert "mini-ikon".')
-    )
-    order = models.PositiveSmallIntegerField(
-        default=0,
-        blank=False,
-        null=False
     )
 
     def clean(self):
@@ -274,10 +335,6 @@ class Link(models.Model):
                                     'samtidig. Du kan kun velge én av delene, '
                                     'eller ingen av delene.'))
 
-    def __str__(self):
-        return self.title
-
-    class Meta:
-        verbose_name = _('lenke')
-        verbose_name_plural = _('lenker')
-        ordering = ('order',)
+    class Meta(Link.Meta):
+        verbose_name = _('ressurslenke')
+        verbose_name_plural = _('ressurslenker')

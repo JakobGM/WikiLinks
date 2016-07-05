@@ -1,5 +1,5 @@
 from django import forms
-from semesterpage.models import Link, Course
+from semesterpage.models import CourseLink, Course
 
 
 class LinkForm(forms.ModelForm):
@@ -8,7 +8,7 @@ class LinkForm(forms.ModelForm):
                                   required=False)
 
     class Meta:
-        model = Link
+        model = CourseLink
         fields = ['title', 'url', 'category', 'course']
 
 

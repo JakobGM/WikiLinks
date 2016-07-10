@@ -58,14 +58,12 @@ class MainProfile(models.Model):
     full_name = models.CharField(
         _('fullt navn'),
         max_length=60,
-        default=_('felles'),
         help_text=_('F.eks. "Industriell matematikk"')
     )
     display_name = models.CharField(
         _('visningsnavn / kallenavn'),
         max_length=60,
-        default=_('Felles'),
-        help_text=_('F.eks. "InMat"')
+        help_text=_('F.eks. "InMat". NB! Må være kun ett ord uten mellomrom.')
     )
     study_program = models.ForeignKey(
         StudyProgram,

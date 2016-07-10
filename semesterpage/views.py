@@ -2,28 +2,40 @@ from django.shortcuts import render
 from django.core.exceptions import ValidationError
 from django.core.mail import mail_admins, send_mail, EmailMessage
 from gettext import gettext as _
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from .models import StudyProgram, Semester, Course, ResourceLinkList
 from .forms import LinkForm, FileForm
 from kokekunster.settings import ADMINS, SERVER_EMAIL, DEFAULT_PROGRAM_CODE
 
 
-def getSemesterData(program_code, semester_number):
+def getSemesterData(program_code, main_profile, semester_number):
     """
     Retrieve relevant data related to a given semester at a given study program
-    TODO: Add compatibility for semesters with several main profiles
     """
+    # Simple, unsplit semesters have NULL-value in the main_profile field,
+    # but are given 'felles' as their main_profile url parameter
+    if main_profile == 'felles':
+        main_profile = None
+
     SemesterData = namedtuple('SemesterData',
                               ['study_program',
-                               'all_semesters',
+                               'simple_semesters',
+                               'grouped_split_semesters',
                                'semester',
                                'courses']
                               )
     study_program = StudyProgram.objects.get(program_code__iexact=program_code)
-    all_semesters = study_program.semesters.all()
-    semester = all_semesters.get(number=semester_number)
+    simple_semesters = study_program.semesters.filter(main_profile=None)
+    split_semesters = study_program.semesters.exclude(main_profile=None)
+    semester = study_program.semesters.filter(main_profile__display_name__iexact=main_profile).get(number=semester_number)
     courses = semester.courses.all()
-    return SemesterData(study_program, all_semesters, semester, courses)
+
+    # Grouping the split semesters by semester.number
+    grouped_split_semesters = defaultdict(list)
+    for split_semester in split_semesters:
+        grouped_split_semesters[split_semester.number].append(split_semester)
+
+    return SemesterData(study_program, simple_semesters, grouped_split_semesters.items(), semester, courses)
 
 
 def homepage(request):
@@ -34,21 +46,23 @@ def homepage(request):
     of the study program given by DEFAULT_PROGRAM_CODE
     """
     program_code = request.session.get('program_code', DEFAULT_PROGRAM_CODE)
+    main_profile = request.session.get('main_profile', 'felles')
     semester_number = request.session.get('semester_number', '1')
-    return semester(request, program_code, semester_number, save_location=False)
+    return semester(request, program_code, main_profile, semester_number, save_location=False)
 
 
-def semester(request, program_code=DEFAULT_PROGRAM_CODE, semester_number='1', save_location=True):
+def semester(request, program_code=DEFAULT_PROGRAM_CODE, main_profile='felles', semester_number='1', save_location=True):
     """
     Generates the link portal for a given semester in a given program code
     """
     if save_location:
         # Save the deliberate change of location by user in the session
         request.session['program_code'] = program_code
+        request.session['main_profile'] = main_profile
         request.session['semester_number'] = semester_number
 
     # Query database for all the data required by the template
-    study_program, all_semesters, semester, courses = getSemesterData(program_code, int(semester_number))
+    semester_data = getSemesterData(program_code, main_profile, int(semester_number))
 
     # Query database for miscellaneous resource links common to all semesters
     resource_link_lists = ResourceLinkList.objects.all()[0:1]
@@ -57,10 +71,11 @@ def semester(request, program_code=DEFAULT_PROGRAM_CODE, semester_number='1', sa
     is_fysmat = 'fysmat' in request.get_host().lower()
 
     return render(request, 'semesterpage/courses.html',
-                  {'semester_number': semester.number,
-                   'courses': courses,
+                  {'semester_number': semester_data.semester.number,
+                   'courses': semester_data.courses,
                    'resource_link_lists': resource_link_lists,
-                   'semesters': all_semesters,
+                   'simple_semesters': semester_data.simple_semesters,
+                   'grouped_split_semesters': semester_data.grouped_split_semesters,
                    'is_fysmat': is_fysmat}
                   )
 

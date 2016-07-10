@@ -1,19 +1,34 @@
 {% load static %}
 <!-- Site navigation -->
 <nav>
-  <div class="wrap">
-    <ul>
-      <li class="arkiv semestervalg"><a title="Bytt standard semester" href="#"><img class="tannhjul" src="{% static "img/semestervalg_nav.svg" %}" alt="semestervalg"></a></li>
-        {% for semester in semesters %}
-        <li><a href="{% url 'semesterpage-semester' semester.study_program.program_code semester.number %}">
-          {% if semester.number == semester_number %}
-          <b>{{ semester.number }}. Semester</b>
-          {% else %}
-          {{ semester.number }}. Semester
-          {% endif %}
-        </a></li>
-        {% endfor %}
-      <li class="arkiv"><a id="arkiv" href="/arkiv/{{ semester_number }}.Semester"><img src="{% static "img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv</a></li>
-    </ul>
-  </div>
+    <div class="wrap">
+        <ul>
+            {% for semester in simple_semesters %}
+                <li><a href="{% url 'semesterpage-semester' semester.study_program.program_code 'felles' semester.number %}">
+                    {% if semester.number == semester_number %}
+                        <b>{{ semester.number }}. Semester</b>
+                    {% else %}
+                        {{ semester.number }}. Semester
+                    {% endif %}
+                </a></li>
+            {% endfor %}
+            {% for number, split_semesters in grouped_split_semesters %}
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">
+                        {% if number == semester_number %}
+                            <b>{{ number }}. Semester</b>
+                        {% else %}
+                            {{ number }}. Semester
+                        {% endif %}
+                    </a>
+                    <div class="dropdown-content">
+                        {% for split_semester in split_semesters %}
+                            <a href="{% url 'semesterpage-semester' split_semester.study_program.program_code split_semester.main_profile.display_name split_semester.number %}">{{ split_semester.main_profile.display_name }}</a>
+                        {% endfor %}
+                    </div>
+                </li>
+            {% endfor %}
+            <li class="arkiv"><a id="arkiv" href="/arkiv/{{ semester_number }}.Semester"><img src="{% static "img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv</a></li>
+        </ul>
+    </div>
 </nav>

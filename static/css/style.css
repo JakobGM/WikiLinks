@@ -249,47 +249,6 @@ nav a:hover {
 	filter: alpha(opacity=40);
 }
 
-/*Gear icon rotation on hover*/
-.tannhjul:hover {
-	-webkit-animation-name: rotate;
-	-webkit-animation-duration: 4s;
-	-webkit-animation-iteration-count: infinite;
-	-webkit-animation-timing-function: linear;
-	-moz-animation-name: rotate;
-	-moz-animation-duration: 4s;
-	-moz-animation-iteration-count: infinite;
-	-moz-animation-timing-function: linear;
-	animation-name: rotate;
-	animation-duration: 4s;
-	animation-iteration-count: infinite;
-	animation-timing-function: linear;
-}
-@-webkit-keyframes rotate {
-    from {
-			-webkit-transform: rotate(0deg);
-			-webkit-transform-origin: 59% 50%;
-		}
-    to {
-			-webkit-transform: rotate(360deg);
-			-webkit-transform-origin: 59% 50%;
-		}
-}
-@keyframes rotate {
-	from {
-		-moz-transform: rotate(0deg);
-		-moz-transform-origin: 59% 50%;
-		transform: rotate(0deg);
-		transform-origin: 59% 50%;
-	}
-	to {
-		-moz-transform: rotate(360deg);
-		-moz-transform-origin: 59% 50%;
-		transform: rotate(360deg);
-		transform-origin: 59% 50%;
-	}
-}
-
-
 /* Footer */
 
 footer {

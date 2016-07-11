@@ -107,21 +107,21 @@ nav a {
 }
 
 .dropdown-content {
-    display: none;
-    position: absolute;
-		z-index: 2; /* In order to be placed above the semesterpage content */
-		left: 0.3em;
-    background-color: #7a7a7a;
-    min-width: 6.5em;
-    box-shadow: 0px 8px 16px 0px rgba(122,122,122,0.25);
+	display: none;
+	position: absolute;
+	z-index: 2; /* In order to be placed above the semesterpage content */
+	left: 0.3em;
+	background-color: #7a7a7a;
+	min-width: 6.5em;
+	box-shadow: 0px 8px 16px 0px rgba(122,122,122,0.25);
 }
 
 .dropdown-content a {
-    color: white;
-    padding: 3px 12px;
-    text-decoration: none;
-    display: block;
-    text-align: left;
+	color: white;
+	padding: 3px 12px;
+	text-decoration: none;
+	display: block;
+	text-align: left;
 }
 
 .dropdown-content a:first-child {
@@ -133,7 +133,7 @@ nav a {
 }
 
 .dropdown:hover .dropdown-content {
-    display: block;
+	display: block;
 }
 
 /* Content */
@@ -331,7 +331,7 @@ article form p {
 	}
 
 	.dropdown:focus .dropdown-content {
-    	display: inline;
+		display: inline;
 	}
 
 	nav li {

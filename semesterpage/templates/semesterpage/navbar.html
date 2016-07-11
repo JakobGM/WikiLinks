@@ -28,7 +28,7 @@
                     </div>
                 </li>
             {% endfor %}
-            <li class="arkiv"><a id="arkiv" href="/arkiv/{{ semester.number }}.Semester"><img src="{% static "img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv</a></li>
+            <li class="arkiv"><a id="arkiv" href="/arkiv/{{ semester.study_program.program_code | lower }}/{{ semester.number }}.semester{% if semester.main_profile != None %}/{{ semester.main_profile.display_name }}{% endif %}"><img src="{% static "img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv</a></li>
         </ul>
     </div>
 </nav>

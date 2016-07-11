@@ -71,7 +71,7 @@ def semester(request, program_code=DEFAULT_PROGRAM_CODE, main_profile='felles', 
     is_fysmat = 'fysmat' in request.get_host().lower()
 
     return render(request, 'semesterpage/courses.html',
-                  {'semester_number': semester_data.semester.number,
+                  {'semester': semester_data.semester,
                    'courses': semester_data.courses,
                    'resource_link_lists': resource_link_lists,
                    'simple_semesters': semester_data.simple_semesters,

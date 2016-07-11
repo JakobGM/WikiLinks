@@ -3,19 +3,19 @@
 <nav>
     <div class="wrap">
         <ul>
-            {% for semester in simple_semesters %}
-                <li><a href="{% url 'semesterpage-semester' semester.study_program.program_code 'felles' semester.number %}">
-                    {% if semester.number == semester_number %}
-                        <b>{{ semester.number }}. Semester</b>
+            {% for simple_semester in simple_semesters %}
+                <li><a href="{% url 'semesterpage-semester' simple_semester.study_program.program_code 'felles' simple_semester.number %}">
+                    {% if simple_semester.number == semester.number %}
+                        <b>{{ simple_semester.number }}. Semester</b>
                     {% else %}
-                        {{ semester.number }}. Semester
+                        {{ simple_semester.number }}. Semester
                     {% endif %}
                 </a></li>
             {% endfor %}
             {% for number, split_semesters in grouped_split_semesters %}
                 <li class="dropdown">
                     <a href="#" class="dropbtn">
-                        {% if number == semester_number %}
+                        {% if number == semester.number %}
                             <b>{{ number }}. Semester</b>
                         {% else %}
                             {{ number }}. Semester
@@ -23,12 +23,12 @@
                     </a>
                     <div class="dropdown-content">
                         {% for split_semester in split_semesters %}
-                            <a href="{% url 'semesterpage-semester' split_semester.study_program.program_code split_semester.main_profile.display_name split_semester.number %}">{{ split_semester.main_profile.display_name }}</a>
+                            <a href="{% url 'semesterpage-semester' split_semester.study_program.program_code split_semester.main_profile.display_name split_semester.number %}">{% if split_semester == semester %}<b>{% endif %}{{ split_semester.main_profile.display_name }}{% if split_semester == semester %}</b>{% endif %}</a>
                         {% endfor %}
                     </div>
                 </li>
             {% endfor %}
-            <li class="arkiv"><a id="arkiv" href="/arkiv/{{ semester_number }}.Semester"><img src="{% static "img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv</a></li>
+            <li class="arkiv"><a id="arkiv" href="/arkiv/{{ semester.number }}.Semester"><img src="{% static "img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv</a></li>
         </ul>
     </div>
 </nav>

@@ -321,6 +321,19 @@ article form p {
 		font-size: 1.5em;
 	}
 
+	/* Main profile list on split semesters shown when clicked in navbar on mobile */
+	.dropdown-content {
+		position: relative;
+	}
+
+	.dropdown-content a {
+		text-align: center;
+	}
+
+	.dropdown:focus .dropdown-content {
+    	display: inline;
+	}
+
 	nav li {
 		display: block;
 		text-align: center;

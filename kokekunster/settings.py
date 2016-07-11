@@ -125,7 +125,7 @@ SESSION_COOKIE_HTTPONLY = True
 # Which study program should be defaulted to in url handling when the study
 # program code is not specified?
 
-DEFAULT_PROGRAM_CODE = 'MTFYMA'
+DEFAULT_PROGRAM_CODE = 'mtfyma'
 
 
 # Import local settings

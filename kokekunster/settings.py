@@ -119,7 +119,10 @@ MEDIA_ROOT = '/var/www/kokekunster.no/media/'
 # Cookie-based sessions
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
 SESSION_COOKIE_HTTPONLY = True
+
+SESSION_COOKIE_AGE = 31536000  # 1 year, instead of two weeks
 
 
 # Which study program should be defaulted to in url handling when the study

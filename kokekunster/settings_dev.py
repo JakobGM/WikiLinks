@@ -6,6 +6,8 @@ from kokekunster.settings import BASE_DIR
 
 DEBUG = True
 
+ALLOWED_HOSTS = []
+
 
 # "Secret" cryptographic key, only used during local development
 
@@ -27,7 +29,7 @@ DATABASES = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
-EMAIL_FILE_PATH = '/tmp/kokekunster_emails'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'tmp', 'email')
 
 ADMINS = (
   ('Test Testesen', 'admin_email@domain.tld'),

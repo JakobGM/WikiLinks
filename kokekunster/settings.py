@@ -19,13 +19,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# Insert proper secret key here, or in settings_local.py
-SECRET_KEY = 'MUST_BE_REPLACED'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
@@ -75,17 +68,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'kokekunster.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
@@ -113,8 +95,6 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 
-MEDIA_ROOT = '/var/www/kokekunster.no/media/'
-
 
 # Cookie-based sessions
 
@@ -122,7 +102,12 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 SESSION_COOKIE_HTTPONLY = True
 
-SESSION_COOKIE_AGE = 31536000  # 1 year, instead of two weeks
+SESSION_COOKIE_AGE = 31536000  # 1 year, instead of default 2 weeks
+
+
+# Email sending from the following adress
+
+SERVER_EMAIL = 'django@kokekunster.no'
 
 
 # Which study program should be defaulted to in url handling when the study
@@ -131,7 +116,15 @@ SESSION_COOKIE_AGE = 31536000  # 1 year, instead of two weeks
 DEFAULT_PROGRAM_CODE = 'mtfyma'
 
 
-# Import local settings
+# Determine run environment based on the environment variable 'PRODUCTION', and load proper settings
+
+if os.environ.get('PRODUCTION', None):
+    from kokekunster.settings_prod import *
+else:
+    from kokekunster.settings_dev import *
+
+
+# Import local settings that are gitignored. Can be used for temporary test settings
 
 try:
     from kokekunster.settings_local import *

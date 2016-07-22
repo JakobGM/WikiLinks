@@ -23,7 +23,7 @@
                     </a>
                     <div class="dropdown-content">
                         {% for split_semester in split_semesters %}
-                            <a href="{% url 'semesterpage-semester' split_semester.study_program.slug split_semester.main_profile.slug split_semester.number %}">{% if split_semester == semester %}<b>{% endif %}{{ split_semester.main_profile.slug }}{% if split_semester == semester %}</b>{% endif %}</a>
+                            <a href="{% url 'semesterpage-semester' split_semester.study_program.slug split_semester.main_profile.slug split_semester.number %}">{% if split_semester == semester %}<b>{% endif %}{{ split_semester.main_profile.display_name }}{% if split_semester == semester %}</b>{% endif %}</a>
                         {% endfor %}
                     </div>
                 </li>

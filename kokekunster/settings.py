@@ -104,8 +104,9 @@ SESSION_COOKIE_AGE = 31536000  # 1 year, instead of default 2 weeks
 SERVER_EMAIL = 'django@kokekunster.no'
 
 
-# Which study program should be defaulted to in url handling when the study
-# program is not specified?
+# Which study program should be defaulted to in url handling when the study program is not specified?
+# NB! Must be the slug-field of the StudyProgram object, i.e. lowercase version of the display_name field except that
+# the spaces are replaced with underscores
 
 DEFAULT_STUDY_PROGRAM = 'fysmat'
 

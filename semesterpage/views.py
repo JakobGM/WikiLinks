@@ -24,10 +24,10 @@ def getSemesterData(study_program, main_profile, semester_number):
                                'semester',
                                'courses']
                               )
-    study_program = StudyProgram.objects.get(slug__iexact=study_program)
+    study_program = StudyProgram.objects.get(slug=study_program)
     simple_semesters = study_program.semesters.filter(main_profile=None)
     split_semesters = study_program.semesters.exclude(main_profile=None)
-    semester = study_program.semesters.filter(main_profile__slug__iexact=main_profile).get(number=semester_number)
+    semester = study_program.semesters.filter(main_profile__slug=main_profile).get(number=semester_number)
     courses = semester.courses.all()
 
     # Grouping the split semesters by semester.number

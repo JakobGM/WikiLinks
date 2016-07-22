@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 from gettext import gettext as _
+from autoslug import AutoSlugField
 import os
 
 
@@ -34,6 +35,10 @@ class StudyProgram(models.Model):
         max_length=60,
         help_text=_('F.eks. "Fysmat"')
     )
+    slug = AutoSlugField(
+        populate_from='display_name',
+        unique=True
+    )
     program_code = models.CharField(
         _('programkode'),
         primary_key=True,
@@ -63,12 +68,16 @@ class MainProfile(models.Model):
     display_name = models.CharField(
         _('visningsnavn / kallenavn'),
         max_length=60,
-        help_text=_('F.eks. "InMat". NB! Må være kun ett ord uten mellomrom.')
+        help_text=_('F.eks. "InMat"')
     )
     study_program = models.ForeignKey(
         StudyProgram,
         on_delete=models.CASCADE,
         related_name='mainProfiles'
+    )
+    slug = AutoSlugField(
+        populate_from='display_name',
+        unique_with='study_program'
     )
 
     def __str__(self):

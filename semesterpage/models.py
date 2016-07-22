@@ -39,12 +39,6 @@ class StudyProgram(models.Model):
         populate_from='display_name',
         unique=True
     )
-    program_code = models.CharField(
-        _('programkode'),
-        primary_key=True,
-        max_length=10,
-        help_text=_('F.eks. "MTFYMA"')
-    )  # TODO: Only upper case?
 
     def __str__(self):
         return self.display_name
@@ -159,7 +153,7 @@ class Course(LinkList):
     """
     course_code = models.CharField(
         _('emnekode'),
-        primary_key=True,
+        unique=True,
         max_length=10,
         help_text=_('F.eks. "TDT4102"')
     )
@@ -201,7 +195,7 @@ class CustomLinkCategory(models.Model):
     """
     name = models.CharField(
         _('Egendefinert kategori'),
-        primary_key=True,
+        unique=True,
         max_length=60
     )
     thumbnail = models.FileField(

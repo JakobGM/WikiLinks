@@ -6,7 +6,7 @@ from .models import StudyProgram, MainProfile, Semester, Course, \
 
 
 class StudyProgramAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'display_name', 'program_code',)
+    list_display = ('full_name', 'display_name',)
 
 
 class MainProfileAdmin(admin.ModelAdmin):
@@ -38,7 +38,7 @@ class ResourceLinkInline(SortableInlineAdminMixin, admin.TabularInline):
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('full_name', 'display_name', 'course_code',)
     list_filter = ('semesters',)
-    search_fields = ('full_name', 'display_name', 'program_code',)
+    search_fields = ('full_name', 'display_name',)
     filter_horizontal = ('semesters',)
     inlines = [CourseLinkInline]
 

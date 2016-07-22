@@ -21,6 +21,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^(?P<program_code>\w{3,6})/', include('semesterpage.urls')),
+    url(r'^(?P<study_program>\w{3,6})/', include('semesterpage.urls')),
     url(r'^$', include('semesterpage.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

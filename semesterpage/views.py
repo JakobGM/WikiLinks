@@ -5,10 +5,10 @@ from gettext import gettext as _
 from collections import namedtuple, defaultdict
 from .models import StudyProgram, Semester, Course, ResourceLinkList
 from .forms import LinkForm, FileForm
-from kokekunster.settings import ADMINS, SERVER_EMAIL, DEFAULT_PROGRAM_CODE
+from kokekunster.settings import ADMINS, SERVER_EMAIL, DEFAULT_STUDY_PROGRAM
 
 
-def getSemesterData(program_code, main_profile, semester_number):
+def getSemesterData(study_program, main_profile, semester_number):
     """
     Retrieve relevant data related to a given semester at a given study program
     """
@@ -24,10 +24,10 @@ def getSemesterData(program_code, main_profile, semester_number):
                                'semester',
                                'courses']
                               )
-    study_program = StudyProgram.objects.get(program_code__iexact=program_code)
+    study_program = StudyProgram.objects.get(slug__iexact=study_program)
     simple_semesters = study_program.semesters.filter(main_profile=None)
     split_semesters = study_program.semesters.exclude(main_profile=None)
-    semester = study_program.semesters.filter(main_profile__display_name__iexact=main_profile).get(number=semester_number)
+    semester = study_program.semesters.filter(main_profile__slug__iexact=main_profile).get(number=semester_number)
     courses = semester.courses.all()
 
     # Grouping the split semesters by semester.number
@@ -45,24 +45,24 @@ def homepage(request):
     If no data is given, the homepage defaults to the 1st semester
     of the study program given by DEFAULT_PROGRAM_CODE
     """
-    program_code = request.session.get('program_code', DEFAULT_PROGRAM_CODE)
+    study_program = request.session.get('study_program', DEFAULT_STUDY_PROGRAM)
     main_profile = request.session.get('main_profile', 'felles')
     semester_number = request.session.get('semester_number', '1')
-    return semester(request, program_code, main_profile, semester_number, save_location=False)
+    return semester(request, study_program, main_profile, semester_number, save_location=False)
 
 
-def semester(request, program_code=DEFAULT_PROGRAM_CODE, main_profile='felles', semester_number='1', save_location=True):
+def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile='felles', semester_number='1', save_location=True):
     """
     Generates the link portal for a given semester in a given program code
     """
     if save_location:
         # Save the deliberate change of location by user in the session
-        request.session['program_code'] = program_code
+        request.session['study_program'] = study_program
         request.session['main_profile'] = main_profile
         request.session['semester_number'] = semester_number
 
     # Query database for all the data required by the template
-    semester_data = getSemesterData(program_code, main_profile, int(semester_number))
+    semester_data = getSemesterData(study_program, main_profile, int(semester_number))
 
     # Query database for miscellaneous resource links common to all semesters
     resource_link_lists = ResourceLinkList.objects.all()[0:1]

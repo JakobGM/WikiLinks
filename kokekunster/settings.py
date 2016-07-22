@@ -105,9 +105,9 @@ SERVER_EMAIL = 'django@kokekunster.no'
 
 
 # Which study program should be defaulted to in url handling when the study
-# program code is not specified?
+# program is not specified?
 
-DEFAULT_PROGRAM_CODE = 'mtfyma'
+DEFAULT_STUDY_PROGRAM = 'fysmat'
 
 
 # Determine run environment based on the environment variable 'PRODUCTION', and load proper settings

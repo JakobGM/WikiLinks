@@ -1,5 +1,6 @@
 Django==1.9.7
 django-admin-sortable2==0.6.4
 django-autoslug==1.9.3
+django-subdomains==2.1.0
 django-widget-tweaks==1.4.1
 Pillow==3.2.0

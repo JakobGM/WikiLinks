@@ -25,6 +25,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'widget_tweaks',
     'adminsortable2',
     'semesterpage',
@@ -32,6 +33,7 @@ INSTALLED_APPS = (
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'subdomains.middleware.SubdomainURLRoutingMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -42,6 +44,19 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'kokekunster.urls'
+
+
+# A dictionary of urlconf module paths, keyed by their subdomain.
+# https://django-subdomains.readthedocs.io/en/latest/
+
+# Possible to add new subdomains in the future!
+SUBDOMAIN_URLCONFS = {
+#     None: 'kokekunster.urls.urls',  # no subdomain
+#     'www': 'kokekunster.urls.urls', # Should be redirected to None
+#     'api': 'kokekunster.urls.api',  # no subdomain
+}
+
+SITE_ID = 1
 
 TEMPLATES = [
     {

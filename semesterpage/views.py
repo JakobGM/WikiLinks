@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
 from django.core.mail import mail_admins, send_mail, EmailMessage
+from subdomains.utils import reverse
 from gettext import gettext as _
 from collections import namedtuple, defaultdict
 from .models import StudyProgram, Semester, Course, ResourceLinkList
@@ -45,10 +46,25 @@ def homepage(request):
     If no data is given, the homepage defaults to the 1st semester
     of the study program given by DEFAULT_PROGRAM_CODE
     """
-    study_program = request.session.get('study_program', DEFAULT_STUDY_PROGRAM)
-    main_profile = request.session.get('main_profile', 'felles')
-    semester_number = request.session.get('semester_number', '1')
-    return semester(request, study_program, main_profile, semester_number, save_location=False)
+    if request.subdomain:
+        # The user has visited xxx.example.com and is redirected to example.com/xxx, the page for the study program xxx
+        return redirect(reverse(viewname=study_program_view, subdomain=None, kwargs={'study_program': request.subdomain}))
+    else:
+        study_program = request.session.get('study_program', DEFAULT_STUDY_PROGRAM)
+        main_profile = request.session.get('main_profile', 'felles')
+        semester_number = request.session.get('semester_number', '1')
+        return semester(request, study_program, main_profile, semester_number, save_location=False)
+
+
+def study_program_view(request, study_program):
+    if study_program == request.session.get('study_program', 'no match'):
+        # The user has a saved location for this study program, and we can use it
+        main_profile = request.session.get('main_profile', 'felles')
+        semester_number = request.session.get('semester_number', '1')
+        return semester(request, study_program, main_profile, semester_number)
+    else:
+        # Using defaults instead
+        return semester(request, study_program)
 
 
 def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile='felles', semester_number='1', save_location=True):

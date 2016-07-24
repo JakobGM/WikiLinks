@@ -3,6 +3,16 @@
 <nav>
     <div class="wrap">
         <ul>
+            <li class="dropdown">
+                <a href="#" class="dropbtn">
+                    <img src="{% static "semesterpage/img/list-menu.svg" %}" alt="dropdown">&nbsp;&nbsp;{{ semester.study_program.display_name | title }}&nbsp;&nbsp;
+                </a>
+                <div class="dropdown-content">
+                    {% for study_program in study_programs %}
+                        <a href="{% url 'semesterpage-studyprogram' study_program %}">{% if study_program == semester.study_program %}<b>{% endif %}{{ study_program.display_name | title }}{% if study_program == semester.study_program %}</b>{% endif %}</a>
+                    {% endfor %}
+                </div>
+            </li>
             {% for simple_semester in simple_semesters %}
                 <li><a href="{% url 'semesterpage-semester' simple_semester.study_program.slug 'felles' simple_semester.number %}">
                     {% if simple_semester.number == semester.number %}
@@ -28,7 +38,7 @@
                     </div>
                 </li>
             {% endfor %}
-            <li class="arkiv"><a id="arkiv" href="/arkiv/{{ semester.study_program.slug | lower }}/{{ semester.number }}.semester{% if semester.main_profile != None %}/{{ semester.main_profile.slug }}{% endif %}"><img src="{% static "img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv</a></li>
+            <li class="arkiv"><a id="arkiv" href="/arkiv/{{ semester.study_program.slug | lower }}/{{ semester.number }}.semester{% if semester.main_profile != None %}/{{ semester.main_profile.slug }}{% endif %}"><img src="{% static "semesterpage/img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv</a></li>
         </ul>
     </div>
 </nav>

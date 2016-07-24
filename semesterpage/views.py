@@ -92,6 +92,7 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile='felles'
                    'resource_link_lists': resource_link_lists,
                    'simple_semesters': semester_data.simple_semesters,
                    'grouped_split_semesters': semester_data.grouped_split_semesters,
+                   'study_programs': StudyProgram.objects.all(),
                    'is_fysmat': is_fysmat}
                   )
 

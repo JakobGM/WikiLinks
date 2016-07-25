@@ -9,7 +9,7 @@
                 </a>
                 <div class="dropdown-content">
                     {% for study_program in study_programs %}
-                        <a href="{% url 'semesterpage-studyprogram' study_program %}">{% if study_program == semester.study_program %}<b>{% endif %}{{ study_program.display_name | title }}{% if study_program == semester.study_program %}</b>{% endif %}</a>
+                        <a href="{% url 'semesterpage-studyprogram' study_program.slug %}">{% if study_program == semester.study_program %}<b>{% endif %}{{ study_program.display_name | title }}{% if study_program == semester.study_program %}</b>{% endif %}</a>
                     {% endfor %}
                 </div>
             </li>

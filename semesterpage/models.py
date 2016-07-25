@@ -172,8 +172,19 @@ class ResourceLinkList(LinkList):
     """
     Used to portray resource links which are common across all the semesters.
     Almost identical to Course, except for not being connected to any specific
-    semester, and not having a course code.
+    semester, but a study program instead, and not having a course code.
     """
+    study_programs = models.ManyToManyField(
+        StudyProgram,
+        blank=True,
+        null=True,
+        related_name='resource_link_lists'
+    )
+    default = models.BooleanField(
+        default=False,
+        help_text=_('Skal denne ressurslenkelisten brukes i alle studieprogram som ikke har satt sine egendefinerte '
+                    'ressurslenkelister?')
+    )
     order = models.PositiveSmallIntegerField(
         default=0,
         blank=False,

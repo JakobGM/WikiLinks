@@ -44,6 +44,7 @@ class CourseAdmin(admin.ModelAdmin):
 
 
 class ResourceLinkListAdmin(admin.ModelAdmin):
+    filter_horizontal = ('study_programs',)
     inlines = [ResourceLinkInline]
 
 

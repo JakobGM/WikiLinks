@@ -4,7 +4,7 @@ from django.core.mail import mail_admins, send_mail, EmailMessage
 from subdomains.utils import reverse
 from gettext import gettext as _
 from collections import namedtuple, defaultdict
-from .models import StudyProgram, Semester, Course, ResourceLinkList
+from .models import StudyProgram, ResourceLinkList
 from .forms import LinkForm, FileForm
 from kokekunster.settings import ADMINS, SERVER_EMAIL, DEFAULT_STUDY_PROGRAM
 
@@ -23,8 +23,10 @@ def getSemesterData(study_program, main_profile, semester_number):
                                'simple_semesters',
                                'grouped_split_semesters',
                                'semester',
-                               'courses']
-                              )
+                               'courses',
+                               'resource_link_lists']
+    )
+
     study_program = StudyProgram.objects.get(slug=study_program)
     simple_semesters = study_program.semesters.filter(main_profile=None)
     split_semesters = study_program.semesters.exclude(main_profile=None)
@@ -36,7 +38,20 @@ def getSemesterData(study_program, main_profile, semester_number):
     for split_semester in split_semesters:
         grouped_split_semesters[split_semester.number].append(split_semester)
 
-    return SemesterData(study_program, simple_semesters, grouped_split_semesters.items(), semester, courses)
+    # Get the ResourceLinkLists, falling back on the default ones if there are no custom ones for the study program
+    if study_program.resource_link_lists.exists():
+        resource_link_lists = study_program.resource_link_lists.all()
+    else:
+        resource_link_lists = ResourceLinkList.objects.filter(default=True)
+
+    return SemesterData(
+        study_program,
+        simple_semesters,
+        grouped_split_semesters.items(),
+        semester,
+        courses,
+        resource_link_lists
+    )
 
 
 def homepage(request):
@@ -80,16 +95,13 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile='felles'
     # Query database for all the data required by the template
     semester_data = getSemesterData(study_program, main_profile, int(semester_number))
 
-    # Query database for miscellaneous resource links common to all semesters
-    resource_link_lists = ResourceLinkList.objects.all()[0:1]
-
     # Boolean for changing the logo if the domain is fysmat.no
     is_fysmat = 'fysmat' in request.get_host().lower()
 
     return render(request, 'semesterpage/courses.html',
                   {'semester': semester_data.semester,
                    'courses': semester_data.courses,
-                   'resource_link_lists': resource_link_lists,
+                   'resource_link_lists': semester_data.resource_link_lists,
                    'simple_semesters': semester_data.simple_semesters,
                    'grouped_split_semesters': semester_data.grouped_split_semesters,
                    'study_programs': StudyProgram.objects.all(),

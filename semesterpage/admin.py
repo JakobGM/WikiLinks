@@ -23,7 +23,6 @@ class StudyProgramAdmin(admin.ModelAdmin):
 
 
 class MainProfileAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'display_name',)
     list_filter = ('study_program',)
 
     def get_queryset(self, request):

@@ -42,7 +42,7 @@ class StudyProgram(models.Model):
     )
 
     def __str__(self):
-        return self.display_name
+        return self.full_name + ' A.K.A. ' + self.display_name
 
     class Meta:
         ordering = ['full_name']
@@ -76,7 +76,7 @@ class MainProfile(models.Model):
     )
 
     def __str__(self):
-        return self.full_name
+        return self.display_name + _(' på ') + str(self.study_program)
 
     class Meta:
         ordering = ['full_name']
@@ -90,7 +90,7 @@ class Semester(models.Model):
     """
     number = models.PositiveSmallIntegerField(
         _('semester (nummer)'),
-        help_text='F.eks. "2"'
+        help_text=_('F.eks. "2"')
     )
     study_program = models.ForeignKey(
         StudyProgram,
@@ -107,10 +107,17 @@ class Semester(models.Model):
     )
 
     def __str__(self):
-        return str(self.study_program) + " (" + str(self.number) + '. semester)'
+        string = str(self.number) + '. semester på '
+        string += str(self.study_program)
+        if self.main_profile is not None:
+            string += ' (' + str(self.main_profile) + ')'
+        else:
+            string += ' (Felles)'
+
+        return string
 
     class Meta:
-        ordering = ['study_program', 'number']
+        ordering = ['study_program', 'main_profile', 'number']
         verbose_name = _('semester')
         verbose_name_plural = _('semestere')
 
@@ -162,6 +169,9 @@ class Course(LinkList):
         Semester,
         related_name='courses'
     )
+
+    def __str__(self):
+        return self.course_code + ': ' + self.full_name
 
     class Meta:
         ordering = ['full_name']
@@ -313,6 +323,9 @@ class CourseLink(Link):
         related_name='links'
     )
 
+    def __str__(self):
+        return self.title + ' ['+ str(self.course) + ']'
+
     class Meta(Link.Meta):
         verbose_name = _('lenke')
         verbose_name_plural = _('lenker')
@@ -348,9 +361,14 @@ class ResourceLink(Link):
                                     'samtidig. Du kan kun velge én av delene, '
                                     'eller ingen av delene.'))
 
+    def __str__(self):
+        return self.title + _(' [Ressurslenkeliste: ') + str(self.resource_link_list) + ']'
+
+
     class Meta(Link.Meta):
         verbose_name = _('ressurslenke')
         verbose_name_plural = _('ressurslenker')
+
 
 class Contributor(models.Model):
     user = models.OneToOneField(

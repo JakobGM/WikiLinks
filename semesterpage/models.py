@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 from gettext import gettext as _
 from autoslug import AutoSlugField
@@ -350,3 +351,26 @@ class ResourceLink(Link):
     class Meta(Link.Meta):
         verbose_name = _('ressurslenke')
         verbose_name_plural = _('ressurslenker')
+
+class Contributor(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE
+    )
+    study_program = models.ForeignKey(
+        StudyProgram,
+        blank=False,
+        related_name='contributors'
+    )
+    main_profile = models.ForeignKey(
+        MainProfile,
+        blank=True,
+        null=True,
+        related_name='contributors'
+    )
+    semester = models.ForeignKey(
+        Semester,
+        blank=True,
+        null=True,
+        related_name='contributors'
+    )

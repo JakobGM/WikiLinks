@@ -38,6 +38,17 @@ class MainProfileAdmin(admin.ModelAdmin):
         else:
             return qs.filter(study_program=request.user.contributor.study_program)
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """
+        Restrict the options available for the foreign key field 'study_program' to model instances that the user should
+        have access to. These model instances are found in the semesterpage.models.contributor model, which is related
+        one-to-one to the User model (request.user.contributor).
+        """
+        if not request.user.is_superuser:
+            if db_field.name == 'study_program':
+                kwargs['queryset'] = StudyProgram.objects.filter(pk=request.user.contributor.study_program.pk)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class SemesterAdmin(admin.ModelAdmin):
     list_filter = ('study_program',)
@@ -56,6 +67,19 @@ class SemesterAdmin(admin.ModelAdmin):
             return qs.filter(main_profile=request.user.contributor.main_profile)
         else:
             return qs.filter(study_program=request.user.contributor.study_program)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """
+        Restrict the options available for the foreign key fields 'study_program' and 'main_profile' to model instances
+        that the user should have access to. These model instances are found in the semesterpage.models.contributor
+        model, which is related one-to-one to the User model (request.user.contributor).
+        """
+        if not request.user.is_superuser:
+            if db_field.name == 'study_program':
+                kwargs['queryset'] = StudyProgram.objects.filter(pk=request.user.contributor.study_program.pk)
+            if db_field.name == 'main_profile':
+                kwargs['queryset'] = request.user.contributor.main_profiles()
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class CourseLinkInline(SortableInlineAdminMixin, admin.TabularInline):
@@ -97,6 +121,17 @@ class CourseAdmin(admin.ModelAdmin):
         else:
             return qs.filter(semesters__study_program__in=[request.user.contributor.study_program])
 
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        """
+        Restrict the options available for the many-to-many field 'semesters' to model instances that the user should
+        have access to. These model instances are found in the semesterpage.models.contributor model, which is related
+        one-to-one to the User model (request.user.contributor).
+        """
+        if db_field.name == 'semesters':
+            if not request.user.is_superuser:
+                kwargs['queryset'] = request.user.contributor.semesters()
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+
 
 class ResourceLinkListAdmin(admin.ModelAdmin):
     filter_horizontal = ('study_programs',)
@@ -116,6 +151,17 @@ class ResourceLinkListAdmin(admin.ModelAdmin):
             return qs.filter(study_programs__in=[request.user.contributor.main_profile.study_program])
         else:
             return qs.filter(study_programs__in=[request.user.contributor.study_program])
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        """
+        Restrict the options available for the many-to-many field 'study_programs' to model instances that the user
+        should have access to. These model instances are found in the semesterpage.models.contributor model, which is
+        related one-to-one to the User model (request.user.contributor).
+        """
+        if db_field.name == 'study_programs':
+            if not request.user.is_superuser:
+                kwargs['queryset'] = StudyProgram.objects.filter(pk=request.user.contributor.study_program.pk)
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 
 class CourseLinkAdmin(admin.ModelAdmin):
@@ -139,6 +185,17 @@ class CourseLinkAdmin(admin.ModelAdmin):
         else:
             return qs.filter(course__semesters__study_program__in=[request.user.contributor.study_program])
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """
+        Restrict the options available for the foreign key field 'course' to model instances that the user should
+        have access to. These model instances are found in the semesterpage.models.contributor model, which is related
+        one-to-one to the User model (request.user.contributor).
+        """
+        if not request.user.is_superuser:
+            if db_field.name == 'course':
+                kwargs['queryset'] = request.user.contributor.courses()
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class ResourceLinkAdmin(admin.ModelAdmin):
     list_display = ('title', 'url', 'resource_link_list', 'category', 'custom_category',)
@@ -160,6 +217,17 @@ class ResourceLinkAdmin(admin.ModelAdmin):
             return qs.filter(resource_link_list__study_programs__in=[request.user.contributor.main_profile.study_program])
         else:
             return qs.filter(resource_link_list__study_programs__in=[request.user.contributor.study_program])
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """
+        Restrict the options available for the foreign key field 'resource_link_list' to model instances that the user should
+        have access to. These model instances are found in the semesterpage.models.contributor model, which is related
+        one-to-one to the User model (request.user.contributor).
+        """
+        if not request.user.is_superuser:
+            if db_field.name == 'resource_link_list':
+                kwargs['queryset'] = request.user.contributor.study_program.resource_link_lists
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class CustomLinkCategoryAdmin(admin.ModelAdmin):

@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 from gettext import gettext as _
 from autoslug import AutoSlugField
+from autoslug.utils import slugify
 import os
 
 
@@ -11,15 +12,10 @@ def upload_path(instance, filename):
     """
     For setting the upload_to parameter of FileFields and ImageFields,
         e.g. field_name = FileField(upload_to=upload_path)
-    Returns a MEDIA_ROOT file path that is guaranteed to not collide with
-    excisting model instances, as it uses the model class name and the
-    model instance's primary key
+    Returns a MEDIA_ROOT file path that is quite descriptive as it uses
+    the instance.__str__ method. It is assumed that this method is defined.
     """
-    if instance.pk:
-        return os.path.join(instance.__class__.__name__, instance.pk, filename)
-    else:
-        # When ResourceLinkList instance doesn't have a primary key at invocation
-        return os.path.join(instance.__class__.__name__, instance.full_name, filename)
+    return os.path.join(instance.__class__.__name__, slugify(str(instance)), filename)
 
 
 class StudyProgram(models.Model):
@@ -68,7 +64,7 @@ class MainProfile(models.Model):
     study_program = models.ForeignKey(
         StudyProgram,
         on_delete=models.CASCADE,
-        related_name='mainProfiles'
+        related_name='main_profiles'
     )
     slug = AutoSlugField(
         populate_from='display_name',
@@ -392,3 +388,28 @@ class Contributor(models.Model):
         null=True,
         related_name='contributors'
     )
+
+    """
+    Methods for retrieving the model instances that should be available to the user.
+    """
+    def main_profiles(self):
+        if self.main_profile is not None:
+            return MainProfile.objects.filter(pk=self.main_profile.pk)
+        else:
+            return self.study_program.main_profiles
+
+    def semesters(self):
+        if self.semester is not None:
+            return Semester.objects.filter(pk=self.semester.pk)
+        elif self.main_profile is not None:
+            return self.main_profile.semesters
+        else:
+            return self.study_program.semesters
+
+    def courses(self):
+        if self.semester is not None:
+            return self.semester.courses
+        elif self.main_profile is not None:
+            return Course.objects.filter(semesters__main_profile__in=[self.main_profile])
+        else:
+            return Course.objects.filter(semesters__study_program__in=[self.study_program])

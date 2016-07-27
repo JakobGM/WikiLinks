@@ -198,7 +198,6 @@ class ResourceLinkList(LinkList):
     study_programs = models.ManyToManyField(
         StudyProgram,
         blank=True,
-        null=True,
         related_name='resource_link_lists'
     )
     default = models.BooleanField(

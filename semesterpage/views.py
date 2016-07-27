@@ -28,8 +28,8 @@ def getSemesterData(study_program, main_profile, semester_number):
     )
 
     study_program = StudyProgram.objects.get(slug=study_program)
-    simple_semesters = study_program.semesters.filter(main_profile=None)
-    split_semesters = study_program.semesters.exclude(main_profile=None)
+    simple_semesters = study_program.semesters.filter(main_profile=None, published=True)
+    split_semesters = study_program.semesters.exclude(main_profile=None).filter(published=True)
     semester = study_program.semesters.filter(main_profile__slug=main_profile).get(number=semester_number)
     courses = semester.courses.all()
 
@@ -104,7 +104,7 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile='felles'
                    'resource_link_lists': semester_data.resource_link_lists,
                    'simple_semesters': semester_data.simple_semesters,
                    'grouped_split_semesters': semester_data.grouped_split_semesters,
-                   'study_programs': StudyProgram.objects.all(),
+                   'study_programs': StudyProgram.objects.filter(published=True),
                    'is_fysmat': is_fysmat}
                   )
 

@@ -36,6 +36,13 @@ class StudyProgram(models.Model):
         populate_from='display_name',
         unique=True
     )
+    published = models.BooleanField(
+        _('publisert'),
+        default=False,
+        help_text=_('Studieprogrammet dukker ikke opp i studieprogramlisten i navigasjonsbaren før det er publisert, '
+                    'men det er fortsatt mulig å besøke studieprogrammet manuelt (URL: visningsnavn.kokekunster.no) '
+                    'for å teste resultatet før du publiserer.')
+    )
 
     def __str__(self):
         return self.full_name
@@ -100,6 +107,13 @@ class Semester(models.Model):
         null=True,
         default=None,
         related_name='semesters'
+    )
+    published = models.BooleanField(
+        _('publisert'),
+        default=False,
+        help_text=_('Semesteret dukker ikke opp i navigasjonsbaren før det er publisert, men det er fortsatt mulig å '
+                    'besøke semesteret manuelt (URL: kokekunster.no/studieprogram/hovedprofil/semesternummer) for å '
+                    'teste resultatet før du publiserer.')
     )
 
     def __str__(self):

@@ -38,7 +38,7 @@ class StudyProgram(models.Model):
     )
 
     def __str__(self):
-        return self.full_name + ' A.K.A. ' + self.display_name
+        return self.full_name
 
     class Meta:
         ordering = ['full_name']
@@ -72,7 +72,7 @@ class MainProfile(models.Model):
     )
 
     def __str__(self):
-        return self.display_name + _(' på ') + str(self.study_program)
+        return self.display_name + ', ' + str(self.study_program)
 
     class Meta:
         ordering = ['full_name']
@@ -103,12 +103,12 @@ class Semester(models.Model):
     )
 
     def __str__(self):
-        string = str(self.number) + '. semester på '
-        string += str(self.study_program)
         if self.main_profile is not None:
-            string += ' (' + str(self.main_profile) + ')'
+            string = self.main_profile.display_name + ' '
         else:
-            string += ' (Felles)'
+            string = 'Felles '
+        string += str(self.number) + '. semester, '
+        string += self.study_program.full_name
 
         return string
 
@@ -167,7 +167,7 @@ class Course(LinkList):
     )
 
     def __str__(self):
-        return self.course_code + ': ' + self.full_name
+        return self.course_code + ' - ' + self.full_name
 
     class Meta:
         ordering = ['full_name']
@@ -320,7 +320,7 @@ class CourseLink(Link):
     )
 
     def __str__(self):
-        return self.title + ' ['+ str(self.course) + ']'
+        return self.title + ' ('+ str(self.course.course_code) + ')'
 
     class Meta(Link.Meta):
         verbose_name = _('lenke')
@@ -358,7 +358,7 @@ class ResourceLink(Link):
                                     'eller ingen av delene.'))
 
     def __str__(self):
-        return self.title + _(' [Ressurslenkeliste: ') + str(self.resource_link_list) + ']'
+        return self.title + ' (' + str(self.resource_link_list.full_name) + ')'
 
 
     class Meta(Link.Meta):

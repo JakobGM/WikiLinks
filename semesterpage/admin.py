@@ -1,84 +1,78 @@
 from django.contrib import admin
+from gettext import gettext as _
 from adminsortable2.admin import SortableInlineAdminMixin
+from rules.contrib.admin import ObjectPermissionsModelAdmin
 from .models import StudyProgram, MainProfile, Semester, Course, \
                     ResourceLinkList, CourseLink, ResourceLink, \
-                    CustomLinkCategory, Contributor
+                    CustomLinkCategory, Student
 
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
 
-class StudyProgramAdmin(admin.ModelAdmin):
+class StudyProgramAdmin(ObjectPermissionsModelAdmin):
     list_display = ('full_name', 'display_name',)
 
     def get_queryset(self, request):
         """
-        Restrict the displayed model instances in the admin view as spesifically as possible based on the fields in
+        Restrict the displayed model instances in the admin view as specifically as possible based on the fields in
         semesterpage.models.contributor, which is related one-to-one to the User model.
         """
-        qs = super(StudyProgramAdmin, self).get_queryset(request)
         if request.user.is_superuser:
-            return qs
-        return qs.filter(pk=request.user.contributor.study_program.pk)
+            return super().get_queryset(request)
+        else:
+            return request.user.student.accessible_study_programs()
 
 
-class MainProfileAdmin(admin.ModelAdmin):
+class MainProfileAdmin(ObjectPermissionsModelAdmin):
     list_filter = ('study_program',)
 
     def get_queryset(self, request):
         """
-        Restrict the displayed model instances in the admin view as spesifically as possible based on the fields in
+        Restrict the displayed model instances in the admin view as specifically as possible based on the fields in
         semesterpage.models.contributor, which is related one-to-one to the User model.
         """
-        qs = super(MainProfileAdmin, self).get_queryset(request)
         if request.user.is_superuser:
-            return qs
-        elif request.user.contributor.main_profile is not None:
-            return qs.filter(pk=request.user.contributor.main_profile.pk)
+            return super().get_queryset(request)
         else:
-            return qs.filter(study_program=request.user.contributor.study_program)
+            return request.user.student.accessible_main_profiles()
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """
         Restrict the options available for the foreign key field 'study_program' to model instances that the user should
         have access to. These model instances are found in the semesterpage.models.contributor model, which is related
-        one-to-one to the User model (request.user.contributor).
+        one-to-one to the User model (request.user.student).
         """
         if not request.user.is_superuser:
             if db_field.name == 'study_program':
-                kwargs['queryset'] = StudyProgram.objects.filter(pk=request.user.contributor.study_program.pk)
+                kwargs['queryset'] = request.user.student.accessible_study_programs()
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class SemesterAdmin(admin.ModelAdmin):
+class SemesterAdmin(ObjectPermissionsModelAdmin):
     list_filter = ('study_program',)
 
     def get_queryset(self, request):
         """
-        Restrict the displayed model instances in the admin view as spesifically as possible based on the fields in
+        Restrict the displayed model instances in the admin view as specifically as possible based on the fields in
         semesterpage.models.contributor, which is related one-to-one to the User model.
         """
-        qs = super(SemesterAdmin, self).get_queryset(request)
         if request.user.is_superuser:
-            return qs
-        elif request.user.contributor.semester is not None:
-            return qs.filter(pk=request.user.contributor.semester.pk)
-        elif request.user.contributor.main_profile is not None:
-            return qs.filter(main_profile=request.user.contributor.main_profile)
+            return super().get_queryset(request)
         else:
-            return qs.filter(study_program=request.user.contributor.study_program)
+            return request.user.student.accessible_semesters()
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """
         Restrict the options available for the foreign key fields 'study_program' and 'main_profile' to model instances
         that the user should have access to. These model instances are found in the semesterpage.models.contributor
-        model, which is related one-to-one to the User model (request.user.contributor).
+        model, which is related one-to-one to the User model (request.user.student).
         """
         if not request.user.is_superuser:
             if db_field.name == 'study_program':
-                kwargs['queryset'] = StudyProgram.objects.filter(pk=request.user.contributor.study_program.pk)
+                kwargs['queryset'] = request.user.student.accessible_study_programs()
             if db_field.name == 'main_profile':
-                kwargs['queryset'] = request.user.contributor.main_profiles()
+                kwargs['queryset'] = request.user.student.accessible_main_profiles()
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -99,7 +93,7 @@ class ResourceLinkInline(SortableInlineAdminMixin, admin.TabularInline):
     model = ResourceLink
 
 
-class CourseAdmin(admin.ModelAdmin):
+class CourseAdmin(ObjectPermissionsModelAdmin):
     list_display = ('full_name', 'display_name', 'course_code',)
     list_filter = ('semesters',)
     search_fields = ('full_name', 'display_name',)
@@ -108,96 +102,81 @@ class CourseAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         """
-        Restrict the displayed model instances in the admin view as spesifically as possible based on the fields in
+        Restrict the displayed model instances in the admin view as specifically as possible based on the fields in
         semesterpage.models.contributor, which is related one-to-one to the User model.
         """
-        qs = super(CourseAdmin, self).get_queryset(request)
         if request.user.is_superuser:
-            return qs
-        elif request.user.contributor.semester is not None:
-            return qs.filter(semesters__in=[request.user.contributor.semester])
-        elif request.user.contributor.main_profile is not None:
-            return qs.filter(semesters__main_profile__in=[request.user.contributor.main_profile])
+            return super().get_queryset(request)
         else:
-            return qs.filter(semesters__study_program__in=[request.user.contributor.study_program])
+            return request.user.student.accessible_courses()
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         """
         Restrict the options available for the many-to-many field 'semesters' to model instances that the user should
         have access to. These model instances are found in the semesterpage.models.contributor model, which is related
-        one-to-one to the User model (request.user.contributor).
+        one-to-one to the User model (request.user.student).
         """
         if db_field.name == 'semesters':
             if not request.user.is_superuser:
-                kwargs['queryset'] = request.user.contributor.semesters()
+                kwargs['queryset'] = request.user.student.accessible_semesters()
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 
-class ResourceLinkListAdmin(admin.ModelAdmin):
+class ResourceLinkListAdmin(ObjectPermissionsModelAdmin):
     filter_horizontal = ('study_programs',)
     inlines = [ResourceLinkInline]
 
     def get_queryset(self, request):
         """
-        Restrict the displayed model instances in the admin view as spesifically as possible based on the fields in
+        Restrict the displayed model instances in the admin view as specifically as possible based on the fields in
         semesterpage.models.contributor, which is related one-to-one to the User model.
         """
-        qs = super(ResourceLinkListAdmin, self).get_queryset(request)
         if request.user.is_superuser:
-            return qs
-        elif request.user.contributor.semester is not None:
-            return qs.filter(study_programs__in=[request.user.contributor.semester.study_program])
-        elif request.user.contributor.main_profile is not None:
-            return qs.filter(study_programs__in=[request.user.contributor.main_profile.study_program])
+            return super().get_queryset(request)
         else:
-            return qs.filter(study_programs__in=[request.user.contributor.study_program])
+            return request.user.student.accessible_resource_link_lists()
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         """
         Restrict the options available for the many-to-many field 'study_programs' to model instances that the user
         should have access to. These model instances are found in the semesterpage.models.contributor model, which is
-        related one-to-one to the User model (request.user.contributor).
+        related one-to-one to the User model (request.user.student).
         """
         if db_field.name == 'study_programs':
             if not request.user.is_superuser:
-                kwargs['queryset'] = StudyProgram.objects.filter(pk=request.user.contributor.study_program.pk)
+                kwargs['queryset'] = request.user.student.accessible_study_programs()
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 
-class CourseLinkAdmin(admin.ModelAdmin):
+class CourseLinkAdmin(ObjectPermissionsModelAdmin):
     list_display = ('title', 'url', 'course', 'category',)
-    list_filter = ('course',)
+    list_filter = ('course', 'course__semesters',)
     search_fields = ('title', 'url', 'course',)
     exclude = ('order',)
 
     def get_queryset(self, request):
         """
-        Restrict the displayed model instances in the admin view as spesifically as possible based on the fields in
+        Restrict the displayed model instances in the admin view as specifically as possible based on the fields in
         semesterpage.models.contributor, which is related one-to-one to the User model.
         """
-        qs = super(CourseLinkAdmin, self).get_queryset(request)
         if request.user.is_superuser:
-            return qs
-        elif request.user.contributor.semester is not None:
-            return qs.filter(course__semesters__in=[request.user.contributor.semester])
-        elif request.user.contributor.main_profile is not None:
-            return qs.filter(course__semesters__main_profile__in=[request.user.contributor.main_profile])
+            return super().get_queryset(request)
         else:
-            return qs.filter(course__semesters__study_program__in=[request.user.contributor.study_program])
+            return request.user.student.accessible_course_links()
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """
         Restrict the options available for the foreign key field 'course' to model instances that the user should
         have access to. These model instances are found in the semesterpage.models.contributor model, which is related
-        one-to-one to the User model (request.user.contributor).
+        one-to-one to the User model (request.user.student).
         """
         if not request.user.is_superuser:
             if db_field.name == 'course':
-                kwargs['queryset'] = request.user.contributor.courses()
+                kwargs['queryset'] = request.user.student.accessible_courses()
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class ResourceLinkAdmin(admin.ModelAdmin):
+class ResourceLinkAdmin(ObjectPermissionsModelAdmin):
     list_display = ('title', 'url', 'resource_link_list', 'category', 'custom_category',)
     list_filter = ('resource_link_list',)
     search_fields = ('title', 'url', 'resource_link_list',)
@@ -205,46 +184,51 @@ class ResourceLinkAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         """
-        Restrict the displayed model instances in the admin view as spesifically as possible based on the fields in
+        Restrict the displayed model instances in the admin view as specifically as possible based on the fields in
         semesterpage.models.contributor, which is related one-to-one to the User model.
         """
-        qs = super(ResourceLinkAdmin, self).get_queryset(request)
         if request.user.is_superuser:
-            return qs
-        elif request.user.contributor.semester is not None:
-            return qs.filter(resource_link_list__study_programs__in=[request.user.contributor.semester.study_program])
-        elif request.user.contributor.main_profile is not None:
-            return qs.filter(resource_link_list__study_programs__in=[request.user.contributor.main_profile.study_program])
+            return super().get_queryset(request)
         else:
-            return qs.filter(resource_link_list__study_programs__in=[request.user.contributor.study_program])
+            return request.user.student.accessible_resource_links()
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """
         Restrict the options available for the foreign key field 'resource_link_list' to model instances that the user should
         have access to. These model instances are found in the semesterpage.models.contributor model, which is related
-        one-to-one to the User model (request.user.contributor).
+        one-to-one to the User model (request.user.student).
         """
         if not request.user.is_superuser:
             if db_field.name == 'resource_link_list':
-                kwargs['queryset'] = request.user.contributor.study_program.resource_link_lists
+                kwargs['queryset'] = request.user.student.accessible_resource_link_lists()
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class CustomLinkCategoryAdmin(admin.ModelAdmin):
+class CustomLinkCategoryAdmin(ObjectPermissionsModelAdmin):
     list_display = ('name',)
+
+    def get_queryset(self, request):
+        """
+        Restrict the displayed model instances in the admin view as specifically as possible based on the fields in
+        semesterpage.models.contributor, which is related one-to-one to the User model.
+        """
+        if request.user.is_superuser:
+            return super().get_queryset(request)
+        else:
+            return request.user.student.accessible_custom_link_categories()
 
 
 # Define an inline admin descriptor for Contributor model
 # which acts a bit like a singleton
-class ContributorInline(admin.StackedInline):
-    model = Contributor
+class StudentInline(admin.StackedInline):
+    model = Student
     can_delete = False
-    verbose_name_plural = 'contributor'
+    verbose_name_plural = _('studenter')
 
 
 # Define a new User admin
 class UserAdmin(BaseUserAdmin):
-    inlines = (ContributorInline,)
+    inlines = (StudentInline,)
 
 
 admin.site.register(StudyProgram, StudyProgramAdmin)

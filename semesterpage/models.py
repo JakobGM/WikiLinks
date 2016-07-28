@@ -44,6 +44,9 @@ class StudyProgram(models.Model):
                     'for å teste resultatet før du publiserer.')
     )
 
+    def check_access(self, user):
+        return self in user.student.accessible_study_programs()
+
     def __str__(self):
         return self.full_name
 
@@ -77,6 +80,9 @@ class MainProfile(models.Model):
         populate_from='display_name',
         unique_with='study_program'
     )
+
+    def check_access(self, user):
+        return self in user.student.accessible_main_profiles()
 
     def __str__(self):
         return self.display_name + ', ' + str(self.study_program)
@@ -115,6 +121,9 @@ class Semester(models.Model):
                     'besøke semesteret manuelt (URL: kokekunster.no/studieprogram/hovedprofil/semesternummer) for å '
                     'teste resultatet før du publiserer.')
     )
+
+    def check_access(self, user):
+        return self in user.student.accessible_semesters()
 
     def __str__(self):
         if self.main_profile is not None:
@@ -180,6 +189,9 @@ class Course(LinkList):
         related_name='courses'
     )
 
+    def check_access(self, user):
+        return self in user.student.accessible_courses()
+
     def __str__(self):
         return self.course_code + ' - ' + self.full_name
 
@@ -211,6 +223,9 @@ class ResourceLinkList(LinkList):
         null=False
     )
 
+    def check_access(self, user):
+        return self in user.student.accessible_resource_link_lists()
+
     class Meta:
         ordering = ['order']
         verbose_name = _('Ressurslenkeliste')
@@ -234,6 +249,9 @@ class CustomLinkCategory(models.Model):
         upload_to=upload_path,
         blank=True
     )
+
+    def check_access(self, user):
+        return self in user.student.accessible_custom_link_categories()
 
     def __str__(self):
         return self.name
@@ -332,6 +350,9 @@ class CourseLink(Link):
         related_name='links'
     )
 
+    def check_access(self, user):
+        return self in user.student.accessible_course_links()
+
     def __str__(self):
         return self.title + ' ('+ str(self.course.course_code) + ')'
 
@@ -361,6 +382,9 @@ class ResourceLink(Link):
         help_text=_('Hvis du ønsker å bruke et egendefinert "mini-ikon".')
     )
 
+    def check_access(self, user):
+        return self in user.student.accessible_resource_links()
+
     def clean(self):
         # Can't allow selection of both a category and a custom category at the
         # same time
@@ -379,50 +403,105 @@ class ResourceLink(Link):
         verbose_name_plural = _('ressurslenker')
 
 
-class Contributor(models.Model):
+NO_ACCESS = 0
+SEMESTER = 1
+MAIN_PROFILE = 2
+STUDY_PROGRAM = 3
+ACCESS_LEVELS = (
+    (NO_ACCESS, _('Ingen tilgang')),
+    (SEMESTER, _('Kun semesteret')),
+    (MAIN_PROFILE, _('Hele hovedprofilen')),
+    (STUDY_PROGRAM, _('Hele studieprogrammet')),
+)
+
+
+class Student(models.Model):
+    """
+    A student connected to a given semester, with a one-to-one relationship to the User model. Has an access_level
+    field used to grant edit and delete permissions to Semesterpage models in the admin panel.
+    """
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE
     )
-    study_program = models.ForeignKey(
-        StudyProgram,
-        blank=False,
-        related_name='contributors'
-    )
-    main_profile = models.ForeignKey(
-        MainProfile,
-        blank=True,
-        null=True,
-        related_name='contributors'
+    access_level = models.SmallIntegerField(
+        _('tilgangsnivå'),
+        choices=ACCESS_LEVELS,
+        default=0,
+        help_text=_('Gir muligheten til å endre på lenker o.l. knyttet til semesteret spesifisert nedenfor.')
     )
     semester = models.ForeignKey(
         Semester,
-        blank=True,
+        blank=False,
         null=True,
         related_name='contributors'
     )
 
-    """
-    Methods for retrieving the model instances that should be available to the user.
-    """
-    def main_profiles(self):
-        if self.main_profile is not None:
-            return MainProfile.objects.filter(pk=self.main_profile.pk)
-        else:
-            return self.study_program.main_profiles
+    @property
+    def is_contributor(self):
+        return self.access_level is not NO_ACCESS
 
-    def semesters(self):
-        if self.semester is not None:
+    @property
+    def study_program(self):
+        return self.semester.study_program
+
+    @property
+    def main_profile(self):
+        return self.semester.main_profile
+
+    """
+    Methods for retrieving the model instances that should be accessible to the contributor.
+    """
+    def has_contributor_access_to(self, object):
+        if self.user.is_superuser:
+            return True
+        elif self.is_contributor:
+            try:
+                return object.check_access(self.user)
+            except AttributeError:
+                return False
+        else:
+            return False
+
+    def accessible_study_programs(self):
+        if self.access_level == STUDY_PROGRAM:
+            return StudyProgram.objects.filter(pk=self.study_program.pk)
+        else:
+            return StudyProgram.objects.none()
+
+    def accessible_main_profiles(self):
+        if self.access_level == SEMESTER or self.access_level == NO_ACCESS:
+            return MainProfile.objects.none()
+        elif self.access_level == MAIN_PROFILE:
+            return MainProfile.objects.filter(semesters__in=[self.semester])
+        elif self.access_level == STUDY_PROGRAM:
+            return self.study_program.main_profiles.all()
+        else:
+            raise RuntimeError('Invalid contributor access level.')
+
+    def accessible_semesters(self):
+        if self.access_level == SEMESTER:
             return Semester.objects.filter(pk=self.semester.pk)
-        elif self.main_profile is not None:
-            return self.main_profile.semesters
+        elif self.access_level == MAIN_PROFILE:
+            return Semester.objects.filter(study_program=self.study_program, main_profile=self.main_profile)
+        elif self.access_level == STUDY_PROGRAM:
+            return self.study_program.semesters.all()
+        elif self.access_level == NO_ACCESS:
+            return Semester.objects.none()
         else:
-            return self.study_program.semesters
+            raise RuntimeError('Invalid contributor access level.')
 
-    def courses(self):
-        if self.semester is not None:
-            return self.semester.courses
-        elif self.main_profile is not None:
-            return Course.objects.filter(semesters__main_profile__in=[self.main_profile])
-        else:
-            return Course.objects.filter(semesters__study_program__in=[self.study_program])
+    def accessible_courses(self):
+        return Course.objects.filter(semesters__in=self.accessible_semesters())
+
+    def accessible_resource_link_lists(self):
+        return ResourceLinkList.objects.filter(study_programs__in=self.accessible_study_programs())
+
+    def accessible_custom_link_categories(self):
+        return CustomLinkCategory.objects.filter(links__resource_link_list__study_programs__in=self.accessible_study_programs())
+
+    def accessible_course_links(self):
+        return CourseLink.objects.filter(course__in=self.accessible_courses())
+
+    def accessible_resource_links(self):
+        return ResourceLink.objects.filter(resource_link_list__study_programs__in=self.accessible_study_programs())

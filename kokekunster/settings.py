@@ -28,6 +28,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'widget_tweaks',
     'adminsortable2',
+    'rules.apps.AutodiscoverRulesConfig',
     'semesterpage',
 )
 
@@ -75,6 +76,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'kokekunster.wsgi.application'
+
+
+# Custom object instance based permissions with django-rules
+AUTHENTICATION_BACKENDS = (
+    'rules.permissions.ObjectPermissionBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 
 # Internationalization

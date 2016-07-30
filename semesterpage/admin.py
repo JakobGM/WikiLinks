@@ -224,6 +224,7 @@ class CustomLinkCategoryAdmin(ObjectPermissionsModelAdmin):
 class StudentInline(admin.StackedInline):
     model = Student
     can_delete = False
+    filter_horizontal = ('courses',)
     verbose_name_plural = _('studenter')
 
 

@@ -436,6 +436,12 @@ class Student(models.Model):
         null=True,
         related_name='contributors'
     )
+    courses = models.ManyToManyField(
+        Course,
+        default=None,
+        related_name='students',
+        blank=True,
+    )
 
     @property
     def is_contributor(self):

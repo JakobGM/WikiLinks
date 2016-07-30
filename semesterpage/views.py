@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
-from django.core.mail import mail_admins, send_mail, EmailMessage
+from django.core.mail import mail_admins, EmailMessage
+from django.http import Http404
 from subdomains.utils import reverse
 from gettext import gettext as _
 from collections import namedtuple, defaultdict
-from .models import StudyProgram, ResourceLinkList
+from .models import StudyProgram, Semester, ResourceLinkList
 from .forms import LinkForm, FileForm
 from kokekunster.settings import ADMINS, SERVER_EMAIL, DEFAULT_STUDY_PROGRAM
 
@@ -15,6 +16,7 @@ def getSemesterData(study_program, main_profile, semester_number):
     """
     # Simple, unsplit semesters have NULL-value in the main_profile field,
     # but are given 'felles' as their main_profile url parameter
+    main_profile_display_name = main_profile  # Used for Http404 response
     if main_profile == 'felles':
         main_profile = None
 
@@ -27,10 +29,23 @@ def getSemesterData(study_program, main_profile, semester_number):
                                'resource_link_lists']
     )
 
-    study_program = StudyProgram.objects.get(slug=study_program)
+    try:
+        study_program = StudyProgram.objects.get(slug=study_program)
+        semester = study_program.semesters.filter(main_profile__slug=main_profile).get(number=semester_number)
+    except StudyProgram.DoesNotExist:
+        raise Http404(_('Studieprogrammet "%s" eksisterer ikke') % study_program)
+    except Semester.DoesNotExist:
+        raise Http404(
+            _(
+                '%d. semester ved hovedprofilen "%s" '
+                'knyttet til studieprogrammet "%s" eksisterer ikke'
+            )
+            % (semester_number, main_profile_display_name, study_program)
+        )
+
     simple_semesters = study_program.semesters.filter(main_profile=None, published=True)
     split_semesters = study_program.semesters.exclude(main_profile=None).filter(published=True)
-    semester = study_program.semesters.filter(main_profile__slug=main_profile).get(number=semester_number)
+
     courses = semester.courses.all()
 
     # Grouping the split semesters by semester.number

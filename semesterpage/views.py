@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import ValidationError
 from django.core.mail import mail_admins, EmailMessage
 from django.http import Http404
+from django.contrib.auth.models import User
 from subdomains.utils import reverse
 from gettext import gettext as _
 from collections import namedtuple, defaultdict
@@ -88,9 +89,9 @@ def homepage(request):
 
 def study_program_view(request, study_program):
     if not StudyProgram.objects.filter(slug=study_program).exists():
-        # This study program does not exist, thus we check if there is a userpage
+        # This study program does not exist, thus we check if there is a studentpage
         # with the same name instead
-        return userpage(request, study_program)
+        return studentpage(request, study_program)
     elif study_program == request.session.get('study_program', 'no match'):
         # The user has a saved location for this study program, and we can use it
         main_profile = request.session.get('main_profile', 'felles')
@@ -111,8 +112,36 @@ def study_program_view(request, study_program):
         )
 
 
-def userpage(request, user):
-    raise Http404('Userpage not implemented yet')
+def studentpage(request, username):
+    try:
+        student = User.objects.get(username__iexact=username).student
+    except User.DoesNotExist:
+        raise Http404(_('Fant ingen studieprogram eller bruker med navnet "%s"') % username)
+
+    # Query database for all the data required by the template
+    semester_data = getSemesterData(student.study_program.slug, student.semester.main_profile_slug, int(student.semester.number))
+
+    student_courses = student.courses.all()
+    # Student has all the required methods for the template rendering as Semester has
+    student_semester = student
+    if not student_courses.exists():
+        # The user has not specified his/her own courses, and we use the courses
+        # given by the semester which the student has chosen
+        student_courses = semester_data.courses
+        student_semester = semester_data.semester
+
+    # Boolean for changing the logo if the domain is fysmat.no
+    is_fysmat = 'fysmat' in request.get_host().lower()
+
+    return render(request, 'semesterpage/userpage.html',
+                  {'semester': student_semester,
+                   'courses': student_courses,
+                   'resource_link_lists': semester_data.resource_link_lists,
+                   'simple_semesters': semester_data.simple_semesters,
+                   'grouped_split_semesters': semester_data.grouped_split_semesters,
+                   'study_programs': StudyProgram.objects.filter(published=True),
+                   'is_fysmat': is_fysmat}
+                  )
 
 
 def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile='felles', semester_number='1', save_location=True):

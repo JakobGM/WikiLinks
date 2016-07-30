@@ -122,6 +122,13 @@ class Semester(models.Model):
                     'teste resultatet før du publiserer.')
     )
 
+    @property
+    def main_profile_slug(self):
+        if self.main_profile is not None:
+            return self.main_profile.slug
+        else:
+            return 'felles'
+
     def check_access(self, user):
         return self in user.student.accessible_semesters()
 

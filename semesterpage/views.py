@@ -87,14 +87,40 @@ def homepage(request):
 
 
 def study_program_view(request, study_program):
-    if study_program == request.session.get('study_program', 'no match'):
+    if not StudyProgram.objects.filter(slug=study_program).exists():
+        # This study program does not exist, thus we check if there is a userpage
+        # with the same name instead
+        return userpage(request, study_program)
+    elif study_program == request.session.get('study_program', 'no match'):
         # The user has a saved location for this study program, and we can use it
         main_profile = request.session.get('main_profile', 'felles')
         semester_number = request.session.get('semester_number', '1')
         return semester(request, study_program, main_profile, semester_number)
+    elif not Semester.objects.filter(study_program__slug=study_program,
+                                     main_profile=None,
+                                     number=1
+                                     ).exists():
+        # The semester does not have a common 1st semester, so we have to fall back
+        # on the lowest available semester (depends on the ordering of the semester
+        # model)
+        fall_back_semester = Semester.objects.filter(study_program__slug=study_program)[0]
+        if fall_back_semester.main_profile is None:
+            main_profile = 'felles'
+        else:
+            main_profile = fall_back_semester.main_profile.slug
+        return semester(
+            request=request,
+            study_program=study_program,
+            main_profile=main_profile,
+            semester_number=fall_back_semester.number
+        )
     else:
-        # Using defaults instead
+        # Using common first semester
         return semester(request, study_program)
+
+
+def userpage(request, user):
+    raise Http404('Userpage not implemented yet')
 
 
 def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile='felles', semester_number='1', save_location=True):

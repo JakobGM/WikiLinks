@@ -96,27 +96,19 @@ def study_program_view(request, study_program):
         main_profile = request.session.get('main_profile', 'felles')
         semester_number = request.session.get('semester_number', '1')
         return semester(request, study_program, main_profile, semester_number)
-    elif not Semester.objects.filter(study_program__slug=study_program,
-                                     main_profile=None,
-                                     number=1
-                                     ).exists():
-        # The semester does not have a common 1st semester, so we have to fall back
-        # on the lowest available semester (depends on the ordering of the semester
-        # model)
-        fall_back_semester = Semester.objects.filter(study_program__slug=study_program)[0]
-        if fall_back_semester.main_profile is None:
+    else:
+        # Fall back on the lowest available semester (depends on the ordering of the semester model)
+        default_semester = Semester.objects.filter(study_program__slug=study_program)[0]
+        if default_semester.main_profile is None:
             main_profile = 'felles'
         else:
-            main_profile = fall_back_semester.main_profile.slug
+            main_profile = default_semester.main_profile.slug
         return semester(
             request=request,
             study_program=study_program,
             main_profile=main_profile,
-            semester_number=fall_back_semester.number
+            semester_number=default_semester.number
         )
-    else:
-        # Using common first semester
-        return semester(request, study_program)
 
 
 def userpage(request, user):

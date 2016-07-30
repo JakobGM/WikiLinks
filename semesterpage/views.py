@@ -101,14 +101,14 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile='felles'
     """
     Generates the link portal for a given semester in a given program code
     """
+    # Query database for all the data required by the template
+    semester_data = getSemesterData(study_program, main_profile, int(semester_number))
+
     if save_location:
         # Save the deliberate change of location by user in the session
         request.session['study_program'] = study_program
         request.session['main_profile'] = main_profile
         request.session['semester_number'] = semester_number
-
-    # Query database for all the data required by the template
-    semester_data = getSemesterData(study_program, main_profile, int(semester_number))
 
     # Boolean for changing the logo if the domain is fysmat.no
     is_fysmat = 'fysmat' in request.get_host().lower()

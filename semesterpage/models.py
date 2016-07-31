@@ -1,11 +1,14 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from gettext import gettext as _
 from autoslug import AutoSlugField
 from autoslug.utils import slugify
 import os
+
+COMMON_SEMESTER_SLUG = getattr(settings, 'COMMON_SEMESTER_SLUG', 'felles')
 
 
 def upload_path(instance, filename):
@@ -130,7 +133,7 @@ class Semester(models.Model):
         if self.main_profile is not None:
             return self.main_profile.slug
         else:
-            return 'felles'
+            return COMMON_SEMESTER_SLUG
 
     def check_access(self, user):
         return self in user.student.accessible_semesters()

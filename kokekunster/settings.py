@@ -136,6 +136,9 @@ SERVER_EMAIL = 'django@kokekunster.no'
 
 DEFAULT_STUDY_PROGRAM = 'fysmat'
 
+# What name should be used for 'common semesters' that are not split into main profiles
+COMMON_SEMESTER_SLUG = 'felles'
+
 
 # Determine run environment based on the environment variable 'PRODUCTION', and load proper settings
 

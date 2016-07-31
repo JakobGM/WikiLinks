@@ -3,22 +3,25 @@ from django.core.exceptions import ValidationError
 from django.core.mail import mail_admins, EmailMessage
 from django.http import Http404
 from django.contrib.auth.models import User
+from django.conf import settings
 from subdomains.utils import reverse
 from gettext import gettext as _
 from collections import namedtuple, defaultdict
 from .models import StudyProgram, Semester, ResourceLinkList
 from .forms import LinkForm, FileForm
-from kokekunster.settings import ADMINS, SERVER_EMAIL, DEFAULT_STUDY_PROGRAM
+from kokekunster.settings import ADMINS, SERVER_EMAIL
 
+DEFAULT_STUDY_PROGRAM = getattr(settings, 'DEFAULT_STUDY_PROGRAM', 'fysmat')
+COMMON_SEMESTER_SLUG = getattr(settings, 'COMMON_SEMESTER_SLUG', 'felles')
 
 def getSemesterData(study_program, main_profile, semester_number):
     """
     Retrieve relevant data related to a given semester at a given study program
     """
     # Simple, unsplit semesters have NULL-value in the main_profile field,
-    # but are given 'felles' as their main_profile url parameter
+    # but are given COMMON_SEMESTER_SLUG as their main_profile slug url parameter
     main_profile_display_name = main_profile  # Used for Http404 response
-    if main_profile == 'felles':
+    if main_profile == COMMON_SEMESTER_SLUG:
         main_profile = None
 
     SemesterData = namedtuple('SemesterData',
@@ -82,7 +85,7 @@ def homepage(request):
         return redirect(reverse(viewname=study_program_view, subdomain=None, kwargs={'study_program': request.subdomain}))
     else:
         study_program = request.session.get('study_program', DEFAULT_STUDY_PROGRAM)
-        main_profile = request.session.get('main_profile', 'felles')
+        main_profile = request.session.get('main_profile', COMMON_SEMESTER_SLUG)
         semester_number = request.session.get('semester_number', '1')
         return semester(request, study_program, main_profile, semester_number, save_location=False)
 
@@ -94,14 +97,14 @@ def study_program_view(request, study_program):
         return studentpage(request, study_program)
     elif study_program == request.session.get('study_program', 'no match'):
         # The user has a saved location for this study program, and we can use it
-        main_profile = request.session.get('main_profile', 'felles')
+        main_profile = request.session.get('main_profile', COMMON_SEMESTER_SLUG)
         semester_number = request.session.get('semester_number', '1')
         return semester(request, study_program, main_profile, semester_number)
     else:
         # Fall back on the lowest available semester (depends on the ordering of the semester model)
         default_semester = Semester.objects.filter(study_program__slug=study_program)[0]
         if default_semester.main_profile is None:
-            main_profile = 'felles'
+            main_profile = COMMON_SEMESTER_SLUG
         else:
             main_profile = default_semester.main_profile.slug
         return semester(
@@ -144,7 +147,7 @@ def studentpage(request, username):
                   )
 
 
-def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile='felles', semester_number='1', save_location=True):
+def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile=COMMON_SEMESTER_SLUG, semester_number='1', save_location=True):
     """
     Generates the link portal for a given semester in a given program code
     """

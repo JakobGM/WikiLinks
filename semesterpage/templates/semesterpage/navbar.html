@@ -9,12 +9,12 @@
                 </a>
                 <div class="dropdown-content">
                     {% for study_program in study_programs %}
-                        <a href="{% url 'semesterpage-studyprogram' study_program.slug %}">{% if study_program == semester.study_program %}<b>{% endif %}{{ study_program.display_name | title }}{% if study_program == semester.study_program %}</b>{% endif %}</a>
+                        <a href="{{ study_program.get_absolute_url }}">{% if study_program == semester.study_program %}<b>{% endif %}{{ study_program.display_name | title }}{% if study_program == semester.study_program %}</b>{% endif %}</a>
                     {% endfor %}
                 </div>
             </li>
             {% for simple_semester in simple_semesters %}
-                <li><a href="{% url 'semesterpage-semester' simple_semester.study_program.slug 'felles' simple_semester.number %}">
+                <li><a href="{{ simple_semester.get_absolute_url }}">
                     {% if simple_semester.number == semester.number %}
                         <b>{{ simple_semester.number }}. Semester</b>
                     {% else %}
@@ -33,7 +33,7 @@
                     </a>
                     <div class="dropdown-content">
                         {% for split_semester in split_semesters %}
-                            <a href="{% url 'semesterpage-semester' split_semester.study_program.slug split_semester.main_profile.slug split_semester.number %}">{% if split_semester == semester %}<b>{% endif %}{{ split_semester.main_profile.display_name }}{% if split_semester == semester %}</b>{% endif %}</a>
+                            <a href="{{ split_semester.get_absolute_url }}">{% if split_semester == semester %}<b>{% endif %}{{ split_semester.main_profile.display_name }}{% if split_semester == semester %}</b>{% endif %}</a>
                         {% endfor %}
                     </div>
                 </li>

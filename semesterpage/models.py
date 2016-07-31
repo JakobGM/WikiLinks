@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.core.urlresolvers import reverse
 
 from gettext import gettext as _
 from autoslug import AutoSlugField
@@ -49,6 +50,9 @@ class StudyProgram(models.Model):
 
     def check_access(self, user):
         return self in user.student.accessible_study_programs()
+
+    def get_absolute_url(self):
+        return reverse('semesterpage-studyprogram', args=[self.slug])
 
     def __str__(self):
         return self.full_name
@@ -137,6 +141,9 @@ class Semester(models.Model):
 
     def check_access(self, user):
         return self in user.student.accessible_semesters()
+
+    def get_absolute_url(self):
+        return reverse('semesterpage-semester', args=[self.study_program.slug, self.main_profile_slug, self.number])
 
     def __str__(self):
         if self.main_profile is not None:

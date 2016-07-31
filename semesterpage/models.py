@@ -88,7 +88,7 @@ class StudyProgram(models.Model):
         return self.full_name
 
     class Meta:
-        ordering = ['full_name']
+        ordering = ['display_name']
         verbose_name = _('studieprogram')
         verbose_name_plural = _('studieprogram')
 
@@ -129,7 +129,7 @@ class MainProfile(models.Model):
         return self.display_name + ', ' + str(self.study_program)
 
     class Meta:
-        ordering = ['full_name']
+        ordering = ['display_name']
         verbose_name = _('hovedprofil')
         verbose_name_plural = _('hovedprofiler')
 
@@ -189,7 +189,7 @@ class Semester(models.Model):
         return string
 
     class Meta:
-        ordering = ['study_program', 'main_profile', 'number']
+        ordering = ['main_profile__display_name', 'number']
         verbose_name = _('semester')
         verbose_name_plural = _('semestere')
 
@@ -251,7 +251,7 @@ class Course(LinkList):
         return self.course_code + ' - ' + self.full_name
 
     class Meta:
-        ordering = ['full_name']
+        ordering = ['display_name']
         verbose_name = _('fag')
         verbose_name_plural = _('fag')
 

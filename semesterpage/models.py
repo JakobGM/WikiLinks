@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from gettext import gettext as _
+from collections import defaultdict
 from autoslug import AutoSlugField
 from autoslug.utils import slugify
 import os
@@ -47,6 +48,35 @@ class StudyProgram(models.Model):
                     'men det er fortsatt mulig å besøke studieprogrammet manuelt (URL: visningsnavn.kokekunster.no) '
                     'for å teste resultatet før du publiserer.')
     )
+
+    @property
+    def simple_semesters(self):
+        """
+        Returns all of the study program's semesters that are not part of any main profile
+        """
+        return self.semesters.filter(main_profile=None, published=True)
+
+    @property
+    def grouped_split_semesters(self):
+        """
+        Grouping the split semesters (semesters part of a main profile) by semester.number
+        """
+        split_semesters = self.semesters.exclude(main_profile=None).filter(published=True)
+        _grouped_split_semesters = defaultdict(list)
+        for split_semester in split_semesters:
+            _grouped_split_semesters[split_semester.number].append(split_semester)
+        return _grouped_split_semesters
+
+    @property
+    def resource_link_lists(self):
+        """
+        Get the ResourceLinkLists, falling back on the default ones if there are no custom ones for the study program
+        """
+        if self._resource_link_lists.exists():
+            _resource_link_lists = self._resource_link_lists.all()
+        else:
+            _resource_link_lists = ResourceLinkList.objects.filter(default=True)[:1]
+        return _resource_link_lists
 
     def check_access(self, user):
         return self in user.student.accessible_study_programs()
@@ -232,7 +262,7 @@ class ResourceLinkList(LinkList):
     study_programs = models.ManyToManyField(
         StudyProgram,
         blank=True,
-        related_name='resource_link_lists',
+        related_name='_resource_link_lists',
         verbose_name=_('studieprogram')
     )
     default = models.BooleanField(

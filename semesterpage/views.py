@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from subdomains.utils import reverse
 from gettext import gettext as _
-from collections import namedtuple, defaultdict
+from collections import namedtuple
 from .models import StudyProgram, Semester, ResourceLinkList
 from .forms import LinkForm, FileForm
 from kokekunster.settings import ADMINS, SERVER_EMAIL
@@ -18,11 +18,21 @@ def getSemesterData(study_program, main_profile, semester_number):
     """
     Retrieve relevant data related to a given semester at a given study program
     """
-    # Simple, unsplit semesters have NULL-value in the main_profile field,
-    # but are given COMMON_SEMESTER_SLUG as their main_profile slug url parameter
-    main_profile_display_name = main_profile  # Used for Http404 response
-    if main_profile == COMMON_SEMESTER_SLUG:
-        main_profile = None
+    try:
+        if main_profile == COMMON_SEMESTER_SLUG:
+            # Simple, unsplit semesters have NULL-value in the main_profile field,
+            # but are given COMMON_SEMESTER_SLUG as their main_profile slug url parameter
+            semester = Semester.objects.get(study_program__slug=study_program, main_profile=None, number=semester_number)
+        else:
+            semester = Semester.objects.get(study_program__slug=study_program, main_profile__slug=main_profile, number=semester_number)
+    except Semester.DoesNotExist:
+        raise Http404(
+            _(
+                '%d. semester ved hovedprofilen "%s" '
+                'knyttet til studieprogrammet "%s" eksisterer ikke'
+            )
+            % (semester_number, main_profile_display_name, study_program)
+        )
 
     SemesterData = namedtuple('SemesterData',
                               ['study_program',
@@ -33,35 +43,11 @@ def getSemesterData(study_program, main_profile, semester_number):
                                'resource_link_lists']
     )
 
-    try:
-        study_program = StudyProgram.objects.get(slug=study_program)
-        semester = study_program.semesters.filter(main_profile__slug=main_profile).get(number=semester_number)
-    except StudyProgram.DoesNotExist:
-        raise Http404(_('Studieprogrammet "%s" eksisterer ikke') % study_program)
-    except Semester.DoesNotExist:
-        raise Http404(
-            _(
-                '%d. semester ved hovedprofilen "%s" '
-                'knyttet til studieprogrammet "%s" eksisterer ikke'
-            )
-            % (semester_number, main_profile_display_name, study_program)
-        )
-
-    simple_semesters = study_program.semesters.filter(main_profile=None, published=True)
-    split_semesters = study_program.semesters.exclude(main_profile=None).filter(published=True)
-
+    study_program = semester.study_program
+    simple_semesters = study_program.simple_semesters
+    grouped_split_semesters = study_program.grouped_split_semesters
     courses = semester.courses.all()
-
-    # Grouping the split semesters by semester.number
-    grouped_split_semesters = defaultdict(list)
-    for split_semester in split_semesters:
-        grouped_split_semesters[split_semester.number].append(split_semester)
-
-    # Get the ResourceLinkLists, falling back on the default ones if there are no custom ones for the study program
-    if study_program.resource_link_lists.exists():
-        resource_link_lists = study_program.resource_link_lists.all()
-    else:
-        resource_link_lists = ResourceLinkList.objects.filter(default=True)
+    resource_link_lists = study_program.resource_link_lists
 
     return SemesterData(
         study_program,

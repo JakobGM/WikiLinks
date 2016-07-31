@@ -65,7 +65,7 @@ class StudyProgram(models.Model):
         _grouped_split_semesters = defaultdict(list)
         for split_semester in split_semesters:
             _grouped_split_semesters[split_semester.number].append(split_semester)
-        return _grouped_split_semesters
+        return _grouped_split_semesters.items()
 
     @property
     def resource_link_lists(self):
@@ -478,7 +478,9 @@ ACCESS_LEVELS = (
 class Student(models.Model):
     """
     A student connected to a given semester, with a one-to-one relationship to the User model. Has an access_level
-    field used to grant edit and delete permissions to Semesterpage models in the admin panel.
+    field used to grant edit and delete permissions to Semesterpage models in the admin panel. It is important to
+    notice that Student is a stand in for Semester in the template rendering of the userpage view, and thus needs
+    many of the same methods and member variables
     """
     user = models.OneToOneField(
         User,

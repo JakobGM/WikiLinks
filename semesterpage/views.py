@@ -14,51 +14,6 @@ from kokekunster.settings import ADMINS, SERVER_EMAIL
 DEFAULT_STUDY_PROGRAM = getattr(settings, 'DEFAULT_STUDY_PROGRAM', 'fysmat')
 COMMON_SEMESTER_SLUG = getattr(settings, 'COMMON_SEMESTER_SLUG', 'felles')
 
-def getSemesterData(study_program, main_profile, semester_number):
-    """
-    Retrieve relevant data related to a given semester at a given study program
-    """
-    try:
-        if main_profile == COMMON_SEMESTER_SLUG:
-            # Simple, unsplit semesters have NULL-value in the main_profile field,
-            # but are given COMMON_SEMESTER_SLUG as their main_profile slug url parameter
-            semester = Semester.objects.get(study_program__slug=study_program, main_profile=None, number=semester_number)
-        else:
-            semester = Semester.objects.get(study_program__slug=study_program, main_profile__slug=main_profile, number=semester_number)
-    except Semester.DoesNotExist:
-        raise Http404(
-            _(
-                '%d. semester ved hovedprofilen "%s" '
-                'knyttet til studieprogrammet "%s" eksisterer ikke'
-            )
-            % (semester_number, main_profile_display_name, study_program)
-        )
-
-    SemesterData = namedtuple('SemesterData',
-                              ['study_program',
-                               'simple_semesters',
-                               'grouped_split_semesters',
-                               'semester',
-                               'courses',
-                               'resource_link_lists']
-    )
-
-    study_program = semester.study_program
-    simple_semesters = study_program.simple_semesters
-    grouped_split_semesters = study_program.grouped_split_semesters
-    courses = semester.courses.all()
-    resource_link_lists = study_program.resource_link_lists
-
-    return SemesterData(
-        study_program,
-        simple_semesters,
-        grouped_split_semesters.items(),
-        semester,
-        courses,
-        resource_link_lists
-    )
-
-
 def homepage(request):
     """
     Homepage view for when the URL does not specify a specific semester.
@@ -107,17 +62,14 @@ def studentpage(request, username):
     except User.DoesNotExist:
         raise Http404(_('Fant ingen studieprogram eller bruker med navnet "%s"') % username)
 
-    # Query database for all the data required by the template
-    semester_data = getSemesterData(student.study_program.slug, student.semester.main_profile_slug, int(student.semester.number))
-
     student_courses = student.courses.all()
     # Student has all the required methods for the template rendering as Semester has
     student_semester = student
     if not student_courses.exists():
         # The user has not specified his/her own courses, and we use the courses
         # given by the semester which the student has chosen
-        student_courses = semester_data.courses
-        student_semester = semester_data.semester
+        student_courses = student.semester.courses.all()
+        student_semester = student.semester
 
     # Boolean for changing the logo if the domain is fysmat.no
     is_fysmat = 'fysmat' in request.get_host().lower()
@@ -125,9 +77,9 @@ def studentpage(request, username):
     return render(request, 'semesterpage/userpage.html',
                   {'semester': student_semester,
                    'courses': student_courses,
-                   'resource_link_lists': semester_data.resource_link_lists,
-                   'simple_semesters': semester_data.simple_semesters,
-                   'grouped_split_semesters': semester_data.grouped_split_semesters,
+                   'resource_link_lists': student.study_program.resource_link_lists,
+                   'simple_semesters': student.study_program.simple_semesters,
+                   'grouped_split_semesters': student.study_program.grouped_split_semesters,
                    'study_programs': StudyProgram.objects.filter(published=True),
                    'is_fysmat': is_fysmat}
                   )
@@ -137,11 +89,21 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile=COMMON_S
     """
     Generates the link portal for a given semester in a given program code
     """
-    # Query database for all the data required by the template
-    semester_data = getSemesterData(study_program, main_profile, int(semester_number))
+    try:
+        if main_profile == COMMON_SEMESTER_SLUG:
+            # Simple, unsplit semesters have NULL-value in the main_profile field,
+            # but are given COMMON_SEMESTER_SLUG as their main_profile slug url parameter
+            _semester = Semester.objects.get(study_program__slug=study_program, main_profile=None, number=semester_number)
+        else:
+            _semester = Semester.objects.get(study_program__slug=study_program, main_profile__slug=main_profile, number=semester_number)
+    except Semester.DoesNotExist:
+        raise Http404(
+            _('%d. semester ved hovedprofilen "%s" knyttet til studieprogrammet "%s" eksisterer ikke')
+            % (semester_number, main_profile, study_program)
+        )
 
     if save_location:
-        # Save the deliberate change of location by user in the session
+        # Save the deliberate change of location by user in the session, as the semester has been found successfully
         request.session['study_program'] = study_program
         request.session['main_profile'] = main_profile
         request.session['semester_number'] = semester_number
@@ -150,11 +112,11 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile=COMMON_S
     is_fysmat = 'fysmat' in request.get_host().lower()
 
     return render(request, 'semesterpage/courses.html',
-                  {'semester': semester_data.semester,
-                   'courses': semester_data.courses,
-                   'resource_link_lists': semester_data.resource_link_lists,
-                   'simple_semesters': semester_data.simple_semesters,
-                   'grouped_split_semesters': semester_data.grouped_split_semesters,
+                  {'semester': _semester,
+                   'courses': _semester.courses.all(),
+                   'resource_link_lists': _semester.study_program.resource_link_lists,
+                   'simple_semesters': _semester.study_program.simple_semesters,
+                   'grouped_split_semesters': _semester.study_program.grouped_split_semesters,
                    'study_programs': StudyProgram.objects.filter(published=True),
                    'is_fysmat': is_fysmat}
                   )
@@ -244,19 +206,19 @@ def user_request(request, program_code, semester_number):
         link_form, file_form = LinkForm(), FileForm()
 
     # Render the template with context from the above else-if evaluation
-    semester_data = getSemesterData(program_code, semester_number)
-    all_semesters = semester_data.all_semesters
-    semester = semester_data.semester
-
-    # Make sure to restrict course options to the courses related to the
-    # semester which the user visited the request page from
-    link_form.fields['course'].queryset = semester.courses
-    file_form.fields['course'].queryset = semester.courses
-
-    return render(request, 'semesterpage/user_request.html',
-                  {'program_code': program_code,
-                   'semesters': all_semesters,
-                   'semester_number': semester_number,
-                   'link_form': link_form,
-                   'file_form': file_form}
-                  )
+    # semester_data = getSemesterData(program_code, semester_number)
+    # all_semesters = semester_data.all_semesters
+    # semester = semester_data.semester
+    #
+    # # Make sure to restrict course options to the courses related to the
+    # # semester which the user visited the request page from
+    # link_form.fields['course'].queryset = semester.courses
+    # file_form.fields['course'].queryset = semester.courses
+    #
+    # return render(request, 'semesterpage/user_request.html',
+    #               {'program_code': program_code,
+    #                'semesters': all_semesters,
+    #                'semester_number': semester_number,
+    #                'link_form': link_form,
+    #                'file_form': file_form}
+    #               )

@@ -55,6 +55,34 @@ def study_program_view(request, study_program):
         )
 
 
+def main_profile_view(request, study_program, main_profile):
+    """
+    Returns the semesterpage of the lowest available semester of the given main profile, or redirects the user to their
+    last visited semester if that semester is part of the given main profile.
+    """
+    if (study_program == request.session.get('study_program', 'no match') and main_profile == request.session.get('main_profile', 'no match')):
+        # The last visited semester is within this main profile, and we can therefore use the saved semester number
+        return redirect(reverse(
+            'semesterpage-semester',
+            args=[
+            request.session.get('study_program'),
+            request.session.get('main_profile'),
+            request.session.get('semester_number')
+            ]
+        ))
+    if main_profile == COMMON_SEMESTER_SLUG:
+        # This assumes that the lowest semester in the studyprogram is a common semester, which isn't necessarily
+        # true, but it will fall back on the lowest semester irrespective of the main profile, and that is not too
+        # bad (for now)
+        return study_program_view(request, study_program)
+    else:
+        try:
+            lowest_semester_number = Semester.objects.filter(study_program__slug=study_program, main_profile__slug=main_profile)[0].number
+            return redirect(reverse('semesterpage-semester', args=[study_program, main_profile, lowest_semester_number]))
+        except Semester.DoesNotExist:
+            raise Http404(_('Fant ingen semestre knyttet til hovedprofilen "%s" under studieprogrammet "%s".' % (main_profile, study_program,)))
+
+
 def studentpage(request, username):
     try:
         student = User.objects.get(username__iexact=username).student

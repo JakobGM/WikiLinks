@@ -122,6 +122,9 @@ class MainProfile(models.Model):
     def check_access(self, user):
         return self in user.student.accessible_main_profiles()
 
+    def get_absolute_url(self):
+        return reverse('semesterpage-mainprofile', args=[self.study_program.slug, self.slug])
+
     def __str__(self):
         return self.display_name + ', ' + str(self.study_program)
 

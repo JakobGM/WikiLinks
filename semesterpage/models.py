@@ -74,7 +74,8 @@ class MainProfile(models.Model):
     study_program = models.ForeignKey(
         StudyProgram,
         on_delete=models.CASCADE,
-        related_name='main_profiles'
+        related_name='main_profiles',
+        verbose_name=_('studieprogram')
     )
     slug = AutoSlugField(
         populate_from='display_name',
@@ -98,13 +99,14 @@ class Semester(models.Model):
     Contains an instance of a specific semester connected to a main profile.
     """
     number = models.PositiveSmallIntegerField(
-        _('semester (nummer)'),
+        _('semesternummer'),
         help_text=_('F.eks. "2"')
     )
     study_program = models.ForeignKey(
         StudyProgram,
         on_delete=models.CASCADE,
-        related_name='semesters'
+        related_name='semesters',
+        verbose_name=_('studieprogram')
     )
     main_profile = models.ForeignKey(
         MainProfile,
@@ -112,7 +114,8 @@ class Semester(models.Model):
         blank=True,
         null=True,
         default=None,
-        related_name='semesters'
+        related_name='semesters',
+        verbose_name=_('hovedprofil')
     )
     published = models.BooleanField(
         _('publisert'),
@@ -171,7 +174,8 @@ class LinkList(models.Model):
     )
     homepage = models.URLField(
         _('Fagets hjemmeside'),
-        help_text=_('F.eks. "http://www.phys.ntnu.no/fysikkfag/"')
+        help_text=_('F.eks. "http://www.phys.ntnu.no/fysikkfag/". '
+                    'Denne lenken kan besøkes ved å trykke på ikonet til faget.')
     )
 
     def __str__(self):
@@ -193,7 +197,8 @@ class Course(LinkList):
     )
     semesters = models.ManyToManyField(
         Semester,
-        related_name='courses'
+        related_name='courses',
+        verbose_name=_('semestre')
     )
 
     def check_access(self, user):
@@ -217,17 +222,21 @@ class ResourceLinkList(LinkList):
     study_programs = models.ManyToManyField(
         StudyProgram,
         blank=True,
-        related_name='resource_link_lists'
+        related_name='resource_link_lists',
+        verbose_name=_('studieprogram')
     )
     default = models.BooleanField(
         default=False,
+        verbose_name=_('standard ressurslenkeliste'),
         help_text=_('Skal denne ressurslenkelisten brukes i alle studieprogram som ikke har satt sine egendefinerte '
                     'ressurslenkelister?')
     )
     order = models.PositiveSmallIntegerField(
         default=0,
         blank=False,
-        null=False
+        null=False,
+        verbose_name=_('Rekkefølge'),
+        help_text=_('Bestemmer hvilken rekkefølge ressurslenkelistene skal vises i. Lavest kommer først.')
     )
 
     def check_access(self, user):
@@ -334,9 +343,11 @@ class Link(models.Model):
                     '"mini-ikon" som plasseres ved siden av lenken.')
     )
     order = models.PositiveSmallIntegerField(
+        _('rekkefølge'),
         default=0,
         blank=False,
-        null=False
+        null=False,
+        help_text=_('Bestemmer hvilken rekkefølge lenkene skal vises i. Lavest kommer først.')
     )
 
     def __str__(self):
@@ -353,6 +364,7 @@ class CourseLink(Link):
     """
     course = models.ForeignKey(
         Course,
+        verbose_name=_('fag'),
         on_delete=models.CASCADE,
         related_name='links'
     )
@@ -376,7 +388,8 @@ class ResourceLink(Link):
     resource_link_list = models.ForeignKey(
         ResourceLinkList,
         on_delete=models.CASCADE,
-        related_name='links'
+        related_name='links',
+        verbose_name=_('ressurslenkeliste')
     )
     custom_category = models.ForeignKey(
         CustomLinkCategory,
@@ -429,7 +442,8 @@ class Student(models.Model):
     """
     user = models.OneToOneField(
         User,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        verbose_name=_('bruker')
     )
     access_level = models.SmallIntegerField(
         _('tilgangsnivå'),
@@ -441,13 +455,15 @@ class Student(models.Model):
         Semester,
         blank=False,
         null=True,
-        related_name='contributors'
+        related_name='contributors',
+        verbose_name=_('semester')
     )
     courses = models.ManyToManyField(
         Course,
         default=None,
         related_name='students',
         blank=True,
+        verbose_name=_('fag')
     )
 
     @property
@@ -518,3 +534,8 @@ class Student(models.Model):
 
     def accessible_resource_links(self):
         return ResourceLink.objects.filter(resource_link_list__study_programs__in=self.accessible_study_programs())
+
+
+    class Meta:
+        verbose_name = _('student')
+        verbose_name_plural = _('studenter')

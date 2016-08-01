@@ -27,7 +27,10 @@ def homepage(request):
         study_program = request.session.get('study_program', DEFAULT_STUDY_PROGRAM)
         main_profile = request.session.get('main_profile', COMMON_SEMESTER_SLUG)
         semester_number = request.session.get('semester_number', '1')
-        return semester(request, study_program, main_profile, semester_number, save_location=False)
+        return redirect(reverse(
+            'semesterpage-semester',
+            args=[study_program, main_profile, semester_number]
+        ))
 
 
 def study_program_view(request, study_program):
@@ -39,7 +42,10 @@ def study_program_view(request, study_program):
         # The user has a saved location for this study program, and we can use it
         main_profile = request.session.get('main_profile', COMMON_SEMESTER_SLUG)
         semester_number = request.session.get('semester_number', '1')
-        return semester(request, study_program, main_profile, semester_number)
+        return redirect(reverse(
+            'semesterpage-semester',
+            args=[study_program, main_profile, semester_number]
+        ))
     else:
         # Fall back on the lowest available semester (depends on the ordering of the semester model)
         default_semester = Semester.objects.filter(study_program__slug=study_program)[0]
@@ -47,12 +53,10 @@ def study_program_view(request, study_program):
             main_profile = COMMON_SEMESTER_SLUG
         else:
             main_profile = default_semester.main_profile.slug
-        return semester(
-            request=request,
-            study_program=study_program,
-            main_profile=main_profile,
-            semester_number=default_semester.number
-        )
+        return redirect(reverse(
+            'semesterpage-semester',
+            args=[study_program, main_profile, default_semester.number]
+        ))
 
 
 def main_profile_view(request, study_program, main_profile):

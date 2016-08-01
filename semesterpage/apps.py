@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 from gettext import gettext as _
 from .rules import create_contributor_groups
-from .admin import set_admin_theme
+from .adminstyle import set_admin_theme
 
 
 class SemesterpageConfig(AppConfig):

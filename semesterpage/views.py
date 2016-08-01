@@ -93,21 +93,13 @@ def studentpage(request, username):
     except User.DoesNotExist:
         raise Http404(_('Fant ingen studieprogram eller bruker med navnet "%s"') % username)
 
-    student_courses = student.courses.all()
-    # Student has all the required methods for the template rendering as Semester has
-    student_semester = student
-    if not student_courses.exists():
-        # The user has not specified his/her own courses, and we use the courses
-        # given by the semester which the student has chosen
-        student_courses = student.semester.courses.all()
-        student_semester = student.semester
 
     # Boolean for changing the logo if the domain is fysmat.no
     is_fysmat = 'fysmat' in request.get_host().lower()
 
     return render(request, 'semesterpage/userpage.html',
-                  {'semester': student_semester,
-                   'courses': student_courses,
+                  {'semester': student,
+                   'courses': student.courses.all(),
                    'resource_link_lists': student.study_program.resource_link_lists,
                    'simple_semesters': student.study_program.simple_semesters,
                    'grouped_split_semesters': student.study_program.grouped_split_semesters,

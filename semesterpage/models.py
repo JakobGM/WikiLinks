@@ -503,7 +503,7 @@ class Student(models.Model):
         related_name='contributors',
         verbose_name=_('semester')
     )
-    courses = models.ManyToManyField(
+    self_chosen_courses = models.ManyToManyField(
         Course,
         default=None,
         related_name='students',
@@ -522,6 +522,17 @@ class Student(models.Model):
     @property
     def main_profile(self):
         return self.semester.main_profile
+
+    @property
+    def courses(self):
+        """
+        The courses that should be displayed to the user. Checks if the user has chosen his/her own courses, and if not,
+        it falls back on the courses of the semester that the user has connected to his/her profile
+        """
+        if self.self_chosen_courses.exists():
+            return self.self_chosen_courses
+        else:
+            return self.semester.courses
 
     """
     Methods for retrieving the model instances that should be accessible to the contributor.

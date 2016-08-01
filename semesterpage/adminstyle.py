@@ -1,11 +1,14 @@
+from gettext import gettext as _
+
 def set_admin_theme():
     """
     Custom styling of the admin site using the admin_interface app.
     Done by editing the default Theme model created by the app at initialization.
     Is invoked by the AppConfig.ready() method.
     """
+    # Important to import here to ensure that all apps have been loaded on invocation
     from admin_interface.models import Theme
-    
+
     # Getting the default theme
     kokekunster_theme = Theme.objects.get_or_create(pk=1)[0]
 

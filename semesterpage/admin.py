@@ -268,7 +268,7 @@ if kokekunster_theme.name != 'Kokekunster':
     # Editing the theme
     kokekunster_theme.name = 'Kokekunster'
 
-    kokekunster_theme.title = _('Kjøkkenet')
+    kokekunster_theme.title = _('Komfyren')
 
     kokekunster_theme.logo = '/static/img/kokekunster_logo.svg'
 

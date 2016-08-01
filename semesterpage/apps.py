@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 from gettext import gettext as _
 from .rules import create_contributor_groups
+from .admin import set_admin_theme
 
 
 class SemesterpageConfig(AppConfig):
@@ -13,3 +14,6 @@ class SemesterpageConfig(AppConfig):
 
         # Create contributor groups at startup
         create_contributor_groups()
+
+        # Style the admin utility according to the kokekunster style
+        set_admin_theme()

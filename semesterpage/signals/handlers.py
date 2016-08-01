@@ -16,9 +16,10 @@ def contributor_save(sender, instance, **kwargs):
     instance.user.groups = contributor_groups[:instance.access_level]
 
     # Set staff status if the user has contributor access
-    if instance.access_level is not NO_ACCESS:
+    if instance.access_level is not NO_ACCESS and not instance.user.is_staff:
         instance.user.is_staff = True
-    else:
+        # Save the user instance, because this is pre-save of the Student model, and not the User model
+        instance.user.save()
+    elif instance.access_level is NO_ACCESS and not instance.user.is_superuser:
         instance.user.is_staff = False
-    # Save the user instance, because this is pre-save of the Student model, and not the User model
-    instance.user.save()
+        instance.user.save()

@@ -46,7 +46,7 @@ class MainProfileAdmin(ObjectPermissionsModelAdmin):
         """
         if not request.user.is_superuser:
             if db_field.name == 'study_program':
-                kwargs['queryset'] = request.user.student.accessible_study_programs()
+                kwargs['queryset'] = StudyProgram.objects.filter(pk=request.user.student.study_program.pk)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -71,9 +71,12 @@ class SemesterAdmin(ObjectPermissionsModelAdmin):
         """
         if not request.user.is_superuser:
             if db_field.name == 'study_program':
-                kwargs['queryset'] = request.user.student.accessible_study_programs()
+                kwargs['queryset'] = StudyProgram.objects.filter(pk=request.user.student.study_program.pk)
             if db_field.name == 'main_profile':
                 kwargs['queryset'] = request.user.student.accessible_main_profiles()
+                if request.user.student.main_profile is not None:
+                    # Union of two set
+                    kwargs['queryset'] |= MainProfile.objects.filter(pk=request.user.student.main_profile.pk)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 

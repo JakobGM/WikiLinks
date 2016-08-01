@@ -510,6 +510,13 @@ class Student(models.Model):
         blank=True,
         verbose_name=_('fag')
     )
+    calendar_name = models.CharField(
+        _('1024-kalendernavn'),
+        max_length=60,
+        blank=True,
+        null=True,
+        help_text=_('Tast inn ditt kalendernavn på ntnu.1024.no.')
+    )
 
     @property
     def is_contributor(self):

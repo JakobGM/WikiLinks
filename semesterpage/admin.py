@@ -87,6 +87,9 @@ class CourseLinkInline(SortableInlineAdminMixin, admin.TabularInline):
     also change the order in which the links are shown on the semesterpage.
     """
     model = CourseLink
+    # Must include order here in order to prevent a 'required field' bug for empty links in the inline.
+    # It is not shown in the admin panel anyhow due to the mixin.
+    fields = ('title', 'url', 'category', 'order',)
 
 
 class ResourceLinkInline(SortableInlineAdminMixin, admin.TabularInline):
@@ -94,6 +97,9 @@ class ResourceLinkInline(SortableInlineAdminMixin, admin.TabularInline):
     See documentation for CourseLinkInline
     """
     model = ResourceLink
+    # Must include order here in order to prevent a 'required field' bug for empty links in the inline.
+    # It is not shown in the admin panel anyhow due to the mixin.
+    fields = ('title', 'url', 'category', 'custom_category', 'order',)
 
 
 class CourseAdmin(ObjectPermissionsModelAdmin):

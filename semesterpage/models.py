@@ -8,6 +8,7 @@ from gettext import gettext as _
 from collections import defaultdict
 from autoslug import AutoSlugField
 from autoslug.utils import slugify
+from sanitizer.models import SanitizedCharField
 import os
 
 COMMON_SEMESTER_SLUG = getattr(settings, 'COMMON_SEMESTER_SLUG', 'felles')
@@ -227,6 +228,7 @@ class LinkList(models.Model):
     class Meta:
         abstract = True
 
+
 class Course(LinkList):
     """
     Contains a specific course with a logo for display on the semesterpage.
@@ -366,11 +368,6 @@ class Link(models.Model):
     field determines the mini-icon used when portraying the link as a part
     of a list with custom bullet-point thumbnails
     """
-    title = models.CharField(
-        _('tittel'),
-        max_length=60,
-        help_text=_('F.eks "Gamle eksamenssett"')
-    )
     url = models.URLField(
         'URL',
         help_text=_('F.eks. "http://www.phys.ntnu.no/fysikkfag/gamleeksamener.html"')
@@ -405,6 +402,13 @@ class CourseLink(Link):
     """
     A link connected to a course, without the ability to add custom thumbnails.
     """
+    title = SanitizedCharField(
+        verbose_name=_('tittel'),
+        allowed_tags=['em', 'strong', 'i', 'b'],
+        max_length=100,
+        strip=False,
+        help_text=_('F.eks "Gamle eksamenssett"')
+    )
     course = models.ForeignKey(
         Course,
         verbose_name=_('fag'),
@@ -428,6 +432,13 @@ class ResourceLink(Link):
     A link connected to one of the two ResourceLinkList elements displayed on
     each semesterpage, with the ability to add custom thumbnails.
     """
+    title = SanitizedCharField(
+        verbose_name=_('tittel'),
+        allowed_tags=['em', 'strong', 'i', 'b'],
+        max_length=100,
+        strip=False,
+        help_text=_('F.eks "Wolfram Alpha"')
+    )
     resource_link_list = models.ForeignKey(
         ResourceLinkList,
         on_delete=models.CASCADE,

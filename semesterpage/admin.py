@@ -247,6 +247,13 @@ class UserAdmin(BaseUserAdmin):
     inlines = (StudentInline, OptionsInline,)
 
 
+class StudentOptionsAdmin(ObjectPermissionsModelAdmin):
+    model = StudentOptions
+    can_delete = False
+    exclude = ('user',)
+    filter_horizontal = ('self_chosen_courses',)
+
+
 admin.site.register(StudyProgram, StudyProgramAdmin)
 admin.site.register(MainProfile, MainProfileAdmin)
 admin.site.register(Semester, SemesterAdmin)
@@ -257,3 +264,4 @@ admin.site.register(ResourceLink, ResourceLinkAdmin)
 admin.site.register(CustomLinkCategory, CustomLinkCategoryAdmin)
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+admin.site.register(StudentOptions, StudentOptionsAdmin)

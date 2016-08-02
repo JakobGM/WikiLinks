@@ -1,25 +1,56 @@
-from django.db.models.signals import pre_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.contrib.auth.models import Group
-from semesterpage.models import Student, NO_ACCESS
+from django.contrib.auth.models import User, Group
+from django.core.exceptions import ObjectDoesNotExist
+from semesterpage.models import Student, StudentOptions
 
-@receiver(pre_save, sender=Student)
-def contributor_save(sender, instance, **kwargs):
-    # Get relevant contributor groups and assemble them in a list
+
+@receiver(post_save, sender=User)
+def user_save(sender, instance, created, raw, **kwargs):
+    if raw:
+        # Fixtures needs to be ignored
+        return
+    elif created:
+        # Add staff status to have access to admin
+        User.objects.filter(pk=instance.pk).update(is_staff=True)
+        # Add to basic student permission group
+        Group.objects.get(name='students').user_set.add(instance)
+        # Create the one-to-one instances related to User
+        Student.objects.create(user=instance)
+        StudentOptions.objects.create(user=instance)
+    elif not created:
+        set_groups(instance)
+
+
+@receiver(post_save, sender=Student)
+def contributor_save(sender, instance, created, raw, **kwargs):
+    # This signal is probably never sent as there is no Student object registered in the admin,
+    # but is left here in case Student instances are altered directly in the code in the future
+    if not created and not raw:
+        set_groups(instance.user)
+
+
+def set_groups(user):
+    """
+    Sets the necessary contributor groups according to the users access level
+    """
+    try:
+        user.student
+    except ObjectDoesNotExist:
+        # Incase student has not been created yet, although user_save() should handle that
+        return
+
+    students = Group.objects.get(name='students')
+    course_contributors = Group.objects.get(name='course_contributors')
     semester_contributors = Group.objects.get(name='semester_contributors')
     mainprofile_contributors = Group.objects.get(name='mainprofile_contributors')
     studyprogram_contributors = Group.objects.get(name='studyprogram_contributors')
 
-    contributor_groups = [semester_contributors, mainprofile_contributors, studyprogram_contributors]
+    contributor_groups = [students, course_contributors, semester_contributors,
+                          mainprofile_contributors, studyprogram_contributors]
 
     # Set the groups of the contributor according to his/hers access level
-    instance.user.groups = contributor_groups[:instance.access_level]
-
-    # Set staff status if the user has contributor access
-    if instance.access_level is not NO_ACCESS and not instance.user.is_staff:
-        instance.user.is_staff = True
-        # Save the user instance, because this is pre-save of the Student model, and not the User model
-        instance.user.save()
-    elif instance.access_level is NO_ACCESS and not instance.user.is_superuser:
-        instance.user.is_staff = False
-        instance.user.save()
+    for group in contributor_groups[:user.student.access_level+1]:
+        group.user_set.add(user)
+    for group in contributor_groups[user.student.access_level+1:]:
+        group.user_set.remove(user)

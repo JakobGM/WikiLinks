@@ -478,11 +478,13 @@ class ResourceLink(Link):
 
 
 NO_ACCESS = 0
-SEMESTER = 1
-MAIN_PROFILE = 2
-STUDY_PROGRAM = 3
+COURSES = 1
+SEMESTER = 2
+MAIN_PROFILE = 3
+STUDY_PROGRAM = 4
 ACCESS_LEVELS = (
     (NO_ACCESS, _('Ingen tilgang')),
+    (COURSES, _('Opprettede fag')),
     (SEMESTER, _('Kun semesteret')),
     (MAIN_PROFILE, _('Hele hovedprofilen')),
     (STUDY_PROGRAM, _('Hele studieprogrammet')),
@@ -506,7 +508,7 @@ class Student(models.Model):
     access_level = models.SmallIntegerField(
         _('tilgangsnivå'),
         choices=ACCESS_LEVELS,
-        default=0,
+        default=COURSES,
         help_text=_('Gir muligheten til å endre på lenker o.l. knyttet til semesteret spesifisert nedenfor.')
     )
     semester = models.ForeignKey(
@@ -518,9 +520,6 @@ class Student(models.Model):
         verbose_name=_('bidragsytersemester')
     )
 
-    @property
-    def is_contributor(self):
-        return self.access_level is not NO_ACCESS
 
     @property
     def study_program(self):
@@ -547,13 +546,12 @@ class Student(models.Model):
     def has_contributor_access_to(self, object):
         if self.user.is_superuser:
             return True
-        elif self.is_contributor:
+        else:
             try:
                 return object.check_access(self.user)
             except AttributeError:
                 return False
-        else:
-            return False
+
 
     def accessible_study_programs(self):
         if self.access_level == STUDY_PROGRAM:
@@ -562,7 +560,7 @@ class Student(models.Model):
             return StudyProgram.objects.none()
 
     def accessible_main_profiles(self):
-        if self.access_level == SEMESTER or self.access_level == NO_ACCESS:
+        if self.access_level == SEMESTER or self.access_level == COURSES:
             return MainProfile.objects.none()
         elif self.access_level == MAIN_PROFILE:
             return MainProfile.objects.filter(semesters__in=[self.semester])
@@ -578,7 +576,7 @@ class Student(models.Model):
             return Semester.objects.filter(study_program=self.study_program, main_profile=self.main_profile)
         elif self.access_level == STUDY_PROGRAM:
             return self.study_program.semesters.all()
-        elif self.access_level == NO_ACCESS:
+        elif self.access_level == COURSES:
             return Semester.objects.none()
         else:
             raise RuntimeError('Invalid contributor access level.')
@@ -641,3 +639,11 @@ class StudentOptions(models.Model):
         default=None,
         help_text=_('Tast inn ditt kalendernavn på ntnu.1024.no.')
     )
+
+    def check_access(self, user):
+        return self.user == user
+
+    class Meta(Link.Meta):
+        verbose_name = _('instillinger')
+        verbose_name_plural = _('instillinger')
+        ordering = ('user__username',)

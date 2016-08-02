@@ -145,6 +145,10 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile=COMMON_S
                   )
 
 
+def profile(request):
+    return redirect(to='semesterpage-homepage')
+
+
 def sendLinkMail(request, link_form):
     """
     Sends an email to all addresses specified in kokekunster.settings.ADMINS.

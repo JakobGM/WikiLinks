@@ -19,5 +19,6 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
+    url(r'^accounts/', include('allauth.urls')),
     url(r'^', include('semesterpage.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

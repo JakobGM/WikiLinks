@@ -498,6 +498,8 @@ class Student(models.Model):
     """
     user = models.OneToOneField(
         User,
+        blank=False,
+        null=False,
         on_delete=models.CASCADE,
         verbose_name=_('bruker')
     )
@@ -509,24 +511,11 @@ class Student(models.Model):
     )
     semester = models.ForeignKey(
         Semester,
-        blank=False,
+        blank=True,
         null=True,
-        related_name='contributors',
-        verbose_name=_('semester')
-    )
-    self_chosen_courses = models.ManyToManyField(
-        Course,
         default=None,
-        related_name='students',
-        blank=True,
-        verbose_name=_('fag')
-    )
-    calendar_name = models.CharField(
-        _('1024-kalendernavn'),
-        max_length=60,
-        blank=True,
-        null=True,
-        help_text=_('Tast inn ditt kalendernavn på ntnu.1024.no.')
+        related_name='contributors',
+        verbose_name=_('bidragsytersemester')
     )
 
     @property
@@ -547,10 +536,10 @@ class Student(models.Model):
         The courses that should be displayed to the user. Checks if the user has chosen his/her own courses, and if not,
         it falls back on the courses of the semester that the user has connected to his/her profile
         """
-        if self.self_chosen_courses.exists():
-            return self.self_chosen_courses
+        if self.user.options.self_chosen_courses.exists():
+            return self.user.options.self_chosen_courses
         else:
-            return self.semester.courses
+            return self.user.option.self_chosen_semester.courses
 
     """
     Methods for retrieving the model instances that should be accessible to the contributor.
@@ -613,3 +602,42 @@ class Student(models.Model):
     class Meta:
         verbose_name = _('student')
         verbose_name_plural = _('studenter')
+
+
+class StudentOptions(models.Model):
+    """
+    Fields that should be available to the student
+    """
+    user = models.OneToOneField(
+        User,
+        blank=False,
+        null=False,
+        on_delete=models.CASCADE,
+        related_name='options',
+        verbose_name=_('bruker')
+    )
+    self_chosen_semester = models.ForeignKey(
+        Semester,
+        blank=True,
+        null=True,
+        default=None,
+        related_name='students',
+        verbose_name=_('semester'),
+        help_text=_('Semesteret du for øyeblikket går.')
+    )
+    self_chosen_courses = models.ManyToManyField(
+        Course,
+        default=None,
+        related_name='students',
+        blank=True,
+        verbose_name=_('fag'),
+        help_text=_('Hvis du ikke går et ordinært semester, og heller har lyst å velge dine egne fag.')
+    )
+    calendar_name = models.CharField(
+        _('1024-kalendernavn'),
+        max_length=60,
+        blank=True,
+        null=True,
+        default=None,
+        help_text=_('Tast inn ditt kalendernavn på ntnu.1024.no.')
+    )

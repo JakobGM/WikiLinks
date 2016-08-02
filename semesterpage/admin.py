@@ -4,7 +4,7 @@ from adminsortable2.admin import SortableInlineAdminMixin
 from rules.contrib.admin import ObjectPermissionsModelAdmin
 from .models import StudyProgram, MainProfile, Semester, Course, \
                     ResourceLinkList, CourseLink, ResourceLink, \
-                    CustomLinkCategory, Student
+                    CustomLinkCategory, Student, StudentOptions
 
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
@@ -232,13 +232,19 @@ class CustomLinkCategoryAdmin(ObjectPermissionsModelAdmin):
 class StudentInline(admin.StackedInline):
     model = Student
     can_delete = False
+    verbose_name_plural = _('student')
+
+
+class OptionsInline(admin.StackedInline):
+    model = StudentOptions
+    can_delete = False
     filter_horizontal = ('self_chosen_courses',)
-    verbose_name_plural = _('studenter')
+    verbose_name_plural = _('instillinger')
 
 
 # Define a new User admin
 class UserAdmin(BaseUserAdmin):
-    inlines = (StudentInline,)
+    inlines = (StudentInline, OptionsInline,)
 
 
 admin.site.register(StudyProgram, StudyProgramAdmin)

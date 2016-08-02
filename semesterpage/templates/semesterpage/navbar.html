@@ -39,6 +39,7 @@
                 </li>
             {% endfor %}
             <li class="arkiv"><a id="arkiv" href="/arkiv/{{ semester.study_program.slug | lower }}/{{ semester.number }}.semester{% if semester.main_profile != None %}/{{ semester.main_profile.slug }}{% endif %}"><img src="{% static "semesterpage/img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv</a></li>
+            <li class="arkiv"><a id="arkiv" {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}><img src="{% static "semesterpage/img/calendar.svg" %}" alt="kalender">  Timeplan</a></li>
         </ul>
     </div>
 </nav>

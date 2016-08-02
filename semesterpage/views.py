@@ -104,6 +104,7 @@ def studentpage(request, username):
                    'simple_semesters': student.study_program.simple_semesters,
                    'grouped_split_semesters': student.study_program.grouped_split_semesters,
                    'study_programs': StudyProgram.objects.filter(published=True),
+                   'calendar_name': get_calendar_name(request),
                    'is_fysmat': is_fysmat}
                   )
 
@@ -141,12 +142,39 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile=COMMON_S
                    'simple_semesters': _semester.study_program.simple_semesters,
                    'grouped_split_semesters': _semester.study_program.grouped_split_semesters,
                    'study_programs': StudyProgram.objects.filter(published=True),
+                    'calendar_name': get_calendar_name(request),
                    'is_fysmat': is_fysmat}
                   )
 
 
 def profile(request):
     return redirect(to='semesterpage-homepage')
+
+
+def get_calendar_name(request):
+    """
+    # Checks if the user has a saved calendar name and returns it
+    """
+    # TODO: Try-except should be replaced
+    try:
+        if request.user.options.calendar_name:
+            # Saved in options
+            return request.user.options.calendar_name
+    except AttributeError:
+        pass
+    # Saved in session
+    return request.session.get('calendar_name', None)
+
+
+def calendar(request, calendar_name):
+    """
+    Saves the users choice of calendarname and then redirects
+    """
+    request.session['calendar_name'] = calendar_name
+    if request.user.is_authenticated():
+        request.user.options.calendar_name = calendar_name
+        request.user.options.save()
+    return redirect(to='https://ntnu.1024.no/' + calendar_name)
 
 
 def sendLinkMail(request, link_form):

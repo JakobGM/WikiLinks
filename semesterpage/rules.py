@@ -11,7 +11,7 @@ contributor_models = ['studyprogram', 'mainprofile',
                       'semester', 'course',
                       'resourcelinklist', 'customlinkcategory',
                       'courselink', 'resourcelink',
-                      'studentoptions']
+                      'options']
 
 for model in contributor_models:
     add_perm('semesterpage.change_' + model, has_contributor_access)
@@ -30,7 +30,7 @@ def create_contributor_groups():
     students, created = Group.objects.get_or_create(name='students')
     if created:
         students.permissions = [
-            Permission.objects.get(codename='change_studentoptions'),
+            Permission.objects.get(codename='change_options'),
         ]
 
     course_contributors, created = Group.objects.get_or_create(name='course_contributors')

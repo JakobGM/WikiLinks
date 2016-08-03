@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from subdomains.utils import reverse
 from gettext import gettext as _
-from .models import StudyProgram, Semester, StudentOptions
+from .models import StudyProgram, Semester, Options
 from .forms import LinkForm, FileForm
 from kokekunster.settings import ADMINS, SERVER_EMAIL
 
@@ -89,7 +89,7 @@ def main_profile_view(request, study_program, main_profile):
 
 def studentpage(request, homepage):
     try:
-        options = StudentOptions.objects.get(homepage_slug=homepage)
+        options = Options.objects.get(homepage_slug=homepage)
     except User.DoesNotExist:
         raise Http404(_('Fant ingen studieprogram eller brukerside med navnet "%s"') % homepage)
 
@@ -141,7 +141,7 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile=COMMON_S
 def profile(request):
     options = request.user.options
     if options.self_chosen_semester is None and not options.self_chosen_courses.exists():
-        return redirect(reverse('admin:semesterpage_studentoptions_change', args=(options.id,)))
+        return redirect(reverse('admin:semesterpage_options_change', args=(options.id,)))
     else:
         return redirect(reverse('semesterpage-studyprogram', args=(self.page_name_slug,)))
 

@@ -606,9 +606,9 @@ class Student(models.Model):
         verbose_name_plural = _('studenter')
 
 
-class StudentOptions(models.Model):
+class Options(models.Model):
     """
-    Fields that should be available to the student. It is important to notice that StudentOptions is a stand in for
+    Fields that should be available to the student. It is important to notice that Options is a stand in for
     Semester in the template rendering of the userpage view, and thus needs many of the same methods and member
     variables
     """
@@ -699,6 +699,9 @@ class StudentOptions(models.Model):
 
     def get_absolute_url(self):
         return reverse('semesterpage-studyprogram', args=(self.homepage_slug,))
+
+    def __str__(self):
+        return self.user.first_name + ' ' + self.user.last_name
 
     class Meta(Link.Meta):
         verbose_name = _('instillinger')

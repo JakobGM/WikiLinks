@@ -2,7 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User, Group
 from django.core.exceptions import ObjectDoesNotExist
-from semesterpage.models import Student, StudentOptions
+from semesterpage.models import Student, Options
 
 
 @receiver(post_save, sender=User)
@@ -17,7 +17,7 @@ def user_save(sender, instance, created, raw, **kwargs):
         Group.objects.get(name='students').user_set.add(instance)
         # Create the one-to-one instances related to User
         Student.objects.create(user=instance)
-        StudentOptions.objects.create(user=instance)
+        Options.objects.create(user=instance)
     elif not created:
         set_groups(instance)
 

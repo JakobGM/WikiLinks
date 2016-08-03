@@ -8,7 +8,7 @@
 {% block content %}
 <div class="wrap content">
 
-{% for course in courses %}
+{% for course in semester.courses.all %}
 <article>
 <a class="kategori" href="{{ course.homepage }}">
   <img src="{{ course.logo.url }}">
@@ -24,7 +24,7 @@
 </article>
 {% endfor %}
 
-{% for rll in resource_link_lists %}
+{% for rll in semester.study_program.resource_link_lists %}
 <article>
 <a class="kategori" href="{{ rll.homepage }}">
   <img src="{{ rll.logo.url }}">

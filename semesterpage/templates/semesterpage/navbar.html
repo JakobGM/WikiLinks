@@ -13,7 +13,7 @@
                     {% endfor %}
                 </div>
             </li>
-            {% for simple_semester in simple_semesters %}
+            {% for simple_semester in semester.study_program.simple_semesters %}
                 <li><a href="{{ simple_semester.get_absolute_url }}">
                     {% if simple_semester.number == semester.number %}
                         <b>{{ simple_semester.number }}. Semester</b>
@@ -22,7 +22,7 @@
                     {% endif %}
                 </a></li>
             {% endfor %}
-            {% for number, split_semesters in grouped_split_semesters %}
+            {% for number, split_semesters in semester.study_program.grouped_split_semesters %}
                 <li class="dropdown">
                     <a href="#" class="dropbtn">
                         {% if number == semester.number %}

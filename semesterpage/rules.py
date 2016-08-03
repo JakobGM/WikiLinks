@@ -5,7 +5,7 @@ from rules import predicate, add_perm, is_superuser
 
 @predicate
 def has_contributor_access(user, object):
-    return user.student.has_contributor_access_to(object)
+    return user.contributor.has_contributor_access_to(object)
 
 contributor_models = ['studyprogram', 'mainprofile',
                       'semester', 'course',

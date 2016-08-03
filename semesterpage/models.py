@@ -81,7 +81,7 @@ class StudyProgram(models.Model):
         return _resource_link_lists
 
     def check_access(self, user):
-        return self in user.student.accessible_study_programs()
+        return self in user.contributor.accessible_study_programs()
 
     def get_absolute_url(self):
         return reverse('semesterpage-studyprogram', args=[self.slug])
@@ -122,7 +122,7 @@ class MainProfile(models.Model):
     )
 
     def check_access(self, user):
-        return self in user.student.accessible_main_profiles()
+        return self in user.contributor.accessible_main_profiles()
 
     def get_absolute_url(self):
         return reverse('semesterpage-mainprofile', args=[self.study_program.slug, self.slug])
@@ -175,7 +175,7 @@ class Semester(models.Model):
             return COMMON_SEMESTER_SLUG
 
     def check_access(self, user):
-        return self in user.student.accessible_semesters()
+        return self in user.contributor.accessible_semesters()
 
     def get_absolute_url(self):
         return reverse('semesterpage-semester', args=[self.study_program.slug, self.main_profile_slug, self.number])
@@ -248,7 +248,7 @@ class Course(LinkList):
     )
 
     def check_access(self, user):
-        return self in user.student.accessible_courses()
+        return self in user.contributor.accessible_courses()
 
     def __str__(self):
         return self.course_code + ' - ' + self.full_name
@@ -286,7 +286,7 @@ class ResourceLinkList(LinkList):
     )
 
     def check_access(self, user):
-        return self in user.student.accessible_resource_link_lists()
+        return self in user.contributor.accessible_resource_link_lists()
 
     class Meta:
         ordering = ['order']
@@ -313,7 +313,7 @@ class CustomLinkCategory(models.Model):
     )
 
     def check_access(self, user):
-        return self in user.student.accessible_custom_link_categories()
+        return self in user.contributor.accessible_custom_link_categories()
 
     def __str__(self):
         return self.name
@@ -418,7 +418,7 @@ class CourseLink(Link):
     )
 
     def check_access(self, user):
-        return self in user.student.accessible_course_links()
+        return self in user.contributor.accessible_course_links()
 
     def __str__(self):
         return self.title + ' ('+ str(self.course.course_code) + ')'
@@ -458,7 +458,7 @@ class ResourceLink(Link):
     )
 
     def check_access(self, user):
-        return self in user.student.accessible_resource_links()
+        return self in user.contributor.accessible_resource_links()
 
     def clean(self):
         # Can't allow selection of both a category and a custom category at the
@@ -492,13 +492,14 @@ ACCESS_LEVELS = (
 )
 
 
-class Student(models.Model):
+class Contributor(models.Model):
     """
-    A student connected to a given semester, with a one-to-one relationship to the User model. Has an access_level
+    A student contributor connected to a given semester, with a one-to-one relationship to the User model. Has an access_level
     field used to grant edit and delete permissions to Semesterpage models in the admin panel.
     """
     user = models.OneToOneField(
         User,
+        related_name='contributor',
         blank=False,
         null=False,
         on_delete=models.CASCADE,
@@ -602,8 +603,8 @@ class Student(models.Model):
 
 
     class Meta:
-        verbose_name = _('student')
-        verbose_name_plural = _('studenter')
+        verbose_name = _('bidragsyter')
+        verbose_name_plural = _('bidragsytere')
 
 
 class Options(models.Model):

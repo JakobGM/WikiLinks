@@ -699,7 +699,12 @@ class Options(models.Model):
         return self.user == user
 
     def get_absolute_url(self):
-        return reverse('semesterpage-studyprogram', args=(self.homepage_slug,))
+        if self.homepage:
+            return reverse('semesterpage-studyprogram', args=(self.homepage_slug,))
+        elif self.self_chosen_semester is not None:
+            return self.self_chosen_semester.get_absolute_url()
+        else:
+            return reverse('semesterpage-homepage')
 
     def __str__(self):
         return self.user.first_name + ' ' + self.user.last_name

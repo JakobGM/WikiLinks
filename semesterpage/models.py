@@ -11,6 +11,7 @@ from autoslug.utils import slugify
 from sanitizer.models import SanitizedCharField
 import os
 
+DEFAULT_STUDY_PROGRAM = getattr(settings, 'DEFAULT_STUDY_PROGRAM', 'fysmat')
 COMMON_SEMESTER_SLUG = getattr(settings, 'COMMON_SEMESTER_SLUG', 'felles')
 
 
@@ -494,9 +495,7 @@ ACCESS_LEVELS = (
 class Student(models.Model):
     """
     A student connected to a given semester, with a one-to-one relationship to the User model. Has an access_level
-    field used to grant edit and delete permissions to Semesterpage models in the admin panel. It is important to
-    notice that Student is a stand in for Semester in the template rendering of the userpage view, and thus needs
-    many of the same methods and member variables
+    field used to grant edit and delete permissions to Semesterpage models in the admin panel.
     """
     user = models.OneToOneField(
         User,
@@ -523,22 +522,27 @@ class Student(models.Model):
 
     @property
     def study_program(self):
-        return self.semester.study_program
+        try:
+            return self.semester.study_program
+        except AttributeError:
+            # Contributor semester not set by the site administrator
+            return StudyProgram.objects.none()
 
     @property
     def main_profile(self):
-        return self.semester.main_profile
+        try:
+            return self.semester.main_profile
+        except AttributeError:
+            # Contributor semester not set by the site administrator
+            return MainProfile.objects.none()
 
     @property
     def courses(self):
-        """
-        The courses that should be displayed to the user. Checks if the user has chosen his/her own courses, and if not,
-        it falls back on the courses of the semester that the user has connected to his/her profile
-        """
-        if self.user.options.self_chosen_courses.exists():
-            return self.user.options.self_chosen_courses
-        else:
-            return self.user.option.self_chosen_semester.courses
+        try:
+            return self.semester.courses
+        except AttributeError:
+            # Contributor semester not set by the site administrator
+            return Course.objects.none()
 
     """
     Methods for retrieving the model instances that should be accessible to the contributor.
@@ -604,7 +608,9 @@ class Student(models.Model):
 
 class StudentOptions(models.Model):
     """
-    Fields that should be available to the student
+    Fields that should be available to the student. It is important to notice that StudentOptions is a stand in for
+    Semester in the template rendering of the userpage view, and thus needs many of the same methods and member
+    variables
     """
     user = models.OneToOneField(
         User,
@@ -613,6 +619,23 @@ class StudentOptions(models.Model):
         on_delete=models.CASCADE,
         related_name='options',
         verbose_name=_('bruker')
+    )
+    homepage = models.CharField(
+        max_length=60,
+        unique=True,
+        verbose_name=_('hjemmesidenavn'),
+        blank=True,
+        null=True,
+        help_text=_('Du kan besøke din personlige semesterside på kokekunster.no/hjemmesidenavn eller '
+                    'hjemmesidenavn.kokekunster.no. Der dukker alle fagene i semesteret du velger nedenfor opp, '
+                    'eller så kan du også velge din egen fagkombinasjon.')
+    )
+    homepage_slug = AutoSlugField(
+        populate_from='homepage',
+        always_update=True,
+        unique=True,
+        blank=True,
+        null=True
     )
     self_chosen_semester = models.ForeignKey(
         Semester,
@@ -640,8 +663,42 @@ class StudentOptions(models.Model):
         help_text=_('Tast inn ditt kalendernavn på ntnu.1024.no.')
     )
 
+    @property
+    def study_program(self):
+        try:
+            return self.self_chosen_semester.study_program
+        except AttributeError:
+            # Semester not set by the user
+            return StudyProgram.objects.get(slug=DEFAULT_STUDY_PROGRAM)
+
+    @property
+    def main_profile(self):
+        try:
+            return self.self_chosen_semester.main_profile
+        except AttributeError:
+            # Semester not set by the user
+            return MainProfile.objects.none()
+
+    @property
+    def courses(self):
+        """
+        The courses that should be displayed to the user. Checks if the user has chosen his/her own courses, and if not,
+        it falls back on the courses of the semester that the user has connected to his/her profile
+        """
+        if self.self_chosen_courses.exists():
+            return self.self_chosen_courses
+        else:
+            try:
+                return self.self_chosen_semester.courses
+            except AttributeError:
+                # Semester not set by the user
+                return Course.objects.none()
+
     def check_access(self, user):
         return self.user == user
+
+    def get_absolute_url(self):
+        return reverse('semesterpage-studyprogram', args=(self.homepage_slug,))
 
     class Meta(Link.Meta):
         verbose_name = _('instillinger')

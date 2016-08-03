@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from subdomains.utils import reverse
 from gettext import gettext as _
-from .models import StudyProgram, Semester
+from .models import StudyProgram, Semester, StudentOptions
 from .forms import LinkForm, FileForm
 from kokekunster.settings import ADMINS, SERVER_EMAIL
 
@@ -87,22 +87,17 @@ def main_profile_view(request, study_program, main_profile):
             raise Http404(_('Fant ingen semestre knyttet til hovedprofilen "%s" under studieprogrammet "%s".' % (main_profile, study_program,)))
 
 
-def studentpage(request, username):
+def studentpage(request, homepage):
     try:
-        student = User.objects.get(username__iexact=username).student
+        options = StudentOptions.objects.get(homepage_slug=homepage)
     except User.DoesNotExist:
-        raise Http404(_('Fant ingen studieprogram eller bruker med navnet "%s"') % username)
-
+        raise Http404(_('Fant ingen studieprogram eller brukerside med navnet "%s"') % homepage)
 
     # Boolean for changing the logo if the domain is fysmat.no
     is_fysmat = 'fysmat' in request.get_host().lower()
 
     return render(request, 'semesterpage/userpage.html',
-                  {'semester': student,
-                   'courses': student.courses.all(),
-                   'resource_link_lists': student.study_program.resource_link_lists,
-                   'simple_semesters': student.study_program.simple_semesters,
-                   'grouped_split_semesters': student.study_program.grouped_split_semesters,
+                  {'semester': options,
                    'study_programs': StudyProgram.objects.filter(published=True),
                    'calendar_name': get_calendar_name(request),
                    'is_fysmat': is_fysmat}
@@ -137,10 +132,6 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile=COMMON_S
 
     return render(request, 'semesterpage/courses.html',
                   {'semester': _semester,
-                   'courses': _semester.courses.all(),
-                   'resource_link_lists': _semester.study_program.resource_link_lists,
-                   'simple_semesters': _semester.study_program.simple_semesters,
-                   'grouped_split_semesters': _semester.study_program.grouped_split_semesters,
                    'study_programs': StudyProgram.objects.filter(published=True),
                     'calendar_name': get_calendar_name(request),
                    'is_fysmat': is_fysmat}
@@ -148,7 +139,11 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile=COMMON_S
 
 
 def profile(request):
-    return redirect(to='semesterpage-homepage')
+    options = request.user.options
+    if options.self_chosen_semester is None and not options.self_chosen_courses.exists():
+        return redirect(reverse('admin:semesterpage_studentoptions_change', args=(options.id,)))
+    else:
+        return redirect(reverse('semesterpage-studyprogram', args=(self.page_name_slug,)))
 
 
 def get_calendar_name(request):

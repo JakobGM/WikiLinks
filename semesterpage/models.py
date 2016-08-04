@@ -705,6 +705,10 @@ class Options(models.Model):
     def check_access(self, user):
         return self.user == user
 
+    def get_admin_url(self):
+        info = (self._meta.app_label, self._meta.model_name)
+        return reverse('admin:%s_%s_change' % info, args=(self.pk,))
+
     def get_absolute_url(self):
         if self.homepage:
             return reverse('semesterpage-studyprogram', args=(self.homepage_slug,))

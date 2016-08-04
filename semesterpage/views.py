@@ -100,7 +100,8 @@ def studentpage(request, homepage):
                   {'semester': options,
                    'study_programs': StudyProgram.objects.filter(published=True),
                    'calendar_name': get_calendar_name(request),
-                   'is_fysmat': is_fysmat}
+                   'is_fysmat': is_fysmat,
+                   'user' : request.user}
                   )
 
 
@@ -134,7 +135,8 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile=COMMON_S
                   {'semester': _semester,
                    'study_programs': StudyProgram.objects.filter(published=True),
                     'calendar_name': get_calendar_name(request),
-                   'is_fysmat': is_fysmat}
+                   'is_fysmat': is_fysmat,
+                   'user' : request.user}
                   )
 
 

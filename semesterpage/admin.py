@@ -166,62 +166,6 @@ class ResourceLinkListAdmin(ObjectPermissionsModelAdmin):
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 
-class CourseLinkAdmin(ObjectPermissionsModelAdmin):
-    list_display = ('title', 'url', 'course', 'category',)
-    list_filter = ('course', 'course__semesters',)
-    search_fields = ('title', 'url', 'course',)
-    exclude = ('order',)
-
-    def get_queryset(self, request):
-        """
-        Restrict the displayed model instances in the admin view as specifically as possible based on the fields in
-        semesterpage.models.contributor, which is related one-to-one to the User model.
-        """
-        if request.user.is_superuser:
-            return super().get_queryset(request)
-        else:
-            return request.user.contributor.accessible_course_links()
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """
-        Restrict the options available for the foreign key field 'course' to model instances that the user should
-        have access to. These model instances are found in the semesterpage.models.contributor model, which is related
-        one-to-one to the User model (request.user.contributor).
-        """
-        if not request.user.is_superuser:
-            if db_field.name == 'course':
-                kwargs['queryset'] = request.user.contributor.accessible_courses()
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-
-class ResourceLinkAdmin(ObjectPermissionsModelAdmin):
-    list_display = ('title', 'url', 'resource_link_list', 'category', 'custom_category',)
-    list_filter = ('resource_link_list',)
-    search_fields = ('title', 'url', 'resource_link_list',)
-    exclude = ('order',)
-
-    def get_queryset(self, request):
-        """
-        Restrict the displayed model instances in the admin view as specifically as possible based on the fields in
-        semesterpage.models.contributor, which is related one-to-one to the User model.
-        """
-        if request.user.is_superuser:
-            return super().get_queryset(request)
-        else:
-            return request.user.contributor.accessible_resource_links()
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """
-        Restrict the options available for the foreign key field 'resource_link_list' to model instances that the user should
-        have access to. These model instances are found in the semesterpage.models.contributor model, which is related
-        one-to-one to the User model (request.user.contributor).
-        """
-        if not request.user.is_superuser:
-            if db_field.name == 'resource_link_list':
-                kwargs['queryset'] = request.user.contributor.accessible_resource_link_lists()
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-
 class CustomLinkCategoryAdmin(ObjectPermissionsModelAdmin):
     list_display = ('name',)
 
@@ -268,8 +212,6 @@ admin.site.register(MainProfile, MainProfileAdmin)
 admin.site.register(Semester, SemesterAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(ResourceLinkList, ResourceLinkListAdmin)
-admin.site.register(CourseLink, CourseLinkAdmin)
-admin.site.register(ResourceLink, ResourceLinkAdmin)
 admin.site.register(CustomLinkCategory, CustomLinkCategoryAdmin)
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)

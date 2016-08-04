@@ -215,7 +215,9 @@ class LinkList(models.Model):
     logo = models.FileField(
         upload_to=upload_path,
         help_text=_('Bildet vises over alle lenkene knyttet til faget. '
-                    'Bør være kvadratisk for å unngå uheldige skaleringseffekter.')
+                    'Bør være kvadratisk for å unngå uheldige skaleringseffekter.'),
+        blank=True,
+        null=True
     )
     homepage = models.URLField(
         _('Fagets hjemmeside'),
@@ -243,8 +245,16 @@ class Course(LinkList):
     )
     semesters = models.ManyToManyField(
         Semester,
+        blank=True,
         related_name='courses',
-        verbose_name=_('semestre')
+        verbose_name=_('semestre'),
+        help_text=_('Hvis du lager et fag for deg selv, så kan du bare hoppe over dette valget.')
+    )
+    contributors = models.ManyToManyField(
+        'Contributor',
+        related_name='courses',
+        blank=True,
+        help_text=_('Bidragsytere som har redigeringstilgang til faget.')
     )
 
     def check_access(self, user):
@@ -537,14 +547,6 @@ class Contributor(models.Model):
             # Contributor semester not set by the site administrator
             return MainProfile.objects.none()
 
-    @property
-    def courses(self):
-        try:
-            return self.semester.courses
-        except AttributeError:
-            # Contributor semester not set by the site administrator
-            return Course.objects.none()
-
     """
     Methods for retrieving the model instances that should be accessible to the contributor.
     """
@@ -587,7 +589,10 @@ class Contributor(models.Model):
             raise RuntimeError('Invalid contributor access level.')
 
     def accessible_courses(self):
-        return Course.objects.filter(semesters__in=self.accessible_semesters())
+        # Also includes courses where the contributor is part of the contributors ManyToManyField,
+        # which the user is added to if he/she created the course
+        return Course.objects.filter(semesters__in=self.accessible_semesters()) | \
+               Course.objects.filter(contributors__in=[self])
 
     def accessible_resource_link_lists(self):
         return ResourceLinkList.objects.filter(study_programs__in=self.accessible_study_programs())

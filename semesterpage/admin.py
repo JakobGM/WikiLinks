@@ -107,6 +107,7 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
     list_filter = ('semesters',)
     search_fields = ('full_name', 'display_name',)
     filter_horizontal = ('semesters',)
+    exclude = ('contributors',)  # Without this exclude, the save_model() method won't work properly
     inlines = [CourseLinkInline]
 
     def get_queryset(self, request):
@@ -129,6 +130,14 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
             if not request.user.is_superuser:
                 kwargs['queryset'] = request.user.contributor.accessible_semesters()
         return super().formfield_for_manytomany(db_field, request, **kwargs)
+
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        if change is False and not obj.semesters.exists():
+            # The user has just created the Course for himself/herself,
+            # and should be added as a contributor to that Course
+            # For this to work, "exclude = ('contributors',)" must be set for some reason
+            obj.contributors.add(request.user.contributor.pk)
 
 
 class ResourceLinkListAdmin(ObjectPermissionsModelAdmin):

@@ -606,6 +606,8 @@ class Contributor(models.Model):
     def accessible_resource_links(self):
         return ResourceLink.objects.filter(resource_link_list__study_programs__in=self.accessible_study_programs())
 
+    def __str__(self):
+        return str(self.user.options)
 
     class Meta:
         verbose_name = _('bidragsyter')

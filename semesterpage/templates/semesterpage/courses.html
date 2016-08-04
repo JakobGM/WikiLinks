@@ -11,7 +11,7 @@
 {% for course in semester.courses.all %}
 <article>
 <a class="kategori" href="{{ course.homepage }}">
-  <img src="{{ course.logo.url }}">
+  {% if course.logo %}<img src="{{ course.logo.url }}">{% endif %}
 
   <h2>{{ course.display_name }}</h2></a>
 <ul>

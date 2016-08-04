@@ -143,7 +143,7 @@ def profile(request):
     if options.self_chosen_semester is None and not options.self_chosen_courses.exists():
         return redirect(reverse('admin:semesterpage_options_change', args=(options.id,)))
     else:
-        return redirect(reverse('semesterpage-studyprogram', args=(self.page_name_slug,)))
+        return redirect(reverse('semesterpage-studyprogram', args=(request.user.options.homepage_slug,)))
 
 
 def get_calendar_name(request):

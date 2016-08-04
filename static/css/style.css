@@ -439,17 +439,31 @@ article form p {
 
 	.tannhjul {
 		position: relative;
-		right: -0.7em;
+		right: -0.4em;
 	}
 
-	.settings-link {
+	#settings-link {
 		position: relative;
-		bottom: -0.05em;
+		bottom: -0.12em;
+	}
+
+	#settings-link img {
+		position: relative;
+		padding-right: 0.6em;
+		top: 0.1em;
 	}
 
 	#facebook a img {
 		position: relative;
 		top: 0.2em;
 		right: 0.14em;
+	}
+
+	.hotfix {
+		/*
+		The calendar had too much margin for logged in users,
+		and instead of fixing it properly, I just made this single li item hotfix :S
+		*/
+		margin-right: -0.7em;
 	}
 }

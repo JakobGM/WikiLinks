@@ -38,22 +38,30 @@
                     </div>
                 </li>
             {% endfor %}
-            <li class="arkiv"><a id="arkiv" href="/arkiv/{{ semester.study_program.slug | lower }}/{{ semester.number }}.semester{% if semester.main_profile != None %}/{{ semester.main_profile.slug }}{% endif %}"><img src="{% static "semesterpage/img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv</a></li>
-            <li class="arkiv"><a id="arkiv" {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}><img src="{% static "semesterpage/img/calendar.svg" %}" alt="kalender">  Timeplan</a></li>
+            <li class="arkiv">
+                <a id="arkiv" href="/arkiv/{{ semester.study_program.slug | lower }}/{{ semester.number }}.semester{% if semester.main_profile != None %}/{{ semester.main_profile.slug }}{% endif %}">
+                    <img src="{% static "semesterpage/img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv
+                </a>
+            </li>
             {% if user.is_authenticated %}
                 <li id="facebook" class="arkiv nav-right">
                     <a id="arkiv" href="/accounts/logout">
                         <img src="{% static "semesterpage/img/logout.svg" %}" alt="exit door">  Logg ut
                     </a>
                 </li>
+                <li class="arkiv semestervalg nav-right">
+                    <a id="settings-link" title="Instillinger" href="{{ user.options.get_admin_url }}">
+                        <img class="tannhjul" src="{% static 'semesterpage/img/settings.svg' %}" alt="Tannhjul">Instillinger
+                    </a>
+                </li>
+                <li class="arkiv nav-right hotfix">
+                <a id="arkiv" {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
+                    <img src="{% static "semesterpage/img/calendar.svg" %}" alt="kalender">  Timeplan
+                </a>
+                </li>
                 <li class="arkiv nav-right">
                     <a id="arkiv" href="{{ user.options.get_absolute_url }}">
                         <img src="{% static "semesterpage/img/profile.svg" %}" alt="kalender">  {{ user.username | title }}
-                    </a>
-                </li>
-                <li class="arkiv semestervalg nav-right">
-                    <a class="settings-link" title="Instillinger" href="{{ user.options.get_admin_url }}">
-                        <img class="tannhjul" src="{% static 'semesterpage/img/settings.svg' %}" alt="Tannhjul">
                     </a>
                 </li>
             {% else %}
@@ -61,6 +69,11 @@
                     <a id="arkiv" href="/accounts/facebook/login">
                         <img src="{% static "semesterpage/img/facebook.svg" %}" alt="facebook logo">  Logg inn
                     </a>
+                </li>
+                <li class="arkiv nav-right">
+                <a id="arkiv" {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
+                    <img src="{% static "semesterpage/img/calendar.svg" %}" alt="kalender">  Timeplan
+                </a>
                 </li>
             {% endif %}
         </ul>

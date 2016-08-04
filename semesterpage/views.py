@@ -172,7 +172,10 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile=None, se
         # Save the deliberate change of location by user in the session, as the semester has been found successfully
         request.session['semester_pk'] = _semester.pk
         request.session['study_program_slug'] = _semester.study_program.slug
-        request.session['main_profile_slug'] = _semester.main_profile_slug
+        if _semester.main_profile:
+            request.session['main_profile_slug'] = _semester.main_profile.slug
+        else:
+            request.session['main_profile_slug'] = ''
         request.session['semester_number_slug'] = _semester.number
         request.session['homepage'] = ''  # Delete saved homepage
 

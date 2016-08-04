@@ -25,6 +25,7 @@ class SemesterInline(admin.TabularInline):
 
 class StudyProgramAdmin(ObjectPermissionsModelAdmin):
     list_display = ('full_name', 'display_name',)
+    exclude = ('has_archive',)
     inlines = (MainProfileInline, SemesterInline,)
 
     def get_queryset(self, request):

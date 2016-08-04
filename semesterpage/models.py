@@ -41,6 +41,11 @@ class StudyProgram(models.Model):
         populate_from='display_name',
         unique=True
     )
+    has_archive = models.BooleanField(
+        _('har arkiv'),
+        default=False,
+        help_text=_('Huk av hvis studieprogrammet har filer i arkivet på kokekunster.no/arkiv.')
+    )
     published = models.BooleanField(
         _('publisert'),
         default=False,

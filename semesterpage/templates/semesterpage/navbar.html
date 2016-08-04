@@ -38,11 +38,13 @@
                     </div>
                 </li>
             {% endfor %}
+        {% if semester.study_program.has_archive %}
             <li class="arkiv">
-                <a id="arkiv" href="/arkiv/{{ semester.study_program.slug | lower }}/{{ semester.number }}.semester{% if semester.main_profile != None %}/{{ semester.main_profile.slug }}{% endif %}">
+                <a id="arkiv" href="/arkiv/{{ semester.get_absolute_url }}">
                     <img src="{% static "semesterpage/img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv
                 </a>
             </li>
+        {% endif %}
             {% if user.is_authenticated %}
                 <li id="facebook" class="arkiv nav-right">
                     <a id="arkiv" href="/accounts/logout">

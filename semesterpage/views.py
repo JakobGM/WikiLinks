@@ -10,27 +10,36 @@ from .models import StudyProgram, Semester, Options
 from .forms import LinkForm, FileForm
 from kokekunster.settings import ADMINS, SERVER_EMAIL
 
-DEFAULT_STUDY_PROGRAM = getattr(settings, 'DEFAULT_STUDY_PROGRAM', 'fysmat')
-COMMON_SEMESTER_SLUG = getattr(settings, 'COMMON_SEMESTER_SLUG', 'felles')
+DEFAULT_STUDY_PROGRAM = getattr(settings, 'DEFAULT_STUDY_PROGRAM', 1)
 
 def homepage(request):
     """
     Homepage view for when the URL does not specify a specific semester.
     Looks at session data to see the user's last visited semester.
     If no data is given, the homepage defaults to the 1st semester
-    of the study program given by DEFAULT_PROGRAM_CODE
+    of the study program with pk given by DEFAULT_STUDY_PROGRAM
     """
     if request.subdomain:
-        # The user has visited xxx.example.com and is redirected to example.com/xxx, the page for the study program xxx
-        return redirect(reverse(viewname=study_program_view, subdomain=None, kwargs={'study_program': request.subdomain}))
-    else:
-        study_program = request.session.get('study_program', DEFAULT_STUDY_PROGRAM)
-        main_profile = request.session.get('main_profile', COMMON_SEMESTER_SLUG)
-        semester_number = request.session.get('semester_number', '1')
+        # The user has visited xxx.example.com and is redirected to example.com/xxx,
+        # the page for the study program or userpage xxx
         return redirect(reverse(
-            'semesterpage-semester',
-            args=[study_program, main_profile, semester_number]
+            viewname=study_program_view,
+            subdomain=None, kwargs={'study_program': request.subdomain}
         ))
+    else:
+        semester_pk = request.session.get('semester_pk', DEFAULT_STUDY_PROGRAM)
+        _semester = Semester.objects.get(pk=semester_pk)
+        # Determine if it is a semester with a main profile or not, and redirect accordingly
+        if _semester.main_profile:
+            return redirect(reverse(
+                'semesterpage-semester',
+                args=[_semester.study_program.slug, _semester.main_profile.slug, _semester.number]
+            ))
+        else:
+            return redirect(reverse(
+                'semesterpage-simplesemester',
+                args=[_semester.study_program.slug, _semester.number]
+            ))
 
 
 def study_program_view(request, study_program):
@@ -38,25 +47,25 @@ def study_program_view(request, study_program):
         # This study program does not exist, thus we check if there is a studentpage
         # with the same name instead
         return studentpage(request, study_program)
-    elif study_program == request.session.get('study_program', 'no match'):
+    elif study_program == request.session.get('semester_slug', 'can not match this'):
         # The user has a saved location for this study program, and we can use it
-        main_profile = request.session.get('main_profile', COMMON_SEMESTER_SLUG)
-        semester_number = request.session.get('semester_number', '1')
-        return redirect(reverse(
-            'semesterpage-semester',
-            args=[study_program, main_profile, semester_number]
-        ))
+        main_profile = request.session.get('main_profile_slug')
+        semester_number = request.session.get('semester_number_slug')
+        # Determine if it is a semester with a main profile or not, and redirect accordingly
+        if main_profile:
+            return redirect(reverse(
+                'semesterpage-semester',
+                args=[study_program, main_profile, semester_number]
+            ))
+        else:
+            return redirect(reverse(
+                'semesterpage-simplesemester',
+                args=[study_program, semester_number]
+            ))
     else:
         # Fall back on the lowest available semester (depends on the ordering of the semester model)
         default_semester = Semester.objects.filter(study_program__slug=study_program)[0]
-        if default_semester.main_profile is None:
-            main_profile = COMMON_SEMESTER_SLUG
-        else:
-            main_profile = default_semester.main_profile.slug
-        return redirect(reverse(
-            'semesterpage-semester',
-            args=[study_program, main_profile, default_semester.number]
-        ))
+        return redirect(default_semester.get_absolute_url())
 
 
 def main_profile_view(request, study_program, main_profile):
@@ -64,33 +73,36 @@ def main_profile_view(request, study_program, main_profile):
     Returns the semesterpage of the lowest available semester of the given main profile, or redirects the user to their
     last visited semester if that semester is part of the given main profile.
     """
-    if (study_program == request.session.get('study_program', 'no match') and main_profile == request.session.get('main_profile', 'no match')):
+    if (study_program == request.session.get('study_program_slug', 'no match')
+        and main_profile == request.session.get('main_profile_slug', 'no match')):
         # The last visited semester is within this main profile, and we can therefore use the saved semester number
         return redirect(reverse(
             'semesterpage-semester',
             args=[
-            request.session.get('study_program'),
-            request.session.get('main_profile'),
-            request.session.get('semester_number')
+                study_program,
+                main_profile,
+                request.session.get('semester_number_slug')
             ]
         ))
-    if main_profile == COMMON_SEMESTER_SLUG:
-        # This assumes that the lowest semester in the studyprogram is a common semester, which isn't necessarily
-        # true, but it will fall back on the lowest semester irrespective of the main profile, and that is not too
-        # bad (for now)
-        return study_program_view(request, study_program)
     else:
         try:
-            lowest_semester_number = Semester.objects.filter(study_program__slug=study_program, main_profile__slug=main_profile)[0].number
-            return redirect(reverse('semesterpage-semester', args=[study_program, main_profile, lowest_semester_number]))
-        except Semester.DoesNotExist:
-            raise Http404(_('Fant ingen semestre knyttet til hovedprofilen "%s" under studieprogrammet "%s".' % (main_profile, study_program,)))
+            lowest_semester_number = Semester.objects.filter(
+                study_program__slug=study_program,
+                main_profile__slug=main_profile
+            )[0].number
+            return redirect(reverse(
+                'semesterpage-semester',
+                args=[study_program, main_profile, lowest_semester_number]
+            ))
+        except IndexError:
+            raise Http404(_('Fant ingen semestre knyttet til hovedprofilen "%s" under studieprogrammet "%s".'
+                            % (main_profile, study_program,)))
 
 
 def studentpage(request, homepage):
     try:
         options = Options.objects.get(homepage_slug=homepage)
-    except User.DoesNotExist:
+    except Options.DoesNotExist:
         raise Http404(_('Fant ingen studieprogram eller brukerside med navnet "%s"') % homepage)
 
     # Boolean for changing the logo if the domain is fysmat.no
@@ -101,32 +113,68 @@ def studentpage(request, homepage):
                    'study_programs': StudyProgram.objects.filter(published=True),
                    'calendar_name': get_calendar_name(request),
                    'is_fysmat': is_fysmat,
-                   'user' : request.user}
+                   'user': request.user}
                   )
 
 
-def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile=COMMON_SEMESTER_SLUG, semester_number='1', save_location=True):
+def simple_semester(request, study_program, semester_number):
+    """
+    A view for semesters that do not have a main profile related to it (simple semesters)
+    """
+    try:
+        # Simple, unsplit semesters have NULL-value in the main_profile field, and there should be
+        # max one for each semester number in a study program
+        _semester = Semester.objects.get(study_program__slug=study_program, number=semester_number)
+
+        if _semester.main_profile:
+            # There is only one semester with the number 'semester_number', but it has a related
+            # main profile, and therefore needs to be redirected to the URL that contains the main
+            # profile slug
+            return redirect(reverse(
+                'semesterpage-semester',
+                args=[_semester.study_program.slug, _semester.main_profile.slug, _semester.number]
+            ))
+        else:
+            return semester(request, semester_object=_semester)
+
+    except Semester.DoesNotExist:
+        raise Http404(
+            _('Felles %d. semester knyttet til studieprogrammet "%s" eksisterer ikke')
+            % (int(semester_number), study_program))
+
+    except Semester.MultipleObjectsReturned:
+        # There are multiple semesters for this semester number, and we therefore redirect to the semesterpage
+        # of the semester of the first main profile (according to MainProfile.Meta.ordering)
+        _semester = Semester.objects.filter(study_program__slug=study_program, number=semester_number)[0]
+        return redirect(reverse(
+            'semesterpage-semester',
+            args=[_semester.study_program.slug, _semester.main_profile.slug, _semester.number]
+        ))
+
+
+def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile=None, semester_number='1', save_location=True, semester_object=None):
     """
     Generates the link portal for a given semester in a given program code
     """
-    try:
-        if main_profile == COMMON_SEMESTER_SLUG:
-            # Simple, unsplit semesters have NULL-value in the main_profile field,
-            # but are given COMMON_SEMESTER_SLUG as their main_profile slug url parameter
-            _semester = Semester.objects.get(study_program__slug=study_program, main_profile=None, number=semester_number)
-        else:
-            _semester = Semester.objects.get(study_program__slug=study_program, main_profile__slug=main_profile, number=semester_number)
-    except Semester.DoesNotExist:
-        raise Http404(
-            _('%d. semester ved hovedprofilen "%s" knyttet til studieprogrammet "%s" eksisterer ikke')
-            % (semester_number, main_profile, study_program)
-        )
+    if semester_object is None:
+        # (Premature?) optimization when semester query is already done in simple semester
+        try:
+            _semester = Semester.objects.get(study_program__slug=study_program, main_profile__slug=main_profile, number=int(semester_number))
+        except Semester.DoesNotExist:
+            raise Http404(
+                _('%d. semester ved hovedprofilen "%s" knyttet til studieprogrammet "%s" eksisterer ikke')
+                % (int(semester_number), main_profile, study_program)
+            )
+    else:
+        _semester = semester_object
 
     if save_location:
         # Save the deliberate change of location by user in the session, as the semester has been found successfully
-        request.session['study_program'] = study_program
-        request.session['main_profile'] = main_profile
-        request.session['semester_number'] = semester_number
+        request.session['semester_pk'] = _semester.pk
+        request.session['study_program_slug'] = _semester.study_program.slug
+        request.session['main_profile_slug'] = _semester.main_profile_slug
+        request.session['semester_number_slug'] = _semester.number
+        request.session['homepage'] = ''  # Delete saved homepage
 
     # Boolean for changing the logo if the domain is fysmat.no
     is_fysmat = 'fysmat' in request.get_host().lower()
@@ -142,7 +190,7 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile=COMMON_S
 
 def profile(request):
     options = request.user.options
-    if options.self_chosen_semester is None and not options.self_chosen_courses.exists():
+    if options.self_chosen_semester is None and not options.self_chosen_courses.exists() or not options.homepage_slug:
         return redirect(reverse('admin:semesterpage_options_change', args=(options.id,)))
     else:
         return redirect(reverse('semesterpage-studyprogram', args=(request.user.options.homepage_slug,)))

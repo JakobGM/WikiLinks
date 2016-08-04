@@ -158,13 +158,9 @@ SERVER_EMAIL = 'django@kokekunster.no'
 
 
 # Which study program should be defaulted to in url handling when the study program is not specified?
-# NB! Must be the slug-field of the StudyProgram object, i.e. lowercase version of the display_name field except that
-# the spaces are replaced with underscores
+# NB! Must be the primary key value of the StudyProgram object
 
-DEFAULT_STUDY_PROGRAM = 'fysmat'
-
-# What name should be used for 'common semesters' that are not split into main profiles
-COMMON_SEMESTER_SLUG = 'felles'
+DEFAULT_STUDY_PROGRAM = 2
 
 
 # Determine run environment based on the environment variable 'PRODUCTION', and load proper settings

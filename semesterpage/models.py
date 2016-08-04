@@ -12,8 +12,6 @@ from sanitizer.models import SanitizedCharField
 import os
 
 DEFAULT_STUDY_PROGRAM = getattr(settings, 'DEFAULT_STUDY_PROGRAM', 'fysmat')
-COMMON_SEMESTER_SLUG = getattr(settings, 'COMMON_SEMESTER_SLUG', 'felles')
-
 
 def upload_path(instance, filename):
     """
@@ -167,18 +165,15 @@ class Semester(models.Model):
                     'teste resultatet før du publiserer.')
     )
 
-    @property
-    def main_profile_slug(self):
-        if self.main_profile is not None:
-            return self.main_profile.slug
-        else:
-            return COMMON_SEMESTER_SLUG
 
     def check_access(self, user):
         return self in user.contributor.accessible_semesters()
 
     def get_absolute_url(self):
-        return reverse('semesterpage-semester', args=[self.study_program.slug, self.main_profile_slug, self.number])
+        if self.main_profile:
+            return reverse('semesterpage-semester', args=[self.study_program.slug, self.main_profile.slug, self.number])
+        else:
+            return reverse('semesterpage-simplesemester', args=[self.study_program.slug, self.number])
 
     def __str__(self):
         if self.main_profile is not None:

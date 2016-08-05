@@ -2,7 +2,8 @@ from django.contrib import admin
 from gettext import gettext as _
 from adminsortable2.admin import SortableInlineAdminMixin
 from rules.contrib.admin import ObjectPermissionsModelAdmin
-from .models import StudyProgram, MainProfile, Semester, Course, \
+from semesterpage.models import \
+                    StudyProgram, MainProfile, Semester, Course, \
                     ResourceLinkList, CourseLink, ResourceLink, \
                     CustomLinkCategory, Contributor, Options
 
@@ -67,7 +68,9 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
     list_filter = ('semesters',)
     search_fields = ('full_name', 'display_name',)
     filter_horizontal = ('semesters',)
-    exclude = ('contributors',)  # Without this exclude, the save_model() method won't work properly
+    # Without this  'contributors' exclude, the save_model() method won't work properly,
+    # that might be the case for created_by too, but that hasn't been tested yet
+    exclude = ('contributors', 'created_by',)
     inlines = [CourseLinkInline]
 
     def get_queryset(self, request):
@@ -97,7 +100,11 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
             # The user has just created the Course for himself/herself,
             # and should be added as a contributor to that Course
             # For this to work, "exclude = ('contributors',)" must be set for some reason
+            # TODO: The second test always evaluates as true
             obj.contributors.add(request.user.contributor.pk)
+        if change is False:
+            # Set creator without calling save() again by using update() instead
+            Course.objects.filter(pk=obj.pk).update(created_by=request.user.contributor)
 
 
 class ResourceLinkListAdmin(ObjectPermissionsModelAdmin):

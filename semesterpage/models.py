@@ -256,6 +256,13 @@ class Course(LinkList):
         blank=True,
         help_text=_('Bidragsytere som har redigeringstilgang til faget.')
     )
+    created_by = models.ForeignKey(
+        'Contributor',
+        related_name='created_courses',
+        blank=True,
+        null=True,
+        help_text=_('Hvem som opprettet faget.')
+    )
 
     def check_access(self, user):
         return self in user.contributor.accessible_courses()

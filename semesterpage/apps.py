@@ -12,8 +12,11 @@ class SemesterpageConfig(AppConfig):
         # Register signal listeners
         import semesterpage.signals.handlers  # noqa
 
-        # Create contributor groups at startup
-        create_contributor_groups()
+        # Set to true in order to create first startup model objects
+        first_startup = False
+        if first_startup is True:
+            # Create contributor groups at startup
+            create_contributor_groups()
 
-        # Style the admin utility according to the kokekunster style
-        set_admin_theme()
+            # Style the admin utility according to the kokekunster style
+            set_admin_theme()

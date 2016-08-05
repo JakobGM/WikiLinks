@@ -393,6 +393,15 @@ class Link(models.Model):
         help_text=_('F.eks. "Løsningsforslag". Valget bestemmer hvilket '
                     '"mini-ikon" som plasseres ved siden av lenken.')
     )
+    custom_category = models.ForeignKey(
+        CustomLinkCategory,
+        default=None,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name=_('(Egendefinert kategori)'),
+        help_text=_('Hvis du ønsker å bruke et egendefinert "mini-ikon".')
+    )
     order = models.PositiveSmallIntegerField(
         _('rekkefølge'),
         default=0,
@@ -403,6 +412,15 @@ class Link(models.Model):
 
     def __str__(self):
         return self.title
+
+    def clean(self):
+        # Can't allow selection of both a category and a custom category at the
+        # same time
+        if self.category is not None and self.custom_category is not None:
+            raise ValidationError(_('Kan ikke velge både en kateogri '
+                                    'og en egendefinert kateogri for en lenke '
+                                    'samtidig. Du kan kun velge én av delene, '
+                                    'eller ingen av delene.'))
 
     class Meta:
         abstract = True
@@ -456,28 +474,10 @@ class ResourceLink(Link):
         related_name='links',
         verbose_name=_('ressurslenkeliste')
     )
-    custom_category = models.ForeignKey(
-        CustomLinkCategory,
-        default=None,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        related_name='links',
-        verbose_name=_('(Egendefinert kategori)'),
-        help_text=_('Hvis du ønsker å bruke et egendefinert "mini-ikon".')
-    )
 
     def check_access(self, user):
         return self in user.contributor.accessible_resource_links()
 
-    def clean(self):
-        # Can't allow selection of both a category and a custom category at the
-        # same time
-        if self.category is not None and self.custom_category is not None:
-            raise ValidationError(_('Kan ikke velge både en kateogri '
-                                    'og en egendefinert kateogri for en lenke '
-                                    'samtidig. Du kan kun velge én av delene, '
-                                    'eller ingen av delene.'))
 
     def __str__(self):
         return self.title + ' (' + str(self.resource_link_list.full_name) + ')'

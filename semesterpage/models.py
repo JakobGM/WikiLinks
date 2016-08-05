@@ -11,7 +11,7 @@ from autoslug.utils import slugify
 from sanitizer.models import SanitizedCharField
 import os
 
-DEFAULT_STUDY_PROGRAM = getattr(settings, 'DEFAULT_STUDY_PROGRAM', 'fysmat')
+DEFAULT_STUDY_PROGRAM_SLUG = getattr(settings, 'DEFAULT_STUDY_PROGRAM_SLUG', 'fysmat')
 
 def upload_path(instance, filename):
     """
@@ -677,7 +677,7 @@ class Options(models.Model):
             return self.self_chosen_semester.study_program
         except AttributeError:
             # Semester not set by the user
-            return StudyProgram.objects.get(slug=DEFAULT_STUDY_PROGRAM)
+            return StudyProgram.objects.get(slug=DEFAULT_STUDY_PROGRAM_SLUG)
 
     @property
     def main_profile(self):

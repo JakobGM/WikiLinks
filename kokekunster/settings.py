@@ -157,10 +157,12 @@ SESSION_COOKIE_AGE = 31536000  # 1 year, instead of default 2 weeks
 SERVER_EMAIL = 'django@kokekunster.no'
 
 
-# Which study program should be defaulted to in url handling when the study program is not specified?
-# NB! Must be the primary key value of the StudyProgram object
+# Which semester should be defaulted to in url handling when the study program is not specified?
+# What is the slug of the associated study_program?
+# NB! Must be the primary key value of the Semester object
 
-DEFAULT_STUDY_PROGRAM = 2
+DEFAULT_SEMESTER_PK = 1
+DEFAULT_STUDY_PROGRAM_SLUG = 'fysmat'
 
 
 # Determine run environment based on the environment variable 'PRODUCTION', and load proper settings

@@ -10,14 +10,15 @@ from .models import StudyProgram, Semester, Options
 from .forms import LinkForm, FileForm
 from kokekunster.settings import ADMINS, SERVER_EMAIL
 
-DEFAULT_STUDY_PROGRAM = getattr(settings, 'DEFAULT_STUDY_PROGRAM', 1)
+DEFAULT_STUDY_PROGRAM_SLUG = getattr(settings, 'DEFAULT_STUDY_PROGRAM_SLUG', 'fysmat')
+DEFAULT_SEMESTER_PK = getattr(settings, 'DEFAULT_SEMESTER_PK', 1)
 
 def homepage(request):
     """
     Homepage view for when the URL does not specify a specific semester.
     Looks at session data to see the user's last visited semester.
-    If no data is given, the homepage defaults to the 1st semester
-    of the study program with pk given by DEFAULT_STUDY_PROGRAM
+    If no data is given, the homepage defaults to the semester
+    given by DEFAULT_SEMESTER_PK
     """
     if request.subdomain:
         # The user has visited xxx.example.com and is redirected to example.com/xxx,
@@ -27,7 +28,7 @@ def homepage(request):
             subdomain=None, kwargs={'study_program': request.subdomain}
         ))
     else:
-        semester_pk = request.session.get('semester_pk', DEFAULT_STUDY_PROGRAM)
+        semester_pk = request.session.get('semester_pk', DEFAULT_SEMESTER_PK)
         _semester = Semester.objects.get(pk=semester_pk)
         # Determine if it is a semester with a main profile or not, and redirect accordingly
         if _semester.main_profile:
@@ -152,7 +153,7 @@ def simple_semester(request, study_program, semester_number):
         ))
 
 
-def semester(request, study_program=DEFAULT_STUDY_PROGRAM, main_profile=None, semester_number='1', save_location=True, semester_object=None):
+def semester(request, study_program=DEFAULT_STUDY_PROGRAM_SLUG, main_profile=None, semester_number='1', save_location=True, semester_object=None):
     """
     Generates the link portal for a given semester in a given program code
     """

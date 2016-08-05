@@ -212,10 +212,19 @@ class LinkList(models.Model):
         max_length=60,
         help_text=_('F.eks. "C++"')
     )
-    logo = models.FileField(
+    safe_logo = models.ImageField(
+        verbose_name=_('logo'),
         upload_to=upload_path,
         help_text=_('Bildet vises over alle lenkene knyttet til faget. '
-                    'Bør være kvadratisk for å unngå uheldige skaleringseffekter.'),
+                    'NB! Bildet skaleres automatisk til å bli kvadratisk, '
+                    'SVG bilder er ikke tillatt.'),
+        blank=True,
+        null=True
+    )
+    # Allows admins to upload potentially unsafe SVG logos if so desired
+    unsafe_logo = models.FileField(
+        verbose_name=_('SVG logo'),
+        upload_to=upload_path,
         blank=True,
         null=True
     )
@@ -225,8 +234,22 @@ class LinkList(models.Model):
                     'Denne lenken kan besøkes ved å trykke på ikonet til faget.')
     )
 
+    @property
+    def logo(self):
+        # If an 'unsafe' SVG is uploaded by the admin, use that one
+        if self.unsafe_logo:
+            return self.unsafe_logo
+        else:
+            return self.safe_logo
+
     def __str__(self):
         return self.full_name
+
+    def clean(self):
+        # Can't allow upload of both a safe logo and an unsafe one
+        if self.safe_logo and self.unsafe_logo:
+            raise ValidationError(_('En administrator har allerede satt en logo for dette faget, '
+                                    'og du kan derfor ikke velge en ny logo.'))
 
     class Meta:
         abstract = True
@@ -266,6 +289,15 @@ class Course(LinkList):
 
     def check_access(self, user):
         return self in user.contributor.accessible_courses()
+
+    def get_absolute_url(self):
+        if self.semesters.exists():
+            return self.semesters.all()[0].get_absolute_url()
+        else:
+            try:
+                return Options.objects.filter(self_chosen_courses__in=[self])[0].get_absolute_url()
+            except IndexError:
+                return reverse('semesterpage-homepage')
 
     def __str__(self):
         return self.course_code + ' - ' + self.full_name

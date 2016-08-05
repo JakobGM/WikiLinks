@@ -2,6 +2,7 @@ from django.contrib import admin
 from gettext import gettext as _
 from adminsortable2.admin import SortableInlineAdminMixin
 from rules.contrib.admin import ObjectPermissionsModelAdmin
+from semesterpage.models import SEMESTER
 from semesterpage.models import \
                     StudyProgram, MainProfile, Semester, Course, \
                     ResourceLinkList, CourseLink, ResourceLink, \
@@ -50,7 +51,13 @@ class CourseLinkInline(SortableInlineAdminMixin, admin.TabularInline):
     model = CourseLink
     # Must include order here in order to prevent a 'required field' bug for empty links in the inline.
     # It is not shown in the admin panel anyhow due to the mixin.
-    fields = ('title', 'url', 'category', 'order',)
+
+    def get_fields(self, request, obj=None):
+        fields = ('title', 'url', 'category', 'order',)
+        if request.user.is_superuser:
+            # Only show custom category field to superusers
+            fields += ('custom_category',)
+        return fields
 
 
 class ResourceLinkInline(SortableInlineAdminMixin, admin.TabularInline):
@@ -64,13 +71,12 @@ class ResourceLinkInline(SortableInlineAdminMixin, admin.TabularInline):
 
 
 class CourseAdmin(ObjectPermissionsModelAdmin):
-    list_display = ('full_name', 'display_name', 'course_code',)
+    list_display = ('course_code', 'full_name', 'display_name',)
     list_filter = ('semesters',)
-    search_fields = ('full_name', 'display_name',)
-    filter_horizontal = ('semesters',)
+    search_fields = ('full_name', 'display_name', 'course_code',)
+    filter_horizontal = ('semesters', 'contributors',)
     # Without this  'contributors' exclude, the save_model() method won't work properly,
     # that might be the case for created_by too, but that hasn't been tested yet
-    exclude = ('contributors', 'created_by',)
     inlines = [CourseLinkInline]
 
     def get_queryset(self, request):
@@ -82,6 +88,17 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
             return super().get_queryset(request)
         else:
             return request.user.contributor.accessible_courses()
+
+    def get_fields(self, request, obj=None):
+        fields = ('full_name', 'display_name', 'course_code', 'homepage', 'safe_logo',)
+        if request.user.contributor.access_level >= SEMESTER or request.user.is_superuser:
+            # Only people with contributor access to semesters need to be able to select semesters on the course object
+            fields += ('semesters',)
+        if request.user.is_superuser:
+            # SVG logos and contributors should only be changed by superusers
+            fields += ('unsafe_logo', 'contributors', 'created_by',)
+        return fields
+
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         """

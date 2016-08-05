@@ -29,3 +29,6 @@ tmp/
 
 # IDE stuff
 .idea/
+
+# Production specific
+koku_env/

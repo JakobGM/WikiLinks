@@ -26,7 +26,6 @@ db.sqlite3-journal
 settings_local.py
 media/
 tmp/
-*/migrations
 
 # IDE stuff
 .idea/

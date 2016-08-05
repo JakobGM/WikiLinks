@@ -16,9 +16,13 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.conf import settings
 from django.conf.urls.static import static
+import os
 
 
 urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
     url(r'^', include('semesterpage.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+if not os.environ.get('PRODUCTION', False):
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

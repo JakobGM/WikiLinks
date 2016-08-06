@@ -157,6 +157,8 @@ class Migration(migrations.Migration):
         ('admin_interface', '__first__'),
         ('auth', '__first__'),
         ('sites', '__first__'),
+        ('admin', '__first__'),
+        ('contenttypes', '__first__'),
     ]
 
     operations = [

@@ -3,61 +3,6 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from django.core.management.sql import emit_post_migrate_signal
-
-def create_contributor_groups(apps, schema_editor):
-    """
-    Add the three permission level groups related to contributors.
-    """
-    # https://code.djangoproject.com/ticket/23422
-    db_alias = schema_editor.connection.alias
-    emit_post_migrate_signal(2, False, db_alias)
-
-    Group = apps.get_model('auth', 'Group')
-    Permission = apps.get_model('auth', 'Permission')
-
-    students, _ = Group.objects.get_or_create(name='students')
-    students.permissions.add(
-        Permission.objects.get_or_create(codename='change_options')
-    )
-    students.save()
-
-    course_contributors, _ = Group.objects.get_or_create(name='course_contributors')
-    course_contributors.permissions.add(
-        Permission.objects.get_or_create(codename='add_course'),
-        Permission.objects.get_or_create(codename='change_course'),
-        Permission.objects.get_or_create(codename='delete_course'),
-        Permission.objects.get_or_create(codename='add_courselink'),
-        Permission.objects.get_or_create(codename='change_courselink'),
-        Permission.objects.get_or_create(codename='delete_courselink')
-    )
-    course_contributors.save()
-
-    # In case of semester-level specific permissions in the future
-    semester_contributors, _ = Group.objects.get_or_create(name='semester_contributors')
-
-    # In case of main profile-level specific permissions in the future
-    mainprofile_contributors, _ = Group.objects.get_or_create(name='mainprofile_contributors')
-
-    studyprogram_contributors, _ = Group.objects.get_or_create(name='studyprogram_contributors')
-    studyprogram_contributors.permissions.add(
-        Permission.objects.get_or_create(codename='change_studyprogram'),
-        Permission.objects.get_or_create(codename='add_mainprofile'),
-        Permission.objects.get_or_create(codename='delete_mainprofile'),
-        Permission.objects.get_or_create(codename='add_resourcelinklist'),
-        Permission.objects.get_or_create(codename='change_resourcelinklist'),
-        Permission.objects.get_or_create(codename='add_customlinkcategory'),
-        Permission.objects.get_or_create(codename='delete_resourcelinklist'),
-        Permission.objects.get_or_create(codename='add_resourcelink'),
-        Permission.objects.get_or_create(codename='change_resourcelink'),
-        Permission.objects.get_or_create(codename='delete_resourcelink'),
-        Permission.objects.get_or_create(codename='change_mainprofile'),
-        Permission.objects.get_or_create(codename='add_mainprofile'),
-        Permission.objects.get_or_create(codename='add_semester'),
-        Permission.objects.get_or_create(codename='change_semester'),
-        Permission.objects.get_or_create(codename='delete_semester')
-    )
-    studyprogram_contributors.save()
 
 def set_admin_theme(apps, schema_editor):
     """
@@ -162,7 +107,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(create_contributor_groups),
         migrations.RunPython(set_admin_theme),
         migrations.RunPython(create_semesterpage_objects),
         migrations.RunPython(set_site),

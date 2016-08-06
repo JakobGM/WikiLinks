@@ -10,6 +10,7 @@ from autoslug import AutoSlugField
 from autoslug.utils import slugify
 from sanitizer.models import SanitizedCharField
 import os
+import itertools
 
 DEFAULT_STUDY_PROGRAM_SLUG = getattr(settings, 'DEFAULT_STUDY_PROGRAM_SLUG', 'fysmat')
 
@@ -673,9 +674,9 @@ class Options(models.Model):
         verbose_name=_('hjemmesidenavn'),
         blank=True,
         null=True,
-        help_text=_('Du kan besøke din personlige semesterside på kokekunster.no/hjemmesidenavn eller '
-                    'hjemmesidenavn.kokekunster.no. Der dukker alle fagene i semesteret du velger nedenfor opp, '
-                    'eller så kan du også velge din egen fagkombinasjon.')
+        help_text=_('Fagene du velger nedenfor vil dukke opp på hjemmesiden din. '
+                    'Du kan besøke din personlige semesterside på '
+                    'kokekunster.no/hjemmesidenavn eller hjemmesidenavn.kokekunster.no.')
     )
     homepage_slug = AutoSlugField(
         populate_from='homepage',
@@ -691,7 +692,7 @@ class Options(models.Model):
         default=None,
         related_name='students',
         verbose_name=_('semester'),
-        help_text=_('Semesteret du for øyeblikket går.')
+        help_text=_('Alle fagene til dette semesteret vil dukke opp på hjemmesiden din.')
     )
     self_chosen_courses = models.ManyToManyField(
         Course,
@@ -699,7 +700,8 @@ class Options(models.Model):
         related_name='students',
         blank=True,
         verbose_name=_('fag'),
-        help_text=_('Hvis du ikke går et ordinært semester, og heller har lyst å velge dine egne fag.')
+        help_text=_('Her kan du velge ekstra fag som ikke er en del av semesteret ditt, '
+                    'eller evt. lage en helt egen fagkombinasjon.')
     )
     calendar_name = models.CharField(
         _('1024-kalendernavn'),
@@ -729,17 +731,17 @@ class Options(models.Model):
     @property
     def courses(self):
         """
-        The courses that should be displayed to the user. Checks if the user has chosen his/her own courses, and if not,
-        it falls back on the courses of the semester that the user has connected to his/her profile
+        The courses that should be displayed to the user.
+        It is the set of the courses from the user's self_chosen_semester and
+        any additional courses from self_chosen_courses.
+        It also handles the case when the user has not selected a semester,
+        only returning the courses from self_chosen_courses.
         """
-        if self.self_chosen_courses.exists():
-            return self.self_chosen_courses
+        if self.self_chosen_semester:
+            return self.self_chosen_semester.courses.all() | self.self_chosen_courses.all()
         else:
-            try:
-                return self.self_chosen_semester.courses
-            except AttributeError:
-                # Semester not set by the user
-                return Course.objects.none()
+            # Semester not set by the user
+            return self.self_chosen_courses
 
     def check_access(self, user):
         return self.user == user

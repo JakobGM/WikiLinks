@@ -5,7 +5,7 @@ import os
 
 DEBUG = False
 
-ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS'].split()
+ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS'].split(',')
 
 
 # SECURITY WARNING: keep the secret key used in production secret!

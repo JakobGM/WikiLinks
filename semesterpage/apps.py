@@ -10,7 +10,8 @@ class SemesterpageConfig(AppConfig):
         import semesterpage.signals.handlers  # noqa
 
         # Create contributor groups at startup
-        create_contributor_groups()
+        # create_contributor_groups()
+        # TODO: Create post migrate signal
 
 
 def create_contributor_groups():

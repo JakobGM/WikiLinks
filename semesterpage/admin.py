@@ -190,6 +190,15 @@ class OptionsAdmin(ObjectPermissionsModelAdmin):
     exclude = ('user',)
     filter_horizontal = ('self_chosen_courses',)
 
+    def get_queryset(self, request):
+        """
+        Only show the user's own settings in the admin view
+        """
+        if request.user.is_superuser:
+            return super().get_queryset(request)
+        else:
+            return Options.objects.filter(pk=request.user.options.pk)
+
 
 admin.site.register(StudyProgram, StudyProgramAdmin)
 admin.site.register(Course, CourseAdmin)

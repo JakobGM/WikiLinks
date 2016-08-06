@@ -11,7 +11,7 @@ def create_contributor_groups(apps, schema_editor):
     """
     # https://code.djangoproject.com/ticket/23422
     db_alias = schema_editor.connection.alias
-    emit_post_migrate_signal(2, False, 'default', db_alias)
+    emit_post_migrate_signal(2, False, db_alias)
 
     Group = apps.get_model('auth', 'Group')
     Permission = apps.get_model('auth', 'Permission')

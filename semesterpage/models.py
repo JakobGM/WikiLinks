@@ -80,7 +80,7 @@ class StudyProgram(models.Model):
         if self._resource_link_lists.exists():
             _resource_link_lists = self._resource_link_lists.all()
         else:
-            _resource_link_lists = ResourceLinkList.objects.filter(default=True)[:1]
+            _resource_link_lists = ResourceLinkList.objects.filter(default=True)[:2]
         return _resource_link_lists
 
     def check_access(self, user):

@@ -13,18 +13,18 @@ def create_contributor_groups(apps, schema_editor):
 
     students, _ = Group.objects.get_or_create(name='students')
     students.permissions = [
-        Permission.objects.get(codename='change_options'),
+        Permission.objects.get_or_create(codename='change_options'),
     ]
     students.save()
 
     course_contributors, _ = Group.objects.get_or_create(name='course_contributors')
     course_contributors.permissions = [
-        Permission.objects.get(codename='add_course'),
-        Permission.objects.get(codename='change_course'),
-        Permission.objects.get(codename='delete_course'),
-        Permission.objects.get(codename='add_courselink'),
-        Permission.objects.get(codename='change_courselink'),
-        Permission.objects.get(codename='delete_courselink'),
+        Permission.objects.get_or_create(codename='add_course'),
+        Permission.objects.get_or_create(codename='change_course'),
+        Permission.objects.get_or_create(codename='delete_course'),
+        Permission.objects.get_or_create(codename='add_courselink'),
+        Permission.objects.get_or_create(codename='change_courselink'),
+        Permission.objects.get_or_create(codename='delete_courselink'),
     ]
     course_contributors.save()
 
@@ -40,21 +40,21 @@ def create_contributor_groups(apps, schema_editor):
 
     studyprogram_contributors, _ = Group.objects.get_or_create(name='studyprogram_contributors')
     studyprogram_contributors.permissions = [
-        Permission.objects.get(codename='change_studyprogram'),
-        Permission.objects.get(codename='add_mainprofile'),
-        Permission.objects.get(codename='delete_mainprofile'),
-        Permission.objects.get(codename='add_resourcelinklist'),
-        Permission.objects.get(codename='change_resourcelinklist'),
-        Permission.objects.get(codename='add_customlinkcategory'),
-        Permission.objects.get(codename='delete_resourcelinklist'),
-        Permission.objects.get(codename='add_resourcelink'),
-        Permission.objects.get(codename='change_resourcelink'),
-        Permission.objects.get(codename='delete_resourcelink'),
-        Permission.objects.get(codename='change_mainprofile'),
-        Permission.objects.get(codename='add_mainprofile'),
-        Permission.objects.get(codename='add_semester'),
-        Permission.objects.get(codename='change_semester'),
-        Permission.objects.get(codename='delete_semester')
+        Permission.objects.get_or_create(codename='change_studyprogram'),
+        Permission.objects.get_or_create(codename='add_mainprofile'),
+        Permission.objects.get_or_create(codename='delete_mainprofile'),
+        Permission.objects.get_or_create(codename='add_resourcelinklist'),
+        Permission.objects.get_or_create(codename='change_resourcelinklist'),
+        Permission.objects.get_or_create(codename='add_customlinkcategory'),
+        Permission.objects.get_or_create(codename='delete_resourcelinklist'),
+        Permission.objects.get_or_create(codename='add_resourcelink'),
+        Permission.objects.get_or_create(codename='change_resourcelink'),
+        Permission.objects.get_or_create(codename='delete_resourcelink'),
+        Permission.objects.get_or_create(codename='change_mainprofile'),
+        Permission.objects.get_or_create(codename='add_mainprofile'),
+        Permission.objects.get_or_create(codename='add_semester'),
+        Permission.objects.get_or_create(codename='change_semester'),
+        Permission.objects.get_or_create(codename='delete_semester')
     ]
     studyprogram_contributors.save()
 

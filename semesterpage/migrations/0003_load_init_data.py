@@ -17,34 +17,30 @@ def create_contributor_groups(apps, schema_editor):
     Permission = apps.get_model('auth', 'Permission')
 
     students, _ = Group.objects.get_or_create(name='students')
-    students.permissions = [
-        Permission.objects.get_or_create(codename='change_options'),
-    ]
+    students.permissions.add(
+        Permission.objects.get_or_create(codename='change_options')
+    )
     students.save()
 
     course_contributors, _ = Group.objects.get_or_create(name='course_contributors')
-    course_contributors.permissions = [
+    course_contributors.permissions.add(
         Permission.objects.get_or_create(codename='add_course'),
         Permission.objects.get_or_create(codename='change_course'),
         Permission.objects.get_or_create(codename='delete_course'),
         Permission.objects.get_or_create(codename='add_courselink'),
         Permission.objects.get_or_create(codename='change_courselink'),
-        Permission.objects.get_or_create(codename='delete_courselink'),
-    ]
+        Permission.objects.get_or_create(codename='delete_courselink')
+    )
     course_contributors.save()
 
     # In case of semester-level specific permissions in the future
     semester_contributors, _ = Group.objects.get_or_create(name='semester_contributors')
-    semester_contributors.permissions = []
-    semester_contributors.save()
 
     # In case of main profile-level specific permissions in the future
     mainprofile_contributors, _ = Group.objects.get_or_create(name='mainprofile_contributors')
-    mainprofile_contributors.permissions = []
-    mainprofile_contributors.save()
 
     studyprogram_contributors, _ = Group.objects.get_or_create(name='studyprogram_contributors')
-    studyprogram_contributors.permissions = [
+    studyprogram_contributors.permissions.add(
         Permission.objects.get_or_create(codename='change_studyprogram'),
         Permission.objects.get_or_create(codename='add_mainprofile'),
         Permission.objects.get_or_create(codename='delete_mainprofile'),
@@ -60,7 +56,7 @@ def create_contributor_groups(apps, schema_editor):
         Permission.objects.get_or_create(codename='add_semester'),
         Permission.objects.get_or_create(codename='change_semester'),
         Permission.objects.get_or_create(codename='delete_semester')
-    ]
+    )
     studyprogram_contributors.save()
 
 def set_admin_theme(apps, schema_editor):

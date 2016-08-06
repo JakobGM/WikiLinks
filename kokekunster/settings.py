@@ -115,6 +115,9 @@ SOCIALACCOUNT_PROVIDERS = \
         'VERIFIED_EMAIL': False,
         'VERSION': 'v2.4'}}
 
+# Controls the life time of the session
+ACCOUNT_SESSION_REMEMBER = True
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 

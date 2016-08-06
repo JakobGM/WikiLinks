@@ -1,6 +1,5 @@
 from django.apps import AppConfig
 from gettext import gettext as _
-from .rules import create_contributor_groups
 
 class SemesterpageConfig(AppConfig):
     name = 'semesterpage'

@@ -9,8 +9,8 @@ from collections import defaultdict
 from autoslug import AutoSlugField
 from autoslug.utils import slugify
 from sanitizer.models import SanitizedCharField
+import subdomains.utils
 import os
-import itertools
 
 DEFAULT_STUDY_PROGRAM_SLUG = getattr(settings, 'DEFAULT_STUDY_PROGRAM_SLUG', 'fysmat')
 
@@ -174,6 +174,21 @@ class Semester(models.Model):
 
     def check_access(self, user):
         return self in user.contributor.accessible_semesters()
+
+    def get_archive_url(self):
+        # Returns the url to the archive section for the semester. Note the use of title().
+        if self.main_profile:
+            return subdomains.utils.reverse(
+                'semesterpage-splitarchive',
+                subdomain='arkiv',
+                args=[self.study_program.slug.title(), self.number, self.main_profile.slug.title()]
+            )
+        else:
+            return subdomains.utils.reverse(
+                'semesterpage-simplearchive',
+                subdomain='arkiv',
+                args=[self.study_program.slug.title(), self.number]
+                )
 
     def get_absolute_url(self):
         if self.main_profile:
@@ -727,6 +742,17 @@ class Options(models.Model):
         except AttributeError:
             # Semester not set by the user
             return MainProfile.objects.none()
+
+    def get_archive_url(self):
+        if self.self_chosen_semester:
+            # Returns the archive link of the chosen semester
+            return self.self_chosen_semester.get_archive_url()
+        else:
+            # Returns the link to the root of the archive site
+            return subdomains.utils.reverse(
+                'semesterpage-homepage',
+                subdomain='arkiv',
+            )
 
     @property
     def courses(self):

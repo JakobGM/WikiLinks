@@ -40,12 +40,7 @@
             {% endfor %}
         {% if semester.study_program.has_archive %}
             <li class="arkiv">
-                <a id="arkiv" href="
-                {% if semester.main_profile %}
-                    {% url 'semesterpage-splitarchive' subdomain='arkiv' study_program=semester.study_program.slug|title semester_number=semester.number main_profile=semester.main_profile.slug|title %}
-                {% else %}
-                    {% url 'semesterpage-simplearchive' subdomain='arkiv' study_program=semester.study_program.slug|title semester_number=semester.number %}
-                {% endif %}">
+                <a id="arkiv" href="{{ semester.get_archive_url }}">
                     <img src="{% static "semesterpage/img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv
                 </a>
             </li>

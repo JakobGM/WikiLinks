@@ -215,6 +215,26 @@ def get_calendar_name(request):
     return request.session.get('calendar_name', None)
 
 
+def simple_archive(request, study_program, semester_number):
+    # This view is only needed in order to be able to reverse lookup arkiv.kokekunster.no/study_program/...
+    # In order to do this, a url needed to be registered with a view name, but it is actually nginx that handles
+    # the redirect to the arkiv.kokekunster.no domain where h5ai is used to index and portray the files in the webroot
+    # TODO: These two views can be merged into one by using a conditional in urls.py and using main_profile=None
+    # as a default argument
+    return redirect(reverse(
+        'semesterpage-simplearchive', subdomain='arkiv', args=[study_program, semester_number]
+    ))
+
+
+def split_archive(request, study_program, semester_number, main_profile):
+    # This view is only needed in order to be able to reverse lookup arkiv.kokekunster.no/study_program/...
+    # In order to do this, a url needed to be registered with a view name, but it is actually nginx that handles
+    # the redirect to the arkiv.kokekunster.no domain where h5ai is used to index and portray the files in the webroot
+    return redirect(reverse(
+        'semesterpage-splitarchive', subdomain='arkiv', args=[study_program, semester_number, main_profile]
+    ))
+
+
 def calendar(request, calendar_name):
     """
     Saves the users choice of calendarname and then redirects

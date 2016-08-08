@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.shortcuts import redirect
 from gettext import gettext as _
 from adminsortable2.admin import SortableInlineAdminMixin
 from rules.contrib.admin import ObjectPermissionsModelAdmin
@@ -198,6 +199,9 @@ class OptionsAdmin(ObjectPermissionsModelAdmin):
             return super().get_queryset(request)
         else:
             return Options.objects.filter(pk=request.user.options.pk)
+
+    def response_change(self, request, obj):
+        return redirect(obj.get_absolute_url())
 
 
 admin.site.register(StudyProgram, StudyProgramAdmin)

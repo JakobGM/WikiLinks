@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
 from django.core.mail import mail_admins, EmailMessage
 from django.http import Http404
-from django.contrib.auth.models import User
 from django.conf import settings
 from subdomains.utils import reverse
 from gettext import gettext as _

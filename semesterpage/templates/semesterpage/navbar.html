@@ -1,4 +1,6 @@
-{% load static admin_urls subdomainurls %}
+{% load static admin_urls subdomainurls socialaccount %}
+{% providers_media_js %}
+
 <!-- Site navigation -->
 <nav>
     <div class="wrap">
@@ -74,7 +76,7 @@
                 {% endblock %}
             {% else %}
                 <li id="facebook" class="arkiv nav-right">
-                    <a id="arkiv" href="/accounts/facebook/login">
+                    <a id="arkiv" href="{% provider_login_url "facebook" method="js_sdk" %}">
                         <img src="{% static "semesterpage/img/facebook.svg" %}" alt="facebook logo">  Logg inn
                     </a>
                 </li>

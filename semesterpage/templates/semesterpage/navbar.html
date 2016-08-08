@@ -3,48 +3,52 @@
 <nav>
     <div class="wrap">
         <ul>
-            <li class="dropdown">
-                <a href="#" class="dropbtn">
-                    <img src="{% static "semesterpage/img/list-menu.svg" %}" alt="dropdown">&nbsp;&nbsp;{{ semester.study_program.display_name | title }}&nbsp;&nbsp;
-                </a>
-                <div class="dropdown-content">
-                    {% for study_program in study_programs %}
-                        <a href="{{ study_program.get_absolute_url }}">{% if study_program == semester.study_program %}<b>{% endif %}{{ study_program.display_name | title }}{% if study_program == semester.study_program %}</b>{% endif %}</a>
-                    {% endfor %}
-                </div>
-            </li>
-            {% for simple_semester in semester.study_program.simple_semesters %}
-                <li><a href="{{ simple_semester.get_absolute_url }}">
-                    {% if simple_semester.number == semester.number %}
-                        <b>{{ simple_semester.number }}. Semester</b>
-                    {% else %}
-                        {{ simple_semester.number }}. Semester
-                    {% endif %}
-                </a></li>
-            {% endfor %}
-            {% for number, split_semesters in semester.study_program.grouped_split_semesters %}
+            {% block nav-studyprograms %}
                 <li class="dropdown">
                     <a href="#" class="dropbtn">
-                        {% if number == semester.number %}
-                            <b>{{ number }}. Semester</b>
-                        {% else %}
-                            {{ number }}. Semester
-                        {% endif %}
+                        <img src="{% static "semesterpage/img/list-menu.svg" %}" alt="dropdown">&nbsp;&nbsp;{{ semester.study_program.display_name | title }}&nbsp;&nbsp;
                     </a>
                     <div class="dropdown-content">
-                        {% for split_semester in split_semesters %}
-                            <a href="{{ split_semester.get_absolute_url }}">{% if split_semester == semester %}<b>{% endif %}{{ split_semester.main_profile.display_name }}{% if split_semester == semester %}</b>{% endif %}</a>
+                        {% for study_program in study_programs %}
+                            <a href="{{ study_program.get_absolute_url }}">{% if study_program == semester.study_program %}<b>{% endif %}{{ study_program.display_name | title }}{% if study_program == semester.study_program %}</b>{% endif %}</a>
                         {% endfor %}
                     </div>
                 </li>
-            {% endfor %}
-        {% if semester.study_program.has_archive %}
-            <li class="arkiv">
-                <a id="arkiv" href="{{ semester.get_archive_url }}">
-                    <img src="{% static "semesterpage/img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv
-                </a>
-            </li>
-        {% endif %}
+            {% endblock %}
+            {% block nav-semesters %}
+                {% for simple_semester in semester.study_program.simple_semesters %}
+                    <li><a href="{{ simple_semester.get_absolute_url }}">
+                        {% if simple_semester.number == semester.number %}
+                            <b>{{ simple_semester.number }}. Semester</b>
+                        {% else %}
+                            {{ simple_semester.number }}. Semester
+                        {% endif %}
+                    </a></li>
+                {% endfor %}
+                {% for number, split_semesters in semester.study_program.grouped_split_semesters %}
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn">
+                            {% if number == semester.number %}
+                                <b>{{ number }}. Semester</b>
+                            {% else %}
+                                {{ number }}. Semester
+                            {% endif %}
+                        </a>
+                        <div class="dropdown-content">
+                            {% for split_semester in split_semesters %}
+                                <a href="{{ split_semester.get_absolute_url }}">{% if split_semester == semester %}<b>{% endif %}{{ split_semester.main_profile.display_name }}{% if split_semester == semester %}</b>{% endif %}</a>
+                            {% endfor %}
+                        </div>
+                    </li>
+                {% endfor %}
+            {% endblock %}
+            {% if semester.study_program.has_archive %}
+                <li class="arkiv">
+                    <a id="arkiv" href="{{ semester.get_archive_url }}">
+                        <img src="{% static "semesterpage/img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv
+                    </a>
+                </li>
+            {% endif %}
             {% if user.is_authenticated %}
                 <li id="facebook" class="arkiv nav-right">
                     <a id="arkiv" href="/accounts/logout">
@@ -57,15 +61,17 @@
                     </a>
                 </li>
                 <li class="arkiv nav-right hotfix">
-                <a id="arkiv" {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
-                    <img src="{% static "semesterpage/img/calendar.svg" %}" alt="kalender">  Timeplan
-                </a>
-                </li>
-                <li class="arkiv nav-right">
-                    <a id="arkiv" href="{{ user.options.get_absolute_url }}">
-                        <img src="{% static "semesterpage/img/profile.svg" %}" alt="kalender">  {{ user.username | title }}
+                    <a id="arkiv" {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
+                        <img src="{% static "semesterpage/img/calendar.svg" %}" alt="kalender">  Timeplan
                     </a>
                 </li>
+                {% block nav-userpage %}
+                    <li class="arkiv nav-right">
+                        <a id="arkiv" href="{{ user.options.get_absolute_url }}">
+                            <img src="{% static "semesterpage/img/profile.svg" %}" alt="kalender">  {{ user.username | title }}
+                        </a>
+                    </li>
+                {% endblock %}
             {% else %}
                 <li id="facebook" class="arkiv nav-right">
                     <a id="arkiv" href="/accounts/facebook/login">
@@ -73,9 +79,9 @@
                     </a>
                 </li>
                 <li class="arkiv nav-right">
-                <a id="arkiv" {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
-                    <img src="{% static "semesterpage/img/calendar.svg" %}" alt="kalender">  Timeplan
-                </a>
+                    <a id="arkiv" {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
+                        <img src="{% static "semesterpage/img/calendar.svg" %}" alt="kalender">  Timeplan
+                    </a>
                 </li>
             {% endif %}
         </ul>

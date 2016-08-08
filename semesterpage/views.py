@@ -109,7 +109,7 @@ def studentpage(request, homepage):
     # Boolean for changing the logo if the domain is fysmat.no
     is_fysmat = 'fysmat' in request.get_host().lower()
 
-    return render(request, 'semesterpage/userpage.html',
+    return render(request, 'semesterpage/userpage-courses.html',
                   {'semester': options,
                    'study_programs': StudyProgram.objects.filter(published=True),
                    'calendar_name': get_calendar_name(request),

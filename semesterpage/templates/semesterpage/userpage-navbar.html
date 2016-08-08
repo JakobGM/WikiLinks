@@ -1,0 +1,29 @@
+{% extends 'semesterpage/navbar.html' %}
+{% load static %}
+
+{% block nav-studyprograms %}
+    <li class="dropdown">
+        <a href="#" class="dropbtn">
+            <img src="{% static "semesterpage/img/list-menu.svg" %}" alt="dropdown">&nbsp;&nbsp;{% if semester.self_chosen_semester %}{{ semester.self_chosen_semester.study_program.display_name | title }}{% else %}Studieprogram{% endif %}&nbsp;&nbsp;
+        </a>
+        <div class="dropdown-content">
+            {% for study_program in study_programs %}
+                <a href="{{ study_program.get_absolute_url }}">{{ study_program.display_name | title }}</a>
+            {% endfor %}
+        </div>
+    </li>
+{% endblock %}
+
+{% block nav-userpage %}
+    <li class="arkiv nav-right">
+        <a id="arkiv" href="{{ user.options.get_absolute_url }}">
+            <img src="{% static "semesterpage/img/profile.svg" %}" alt="kalender">  <b>{{ user.username | title }}</b>
+        </a>
+    </li>
+{% endblock %}
+
+{% block nav-semesters %}
+    {% if semester.self_chosen_semester %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}

@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'sanitizer',
     'subdomains',
     'semesterpage',
+    'django_cleanup',
 )
 
 MIDDLEWARE_CLASSES = (

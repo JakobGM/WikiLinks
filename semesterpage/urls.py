@@ -5,6 +5,7 @@ from semesterpage import views
 urlpatterns = [
     url(r'^$', views.homepage, name='semesterpage-homepage'),
     url(r'^komfyr/login/$', views.homepage),
+    url(r'^www$', views.homepage),
     url(r'^komfyr/', include(admin.site.urls)),
     url(r'^accounts/profile/', views.profile, name='semesterpage-profile'),
     url(r'^kalender/(?P<calendar_name>[-\w]+)/$', views.calendar, name='semesterpage-calendar'),

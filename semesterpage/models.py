@@ -475,7 +475,9 @@ class Link(models.Model):
             raise ValidationError(_('Kan ikke velge både en kateogri '
                                     'og en egendefinert kateogri for en lenke '
                                     'samtidig. Du kan kun velge én av delene, '
-                                    'eller ingen av delene.'))
+                                    'eller ingen av delene. Denne meldingen kan '
+                                    'dukke opp når en administrator allerede har '
+                                    'satt en kategori for denne lenken.'))
 
     class Meta:
         abstract = True

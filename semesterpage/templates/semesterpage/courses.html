@@ -17,7 +17,7 @@
 <ul>
 
 {% for link in course.links.all %}
-  <li style="list-style-image: url('{% static "semesterpage/link_categories/" %}{{ link.category }}');"><a href="{{ link.url }}">{{ link.title|safe }}</a></li>
+  <li style="list-style-image: url('{% if link.custom_category %}{{ link.custom_category.thumbnail.url }}{% else %}{% static "semesterpage/link_categories/" %}{{ link.category }}{% endif %}');"><a href="{{ link.url }}">{{ link.title|safe }}</a></li>
 {% endfor %}
 
 </ul>
@@ -33,7 +33,7 @@
 <ul>
 
 {% for link in rll.links.all %}
-  <li style="list-style-image: url('{% if link.category != None %}{% static "semesterpage/link_categories/" %}{{ link.category }}{% else %}{{ link.custom_category.thumbnail.url }}{% endif %}');"><a href="{{ link.url }}">{{ link.title|safe }}</a></li>
+  <li style="list-style-image: url('{% if link.custom_category %}{{ link.custom_category.thumbnail.url }}{% else %}{% static "semesterpage/link_categories/" %}{{ link.category }}{% endif %}');"><a href="{{ link.url }}">{{ link.title|safe }}</a></li>
 {% endfor %}
 
 </ul>

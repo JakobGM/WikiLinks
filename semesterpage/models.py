@@ -770,7 +770,7 @@ class Options(models.Model):
         only returning the courses from self_chosen_courses.
         """
         if self.self_chosen_semester:
-            return self.self_chosen_semester.courses.all() | self.self_chosen_courses.all()
+            return (self.self_chosen_semester.courses.all() | self.self_chosen_courses.all()).distinct()
         else:
             # Semester not set by the user
             return self.self_chosen_courses

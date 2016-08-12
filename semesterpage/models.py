@@ -40,6 +40,7 @@ class StudyProgram(models.Model):
     )
     slug = AutoSlugField(
         populate_from='display_name',
+        always_update=True,
         unique=True
     )
     has_archive = models.BooleanField(
@@ -122,6 +123,7 @@ class MainProfile(models.Model):
     )
     slug = AutoSlugField(
         populate_from='display_name',
+        always_update=True,
         unique_with='study_program'
     )
 

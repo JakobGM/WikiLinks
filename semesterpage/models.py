@@ -306,6 +306,10 @@ class Course(LinkList):
     def check_access(self, user):
         return self in user.contributor.accessible_courses()
 
+    def get_admin_url(self):
+        info = (self._meta.app_label, self._meta.model_name)
+        return reverse('admin:%s_%s_change' % info, args=(self.pk,))
+
     def get_absolute_url(self):
         if self.semesters.exists():
             return self.semesters.all()[0].get_absolute_url()
@@ -693,7 +697,7 @@ class Options(models.Model):
         null=True,
         help_text=_('Fagene du velger nedenfor vil dukke opp på hjemmesiden din. '
                     'Du kan besøke din personlige semesterside på '
-                    'kokekunster.no/hjemmesidenavn eller hjemmesidenavn.kokekunster.no.')
+                    'kokekunster.no/hjemmesidenavn.')
     )
     homepage_slug = AutoSlugField(
         populate_from='homepage',

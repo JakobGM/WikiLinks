@@ -90,7 +90,7 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
         else:
             return request.user.contributor.accessible_courses()
 
-    def get_fields(self, request, obj=None):
+    def get_fieldsets(self, request, obj=None):
         fields = ('full_name', 'display_name', 'course_code', 'homepage', 'safe_logo',)
         if request.user.contributor.access_level >= SEMESTER or request.user.is_superuser:
             # Only people with contributor access to semesters need to be able to select semesters on the course object
@@ -98,7 +98,12 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
         if request.user.is_superuser:
             # SVG logos and contributors should only be changed by superusers
             fields += ('unsafe_logo', 'contributors', 'created_by',)
-        return fields
+        return (
+            (_('Fagdetaljer'), {
+            'classes': ('collapse',),
+            'fields': fields,
+            }),
+        )
 
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
@@ -111,6 +116,9 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
             if not request.user.is_superuser:
                 kwargs['queryset'] = request.user.contributor.accessible_semesters()
         return super().formfield_for_manytomany(db_field, request, **kwargs)
+
+    def response_change(self, request, obj):
+        return redirect(obj.get_absolute_url())
 
     def save_model(self, request, obj, form, change):
         obj.save()

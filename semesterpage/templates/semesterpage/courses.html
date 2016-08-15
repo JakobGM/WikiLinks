@@ -19,7 +19,7 @@
   <li style="list-style-image: url('{% if link.custom_category %}{{ link.custom_category.thumbnail.url }}{% else %}{% static "semesterpage/link_categories/" %}{{ link.category }}{% endif %}');"><a href="{{ link.url }}">{{ link.title|safe }}</a></li>
 {% endfor %}
 {% if user.is_authenticated and course in user.contributor.accessible_courses %}
-    <li style="list-style-image: url('{% static "semesterpage/link_categories/change_course.svg" %}');"><a href="#">Rediger fag</a></li>
+    <li style="list-style-image: url('{% static "semesterpage/link_categories/change_course.svg" %}');"><a href="{{ course.get_admin_url }}">Rediger fag</a></li>
 {% endif %}
 
 </ul>

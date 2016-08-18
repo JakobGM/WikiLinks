@@ -74,7 +74,6 @@ var mist = document.getElementById("mist");
 var left = document.getElementById("left");
 var middle = document.getElementById("middle");
 var right = document.getElementById("right");
-var pot = document.getElementById("pot");
 
 var flameAnimation = TweenMax.to(flame, 0.2, {scaleX:1.15, scaleY:1.30, transformOrigin: "50% 100%", repeat:-1, yoyo:true, ease:Linear.easeNone, paused:true});
 var mistAnimation = TweenMax.to(mist, 0.6, {scaleX:0.85, scaleY:1.27, transformOrigin: "50% 100%", opacity:0.65, repeat:-1, yoyo:true, ease:Linear.easeNone, paused:true});
@@ -90,7 +89,6 @@ logo.onmouseover = function() {
   leftAnimation.play();
   middleAnimation.play();
   rightAnimation.play();
-  potAnimation.play();
 }
 
 logo.onmouseout = function() {
@@ -102,7 +100,6 @@ logo.onmouseout = function() {
   leftAnimation.reverse(currentTime);
   middleAnimation.reverse(currentTime);
   rightAnimation.reverse(currentTime);
-  potAnimation.reverse(currentTime);
 }
 
 </script>

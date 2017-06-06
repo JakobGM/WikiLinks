@@ -173,7 +173,14 @@ DEFAULT_STUDY_PROGRAM_SLUG = 'fysmat'
 # Determine run environment based on the environment variable 'PRODUCTION', and load proper settings
 
 if os.environ.get('PRODUCTION', None):
-    INSTALLED_APPS += ('dbbackup',)
+    # Use djange_cron to run dbbackup every day
+    INSTALLED_APPS += ('dbbackup', 'django_cron',)
+    CRON_CLASSES = [
+        'kokekunster.cronjobs.Backup',
+    ]
+    BACKUP_TIMES = ['3:00',]
+
+    # Production specific settings are specified in kokekunster/setting_prod.py
     from kokekunster.settings_prod import *
 else:
     from kokekunster.settings_dev import *

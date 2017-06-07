@@ -21,6 +21,7 @@ django-html-sanitizer==0.1.5
 django-subdomains==2.1.0
 django-widget-tweaks==1.4.1
 django==1.11.2
+dropbox==7.3.1
 first==2.0.1              # via pip-tools
 gunicorn==19.6.0
 html5lib==0.9999999       # via bleach
@@ -32,6 +33,7 @@ psycopg2==2.7.1
 python3-openid==3.0.10    # via django-allauth
 pytz==2017.2              # via django, django-dbbackup
 requests-oauthlib==0.6.2  # via django-allauth
-requests==2.10.0          # via django-allauth, requests-oauthlib
+requests==2.10.0          # via django-allauth, dropbox, requests-oauthlib
 rules==1.1.1
-six==1.10.0               # via bleach, django-dbbackup, html5lib, pip-tools
+six==1.10.0               # via bleach, django-dbbackup, dropbox, html5lib, pip-tools
+urllib3==1.21.1           # via dropbox

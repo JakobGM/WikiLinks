@@ -29,6 +29,7 @@ tmp/
 
 # IDE stuff
 .idea/
+*.swp
 
 # Production specific
 koku_env/

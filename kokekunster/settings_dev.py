@@ -17,10 +17,16 @@ SECRET_KEY = 'fc4_hb-wi32l^c&qpx6!m)o*xd(4ga$13(ese#pfj#pjxnmt0p'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
+# The development database requires postgresql to be installed on the machine.
+# The following settings correspond to the default settings used by Postgres.app
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ['USER'],
+        'USER': os.environ['USER'],
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -32,8 +38,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'tmp', 'email')
 
 ADMINS = (
-  ('Test Testesen', 'admin_email@domain.tld'),
-  ('Testinne Testesen', 'admin_email2@domain.tld'),
+    ('Test Testesen', 'admin_email@domain.tld'),
+    ('Testinne Testesen', 'admin_email2@domain.tld'),
 )
 
 

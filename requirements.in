@@ -1,0 +1,17 @@
+django==1.11.2
+django-dbbackup
+django-admin-sortable2
+django-autoslug
+django-subdomains
+rules
+django-admin-interface
+django-allauth
+django-html_sanitizer
+django-cleanup
+django-dbbackup
+django-cron
+gunicorn
+psycopg2
+django-widget-tweaks
+Pillow
+pip-tools

@@ -10,6 +10,7 @@ django-html_sanitizer
 django-cleanup
 django-dbbackup
 dropbox
+django-storages
 django-cron
 gunicorn
 psycopg2

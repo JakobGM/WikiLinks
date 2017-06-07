@@ -44,9 +44,9 @@ ADMINS = (
   (os.environ['ADMIN_NAME'], os.environ['ADMIN_EMAIL']),
 )
 
-# Backup
+# Backup using the django-storages and the dropbox package
 
-DBBACKUP_STORAGE = 'dbbackup.storage.dropbox_storage'
-DBBACKUP_TOKENS_FILEPATH = os.environ['TOKENS_FILEPATH']
-DBBACKUP_DROPBOX_APP_KEY = os.environ['DROPBOX_APP_KEY']
-DBBACKUP_DROPBOX_APP_SECRET = os.environ['DROPBOX_APP_SECRET']
+DBBACKUP_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
+DBBACKUP_STORAGE_OPTIONS = {
+    'oauth2_access_token': os.environ['DROPBOX_ACCESS_TOKEN'],
+}

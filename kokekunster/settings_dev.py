@@ -18,7 +18,8 @@ SECRET_KEY = 'fc4_hb-wi32l^c&qpx6!m)o*xd(4ga$13(ese#pfj#pjxnmt0p'
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 # The development database requires postgresql to be installed on the machine.
-# The following settings correspond to the default settings used by Postgres.app
+# The following settings correspond to the default settings used by
+# Postgres.app
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -46,3 +47,12 @@ ADMINS = (
 # User uploaded files (MEDIA)
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# Settings for 'dbbackup' app such that it is easy to import production data
+# to the dev environment
+
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {
+    'location': os.path.join(BASE_DIR, 'tmp'),
+}

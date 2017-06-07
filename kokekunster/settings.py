@@ -21,6 +21,7 @@ INSTALLED_APPS = (
     'admin_interface',
     'flat',
     'colorfield',
+    'dbbackup', # Used for backing up data to Dropbox and importing prod data
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -174,7 +175,7 @@ DEFAULT_STUDY_PROGRAM_SLUG = 'fysmat'
 
 if os.environ.get('PRODUCTION', None):
     # Use djange_cron to run dbbackup every day
-    INSTALLED_APPS += ('dbbackup', 'django_cron',)
+    INSTALLED_APPS += ('django_cron',)
     CRON_CLASSES = [
         'kokekunster.cronjobs.Backup',
     ]

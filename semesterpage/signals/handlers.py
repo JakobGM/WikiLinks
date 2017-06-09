@@ -11,8 +11,10 @@ def user_save(sender, instance, created, raw, **kwargs):
         # Fixtures needs to be ignored
         return
     elif created:
-        # Add staff status to have access to admin
-        User.objects.filter(pk=instance.pk).update(is_staff=True)
+        # Add staff status to have access to admin (don't know how we can do
+        # this in a *post* save signal hook...)
+        instance.is_staff = True
+        instance.save()
         # Add to basic student permission group
         Group.objects.get(name='students').user_set.add(instance)
         # Create the one-to-one instances related to User

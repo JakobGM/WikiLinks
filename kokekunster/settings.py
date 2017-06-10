@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
+    'kokekunster.dataporten',
     'sanitizer',
     'subdomains',
     'semesterpage',
@@ -133,8 +134,8 @@ AUTH_LDAP_USER_SEARCH = LDAPSearch(
 
 
 # Django-allauth settings
-SOCIALACCOUNT_PROVIDERS = \
-    {'facebook':
+SOCIALACCOUNT_PROVIDERS = {
+    'facebook':
        {'METHOD': 'oauth2',
         'SCOPE': ['email', 'public_profile',],
         'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
@@ -152,7 +153,8 @@ SOCIALACCOUNT_PROVIDERS = \
             'updated_time'],
         'EXCHANGE_TOKEN': True,
         'VERIFIED_EMAIL': False,
-        'VERSION': 'v2.4'}}
+    'VERSION': 'v2.4'},
+}
 
 # Controls the life time of the session
 ACCOUNT_SESSION_REMEMBER = True

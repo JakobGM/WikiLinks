@@ -34,23 +34,66 @@ class DataportenProvider(OAuth2Provider):
         Returns the primary user identifier, an UUID string
         See: https://docs.dataporten.no/docs/userid/
         '''
-        return data['user']['userid']
+        return data['userid']
 
-    def extract_common_fields(self, data):
+    def extract_extra_data(self, data):
         '''
-        Returns the user fields which are saved to DataportenAccount.extra_data
-        Documentation: https://docs.dataporten.no/docs/oauth-authentication/
+        Extracts fields from `data` that will be stored in
+        `SocialAccount`'s `extra_data` JSONField.
 
-        Typical return value:
+        All the necessary data extraction has already been done in the
+        complete_login()-view, so we can just return the data.
+        PS: This is default behaviour, so we did not really need to define
+            this function, but it is included for documentation purposes.
+
+        Typical return dict:
         {
             "userid": "76a7a061-3c55-430d-8ee0-6f82ec42501f",
             "userid_sec": ["feide:andreas@uninett.no"],
             "name": "Andreas \u00c5kre Solberg",
             "email": "andreas.solberg@uninett.no",
-            "profilephoto": "p:a3019954-902f-45a3-b4ee-bca7b48ab507"
+            "profilephoto": "p:a3019954-902f-45a3-b4ee-bca7b48ab507",
+            "groups": [{...}, {...}, ...],
         }
         '''
-        return data['user']
+        return data
+
+    def extract_common_fields(self, data):
+        '''
+        This function extracts information from the /userinfo endpoint which
+        will be consumed by allauth.socialaccount.adapter.populate_user().
+        Look there to find which key-value pairs that should be saved in the
+        returned dict.
+
+        Typical return dict:
+        {
+            "userid": "76a7a061-3c55-430d-8ee0-6f82ec42501f",
+            "userid_sec": ["feide:andreas@uninett.no"],
+            "name": "Andreas \u00c5kre Solberg",
+            "email": "andreas.solberg@uninett.no",
+            "profilephoto": "p:a3019954-902f-45a3-b4ee-bca7b48ab507",
+            "username": "andreas",
+        }
+        '''
+        # Make shallow copy to prevent possible mutability issues
+        data = dict(data)
+
+        # If a Feide username is available, use it. If not, use the "username"
+        # of the email-address
+        username_set = False
+        for userid in data['userid_sec']:
+            usertype, username = userid.split(':')
+            if usertype == 'feide':
+                data['username'] = username.split('@')[0]
+                username_set = True
+                break
+        if not username_set:
+            data['username'] = data['email'].split('@')[0]
+
+        # We do not bother with removing the unused "userid_sec" and
+        # "profilephoto" keys from the data-dictionary, as it doesn't make a
+        # difference anyway
+        return data
 
 
 provider_classes = [DataportenProvider]

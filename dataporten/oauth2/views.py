@@ -22,24 +22,25 @@ class DataportenAdapter(OAuth2Adapter):
         '''
         Arguments:
             request - The get request to the callback URL
-                        /accounts/dataporten/login/callback with.
+                        /accounts/dataporten/login/callback.
             app - The corresponding SocialApp model instance
             token - A token object with access token given in token.token
         Returns:
             Should return a dict with user information intended for parsing
-            by the methods of the DataportenProvider view
+            by the methods of the DataportenProvider view, i.e.
+            extract_uid(), extract_extra_data(), and extract_common_fields()
         '''
         # The athentication header
         headers = {'Authorization': 'Bearer ' + token.token}
 
         # Userinfo endpoint, for documentation see:
         # https://docs.dataporten.no/docs/oauth-authentication/
-        profile_data = requests.get(
+        userinfo_response = requests.get(
             self.profile_url,
             headers=headers,
         )
         # Raise exception for 4xx and 5xx response codes
-        profile_data.raise_for_status()
+        userinfo_response.raise_for_status()
 
         # Groups endpoint, for documentation see:
         # https://docs.dataporten.no/docs/groups/
@@ -50,14 +51,14 @@ class DataportenAdapter(OAuth2Adapter):
         # Raise exception for 4xx and 5xx response codes
         groups_data.raise_for_status()
 
-        extra_data = {
-            'user': profile_data.json()['user'],
-            'groups': groups_data.json(),
-        }
+        # The endpoint returns json-data and it needs to be decoded
+        extra_data = userinfo_response.json()['user']
+        extra_data['groups'] = groups_data.json()
 
         # Finally test that the audience property matches the client id
-        # for validification reasons
-        if profile_data.json()['audience'] != app.client_id:
+        # for validification reasons, as instructed by the Dataporten docs
+        # if the userinfo-response is used for authentication
+        if userinfo_response.json()['audience'] != app.client_id:
             raise SuspiciousOperation(
                 'Dataporten returned a user with an audience field \
                  which does not correspond to the client id of the \

@@ -25,7 +25,8 @@ INSTALLED_APPS = (
     'admin_interface',
     'flat',
     'colorfield',
-    'dbbackup', # Used for backing up data to Dropbox and importing prod data
+    # Used for backing up data to Dropbox and importing prod data
+    'dbbackup',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,7 +41,8 @@ INSTALLED_APPS = (
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
-    'kokekunster.dataporten',
+    # Custom Dataporten oAuth2-provider for django-allauth
+    'dataporten.oauth2',
     'sanitizer',
     'subdomains',
     'semesterpage',

@@ -56,3 +56,6 @@ DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {
     'location': os.path.join(BASE_DIR, 'tmp'),
 }
+
+# Use the PK for the localhost Site model here
+SITE_ID = 4

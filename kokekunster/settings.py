@@ -224,6 +224,8 @@ if os.environ.get('PRODUCTION', None):
     # Production specific settings are specified in kokekunster/setting_prod.py
     from kokekunster.settings_prod import *
 else:
+    # Development assistive apps
+    INSTALLED_APPS += ('django_extensions',)
     from kokekunster.settings_dev import *
 
 

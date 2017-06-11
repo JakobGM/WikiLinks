@@ -27,9 +27,15 @@ settings_local.py
 media/
 tmp/
 
-# IDE stuff
+# IDE/editor stuff
 .idea/
 *.swp
+# Djangotest cache
+.cache/
+# Python autocompletion
+.ropeproject/ 
+# Ctags
+tags
 
 # Production specific
 koku_env/

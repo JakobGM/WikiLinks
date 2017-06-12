@@ -14,7 +14,6 @@ class DataportenTest(OAuth2TestsMixin, TestCase):
     def setUp(self):
         # Not related to Dataporten, just a quick hack
         create_contributor_groups()
-        Site.objects.create(pk=4, domain='http://127.0.0.1:8000')
 
         super(DataportenTest, self).setUp()
         self.provider = DataportenProvider

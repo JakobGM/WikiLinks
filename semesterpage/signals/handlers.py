@@ -2,6 +2,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User, Group
 from django.core.exceptions import ObjectDoesNotExist
+
+from semesterpage.apps import create_contributor_groups
 from semesterpage.models import Contributor, Options
 
 
@@ -15,8 +17,18 @@ def user_save(sender, instance, created, raw, **kwargs):
         # this in a *post* save signal hook...)
         instance.is_staff = True
         instance.save()
+
         # Add to basic student permission group
-        Group.objects.get(name='students').user_set.add(instance)
+        try:
+            Group.objects.get(name='students').user_set.add(instance)
+        except Group.DoesNotExist:
+            # This is the first user being registered, and thus the contributor
+            # groups have not yet been instantiated, one of them being the
+            # 'students' group. This check is quite important for test code to
+            # work properly on empty test databases.
+            create_contributor_groups()
+            Group.objects.get(name='students').user_set.add(instance)
+
         # Create the one-to-one instances related to User
         Contributor.objects.create(user=instance)
         Options.objects.create(user=instance)

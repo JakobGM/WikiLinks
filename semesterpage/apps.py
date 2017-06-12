@@ -16,7 +16,8 @@ class SemesterpageConfig(AppConfig):
 
 def create_contributor_groups():
     """
-    Add the three permission level groups related to contributors. Is invoked by the AppConfig.ready() method.
+    Add the three permission level groups related to contributors.
+    Is invoked by semesterpage.signals.handlers.user_save()
     """
     # Important to import here to ensure that all apps have been loaded on invocation
     from django.contrib.auth.models import Group, Permission

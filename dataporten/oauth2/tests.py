@@ -1,22 +1,11 @@
-from django.contrib.sites.models import Site
 from allauth.socialaccount.tests import OAuth2TestsMixin
 from allauth.tests import MockedResponse, TestCase
-
-# TODO: This should be made unecessery
-from semesterpage.apps import create_contributor_groups
 
 from .provider import DataportenProvider
 
 
 class DataportenTest(OAuth2TestsMixin, TestCase):
     provider_id = DataportenProvider.id
-
-    def setUp(self):
-        # Not related to Dataporten, just a quick hack
-        create_contributor_groups()
-
-        super(DataportenTest, self).setUp()
-        self.provider = DataportenProvider
 
     def get_login_response_json(self, with_refresh_token=True):
         # Dataporten does not send refresh tokens

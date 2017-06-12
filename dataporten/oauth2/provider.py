@@ -81,14 +81,14 @@ class DataportenProvider(OAuth2Provider):
         # If a Feide username is available, use it. If not, use the "username"
         # of the email-address
         username_set = False
-        for userid in data['userid_sec']:
+        for userid in data.get('userid_sec'):
             usertype, username = userid.split(':')
             if usertype == 'feide':
                 data['username'] = username.split('@')[0]
                 username_set = True
                 break
         if not username_set:
-            data['username'] = data['email'].split('@')[0]
+            data['username'] = data.get('email').split('@')[0]
 
         # We do not bother with removing the unused "userid_sec" and
         # "profilephoto" keys from the data-dictionary, as it doesn't make a

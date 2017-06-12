@@ -1,3 +1,4 @@
+from django.core.exceptions import SuspiciousOperation
 import requests
 
 from allauth.socialaccount.providers.oauth2.views import (
@@ -5,7 +6,6 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2CallbackView,
     OAuth2LoginView,
 )
-from django.core.exceptions import SuspiciousOperation
 
 from .provider import DataportenProvider
 
@@ -71,5 +71,5 @@ class DataportenAdapter(OAuth2Adapter):
         )
 
 
-oauth_login = OAuth2LoginView.adapter_view(DataportenAdapter)
-oauth_callback = OAuth2CallbackView.adapter_view(DataportenAdapter)
+oauth2_login = OAuth2LoginView.adapter_view(DataportenAdapter)
+oauth2_callback = OAuth2CallbackView.adapter_view(DataportenAdapter)

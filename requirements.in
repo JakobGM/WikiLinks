@@ -19,3 +19,4 @@ Pillow
 pip-tools
 django_auth_ldap
 django-extensions
+Werkzeug

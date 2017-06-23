@@ -46,3 +46,4 @@ rules==1.2.1
 six==1.10.0               # via bleach, django-dbbackup, django-extensions, dropbox, html5lib, pip-tools
 urllib3==1.21.1           # via dropbox, requests
 webencodings==0.5.1       # via html5lib
+werkzeug==0.12.2

@@ -7,5 +7,8 @@ class TestSemesterURLResolver(TestCase):
         self.models = populate_db()
 
     def test_simple_semester(self):
-        simple_url = reverse(self.models['first_semester'])
-        self.assertEqual(simple_url, '/fymat/1')
+        simple_url = reverse(
+            'semesterpage-simplesemester',
+            args=['fysmat', '1'],
+        )
+        self.assertEqual(simple_url, '/fysmat/1/')

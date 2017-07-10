@@ -1,12 +1,9 @@
-import unittest
-
 from allauth.socialaccount.tests import OAuth2TestsMixin
 from allauth.tests import MockedResponse, TestCase
 
 from .provider import DataportenProvider
 
 
-@unittest.skip("Skip while I figure out how to use the package test framework")
 class DataportenTest(OAuth2TestsMixin, TestCase):
     provider_id = DataportenProvider.id
 
@@ -22,12 +19,15 @@ class DataportenTest(OAuth2TestsMixin, TestCase):
         }
 
     def get_login_response_json(self, with_refresh_token=True):
-        # Dataporten does not send refresh tokens
+        rt = ''
+        if with_refresh_token:
+            rt = ',"refresh_token": "testrf"'
         return '''{
             "access_token":"testac",
             "expires_in":3600,
             "scope": "userid profile groups"
-        }'''
+            %s
+        }''' % rt
 
     def get_mocked_response(self):
         return MockedResponse(
@@ -54,7 +54,7 @@ class DataportenTest(OAuth2TestsMixin, TestCase):
         extra_data = self.provider.extract_extra_data(self.mock_data)
         self.assertEqual(extra_data, self.mock_data)
 
-    def test_extact_common_fields(self):
+    def test_extract_common_fields(self):
         # The main task of this function is to parse the data in order to
         # find the Feide username, and if not, use the email
         common_fields = self.provider.extract_common_fields(self.mock_data)

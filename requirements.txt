@@ -39,8 +39,9 @@ psycopg2==2.7.1
 pyldap==2.4.35.1          # via django-auth-ldap
 python3-openid==3.1.0     # via django-allauth
 pytz==2017.2              # via django, django-dbbackup
+requests-cache==0.4.13
 requests-oauthlib==0.8.0  # via django-allauth
-requests==2.17.3          # via django-allauth, dropbox, requests-oauthlib
+requests==2.17.3
 rules==1.2.1
 six==1.10.0               # via bleach, django-dbbackup, django-extensions, dropbox, html5lib, pip-tools
 subdomains==2.1.1

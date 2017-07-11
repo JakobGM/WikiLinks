@@ -20,3 +20,7 @@ pip-tools
 django_auth_ldap
 django-extensions
 Werkzeug
+
+# For dataporten http queries
+requests
+requests-cache

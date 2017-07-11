@@ -49,7 +49,7 @@ INSTALLED_APPS = (
     'django_cleanup',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'subdomains.middleware.SubdomainURLRoutingMiddleware',
     'django.middleware.common.CommonMiddleware',

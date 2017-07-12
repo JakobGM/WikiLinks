@@ -18,6 +18,7 @@ build/
 tests/report/
 db.sqlite3
 db.sqlite3-journal
+.mypy_cache/
 
 # MacOS specific
 .DS_Store

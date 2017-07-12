@@ -63,6 +63,11 @@ MIDDLEWARE = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+
+    # Adds dataporten API information to request.user.dataporten
+    # Needs to be placed after any authentication middleware, as this
+    # requires inspection of request.user
+    'dataporten.middleware.DataportenGroupsMiddleware',
 )
 
 ROOT_URLCONF = 'kokekunster.urls'
@@ -214,6 +219,14 @@ SERVER_EMAIL = 'django@kokekunster.no'
 DEFAULT_SEMESTER_PK = 1
 DEFAULT_STUDY_PROGRAM_SLUG = 'fysmat'
 
+
+# Dataporten settings
+
+# Cache requests to the dataporten API
+DATAPORTEN_CACHE_REQUESTS = True
+
+# Where to save the sqlite3 cache backend
+DATAPORTEN_CACHE_PATH = 'tmp/'
 
 # Determine run environment based on the environment variable 'PRODUCTION', and load proper settings
 

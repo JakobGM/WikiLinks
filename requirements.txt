@@ -8,6 +8,7 @@ bleach==2.0.0             # via django-html-sanitizer
 certifi==2017.4.17        # via requests
 chardet==3.0.3            # via requests
 click==6.7                # via pip-tools
+cookies==2.2.1            # via responses
 defusedxml==0.5.0         # via python3-openid
 django-admin-interface==0.4.5
 django-admin-sortable2==0.6.12
@@ -31,6 +32,7 @@ first==2.0.1              # via pip-tools
 gunicorn==19.7.1
 html5lib==0.999999999     # via bleach
 idna==2.5                 # via requests
+mypy==0.520
 oauthlib==2.0.2           # via requests-oauthlib
 olefile==0.44             # via pillow
 pillow==4.1.1
@@ -42,9 +44,11 @@ pytz==2017.2              # via django, django-dbbackup
 requests-cache==0.4.13
 requests-oauthlib==0.8.0  # via django-allauth
 requests==2.17.3
+responses==0.5.1
 rules==1.2.1
-six==1.10.0               # via bleach, django-dbbackup, django-extensions, dropbox, html5lib, pip-tools
+six==1.10.0               # via bleach, django-dbbackup, django-extensions, dropbox, html5lib, pip-tools, responses
 subdomains==2.1.1
+typed-ast==1.0.4          # via mypy
 urllib3==1.21.1           # via dropbox, requests
 webencodings==0.5.1       # via html5lib
 werkzeug==0.12.2

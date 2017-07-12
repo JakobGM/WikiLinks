@@ -21,6 +21,10 @@ django_auth_ldap
 django-extensions
 Werkzeug
 
-# For dataporten http queries
+# For dataporten http queries and testing
 requests
 requests-cache
+responses
+
+# Use mypy for static type linting
+mypy

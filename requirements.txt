@@ -29,6 +29,7 @@ django-widget-tweaks==1.4.1
 django==1.11.2
 dropbox==7.3.1
 first==2.0.1              # via pip-tools
+freezegun==0.3.9
 gunicorn==19.7.1
 html5lib==0.999999999     # via bleach
 idna==2.5                 # via requests
@@ -39,6 +40,7 @@ pillow==4.1.1
 pip-tools==1.9.0
 psycopg2==2.7.1
 pyldap==2.4.35.1          # via django-auth-ldap
+python-dateutil==2.6.1    # via freezegun
 python3-openid==3.1.0     # via django-allauth
 pytz==2017.2              # via django, django-dbbackup
 requests-cache==0.4.13
@@ -46,7 +48,7 @@ requests-oauthlib==0.8.0  # via django-allauth
 requests==2.17.3
 responses==0.5.1
 rules==1.2.1
-six==1.10.0               # via bleach, django-dbbackup, django-extensions, dropbox, html5lib, pip-tools, responses
+six==1.10.0               # via bleach, django-dbbackup, django-extensions, dropbox, freezegun, html5lib, pip-tools, python-dateutil, responses
 subdomains==2.1.1
 typed-ast==1.0.4          # via mypy
 urllib3==1.21.1           # via dropbox, requests

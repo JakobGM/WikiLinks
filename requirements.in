@@ -28,3 +28,6 @@ responses
 
 # Use mypy for static type linting
 mypy
+
+# Ability to use @freeze_time in unittests
+freezegun

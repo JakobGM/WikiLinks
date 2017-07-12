@@ -77,12 +77,17 @@
             {% else %}
                 <li id="facebook" class="arkiv nav-right">
                     <a id="arkiv" href="{% provider_login_url "facebook" method="js_sdk" %}">
-                        <img src="{% static "semesterpage/img/facebook.svg" %}" alt="facebook logo">  Logg inn
+                        <i class="fa fa-facebook-square" aria-hidden="true"></i>  Facebook
+                    </a>
+                </li>
+                <li id="facebook" class="arkiv nav-right">
+                    <a id="arkiv" href="{% provider_login_url "dataporten" %}">
+                        <i class="fa fa-sign-in" aria-hidden="true"></i> Feide
                     </a>
                 </li>
                 <li class="arkiv nav-right">
                     <a id="arkiv" {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
-                        <img src="{% static "semesterpage/img/calendar.svg" %}" alt="kalender">  Timeplan
+                        <i class="fa fa-calendar" aria-hidden="true"></i>  Timeplan
                     </a>
                 </li>
             {% endif %}

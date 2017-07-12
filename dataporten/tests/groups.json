@@ -1,0 +1,501 @@
+[
+    {
+        "displayName": "Fysikk og matematikk - masterstudium (5-\u00e5rig)",
+        "id": "fc:fs:fs:prg:ntnu.no:MTFYMA",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:prg",
+        "membership": {
+            "displayName": "Student",
+            "fsroles": [
+                "STUDENT"
+            ],
+            "basic": "member",
+            "active": true
+        },
+        "url": "http://www.ntnu.no/studier/mtfyma"
+    },
+    {
+        "displayName": "Examen philosophicum for naturvitenskap og teknologi",
+        "id": "fc:fs:fs:emne:ntnu.no:EXPH0004:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2014-12-14T23:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "url": "http://www.ntnu.no/exphil"
+    },
+    {
+        "displayName": "Optimering I",
+        "id": "fc:fs:fs:emne:ntnu.no:TMA4180:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "fsroles": [
+                "STUDENT"
+            ],
+            "basic": "member",
+            "active": true
+        },
+        "url": "http://wiki.math.ntnu.no/tma4180"
+    },
+    {
+        "displayName": "Matematikk 4K",
+        "id": "fc:fs:fs:emne:ntnu.no:TMA4120:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2015-12-14T23:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "url": "http://wiki.math.ntnu.no/tma4120"
+    },
+    {
+        "parent": "fc:org:ntnu.no",
+        "displayName": "HMS-kurs for 1. \u00e5rsstudenter",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2014-12-14T23:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "id": "fc:fs:fs:emne:ntnu.no:HMS0001:1"
+    },
+    {
+        "displayName": "Line\u00e6re metoder",
+        "id": "fc:fs:fs:emne:ntnu.no:TMA4145:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2016-12-14T23:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "url": "http://wiki.math.ntnu.no/tma4145"
+    },
+    {
+        "displayName": "Matematikk 1",
+        "id": "fc:fs:fs:emne:ntnu.no:TMA4100:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2014-12-14T23:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "url": "http://wiki.math.ntnu.no/tma4100"
+    },
+    {
+        "displayName": "Matematikk 2",
+        "id": "fc:fs:fs:emne:ntnu.no:TMA4105:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2015-08-14T22:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "url": "http://wiki.math.ntnu.no/tma4105"
+    },
+    {
+        "displayName": "Termisk fysikk",
+        "id": "fc:fs:fs:emne:ntnu.no:TFY4165:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2015-12-14T23:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "url": "http://www.ntnu.no/fysikk/studier/emner"
+    },
+    {
+        "parent": "fc:org:ntnu.no",
+        "displayName": "Mekanisk fysikk",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2014-12-14T23:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "id": "fc:fs:fs:emne:ntnu.no:TFY4145:1"
+    },
+    {
+        "displayName": "Numerisk l\u00f8sning av differensialligninger med differansemetoder",
+        "id": "fc:fs:fs:emne:ntnu.no:TMA4212:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2017-08-14T22:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "url": "http://wiki.math.ntnu.no/tma4212"
+    },
+    {
+        "displayName": "Numerisk matematikk",
+        "id": "fc:fs:fs:emne:ntnu.no:TMA4215:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2016-12-14T23:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "url": "http://wiki.math.ntnu.no/tma4215"
+    },
+    {
+        "displayName": "Algebra ",
+        "id": "fc:fs:fs:emne:ntnu.no:TMA4150:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "fsroles": [
+                "STUDENT"
+            ],
+            "basic": "member",
+            "active": true
+        },
+        "url": "http://wiki.math.ntnu.no/tma4150"
+    },
+    {
+        "parent": "fc:org:ntnu.no",
+        "displayName": "Kjemi ",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2015-08-14T22:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "id": "fc:fs:fs:emne:ntnu.no:TMT4110:1"
+    },
+    {
+        "displayName": "Informasjonsteknologi, grunnkurs",
+        "id": "fc:fs:fs:emne:ntnu.no:TDT4105:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2014-12-14T23:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "url": "http://itgk.idi.ntnu.no"
+    },
+    {
+        "parent": "fc:org:ntnu.no",
+        "displayName": "Prosedyre- og objektorientert programmering",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2016-08-14T22:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "id": "fc:fs:fs:emne:ntnu.no:TDT4102:1"
+    },
+    {
+        "displayName": "Algoritmer og datastrukturer",
+        "id": "fc:fs:fs:emne:ntnu.no:TDT4120:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2016-12-14T23:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "url": "https://algdat.idi.ntnu.no/"
+    },
+    {
+        "displayName": "Matematikk 3",
+        "id": "fc:fs:fs:emne:ntnu.no:TMA4115:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2015-08-14T22:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "url": "http://wiki.math.ntnu.no/tma4115"
+    },
+    {
+        "displayName": "Innf\u00f8ring i kvantefysikk",
+        "id": "fc:fs:fs:emne:ntnu.no:TFY4215:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "fsroles": [
+                "STUDENT"
+            ],
+            "basic": "member",
+            "active": true
+        },
+        "url": "http://www.ntnu.no/fysikk/studier/emner"
+    },
+    {
+        "parent": "fc:org:ntnu.no",
+        "displayName": "Industriell matematikk",
+        "type": "fc:fs:str",
+        "membership": {
+            "displayName": "Student",
+            "fsroles": [
+                "STUDENT"
+            ],
+            "basic": "member",
+            "active": true
+        },
+        "id": "fc:fs:fs:str:ntnu.no:MTFYMA-IM"
+    },
+    {
+        "parent": "fc:org:ntnu.no",
+        "displayName": "Teknologiledelse",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2015-12-14T23:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "id": "fc:fs:fs:emne:ntnu.no:TI\u00d84258:1"
+    },
+    {
+        "parent": "fc:org:ntnu.no",
+        "displayName": "Fluidmekanikk",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2015-12-14T23:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "id": "fc:fs:fs:emne:ntnu.no:TEP4105:1"
+    },
+    {
+        "displayName": "Introduksjon til vitenskapelige beregninger",
+        "id": "fc:fs:fs:emne:ntnu.no:TMA4320:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2016-08-14T22:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "url": "https://wiki.math.ntnu.no/tma4320"
+    },
+    {
+        "parent": "fc:org:ntnu.no",
+        "displayName": "Elektrisitet og magnetisme",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2015-08-14T22:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "id": "fc:fs:fs:emne:ntnu.no:TFY4155:1"
+    },
+    {
+        "displayName": "Line\u00e6re statistiske modeller",
+        "id": "fc:fs:fs:emne:ntnu.no:TMA4267:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2017-08-14T22:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "url": "http://wiki.math.ntnu.no/tma4267"
+    },
+    {
+        "displayName": "Statistikk",
+        "id": "fc:fs:fs:emne:ntnu.no:TMA4245:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2016-08-14T22:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "url": "http://wiki.math.ntnu.no/tma4245"
+    },
+    {
+        "displayName": "Stokastisk modellering",
+        "id": "fc:fs:fs:emne:ntnu.no:TMA4265:1",
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:fs:emne",
+        "membership": {
+            "displayName": "Student",
+            "notAfter": "2016-12-14T23:00:00Z",
+            "active": true,
+            "fsroles": [
+                "STUDENT"
+            ],
+            "subjectRelations": "undervisning",
+            "basic": "member"
+        },
+        "url": "http://wiki.math.ntnu.no/tma4265"
+    },
+    {
+        "displayName": "NORGES TEKNISK-NATURVITENSKAPELIGE UNIVERSITET NTNU",
+        "postalAddress": "N-7491 Trondheim $ NORWAY",
+        "eduOrgLegalName": "NORGES TEKNISK-NATURVITENSKAPELIGE UNIVERSITET NTNU",
+        "norEduOrgUniqueIdentifier": "194000000",
+        "norEduOrgAcronym": "NTNU",
+        "id": "fc:org:ntnu.no",
+        "mail": "orakel@ntnu.no",
+        "telephoneNumber": "+47 73595000",
+        "facsimileTelephoneNumber": "+47 73595310",
+        "membership": {
+            "affiliation": [
+                "employee",
+                "member",
+                "affiliate",
+                "student"
+            ],
+            "displayName": "Ansatt",
+            "title": [
+                "fast ansatt"
+            ],
+            "primaryAffiliation": "employee",
+            "basic": "admin"
+        },
+        "labeledURI": "http://www.ntnu.no/",
+        "l": "Trondheim",
+        "eduOrgHomePageURI": "http://www.ntnu.no/",
+        "public": true,
+        "type": "fc:org",
+        "norEduOrgNIN": "NO974767880",
+        "orgType": [
+            "higher_education"
+        ],
+        "street": "N-7491",
+        "postalCode": "N-7491"
+    },
+    {
+        "displayName": "Seksjon for IT-brukerst\u00f8tte",
+        "id": "fc:org:ntnu.no:unit:167500",
+        "public": true,
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:orgunit",
+        "membership": {
+            "primaryOrgUnit": true,
+            "basic": "member"
+        }
+    },
+    {
+        "displayName": "Fakultet for naturvitenskap",
+        "id": "fc:org:ntnu.no:unit:660000",
+        "public": true,
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:orgunit",
+        "membership": {
+            "primaryOrgUnit": false,
+            "basic": "member"
+        }
+    }
+]

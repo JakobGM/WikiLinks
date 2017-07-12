@@ -41,6 +41,10 @@ INSTALLED_APPS = (
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
+
+    # Dataporten API
+    'dataporten',
+
     # Custom Dataporten oAuth2-provider for django-allauth
     'dataporten.oauth2',
     'sanitizer',

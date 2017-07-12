@@ -5,6 +5,7 @@ from django.test import TestCase
 import responses
 
 from ..api import userinfo, usergroups
+from .utils import mock_usergroups_request, mock_userinfo_request
 
 
 class TestUserInfo(TestCase):
@@ -12,20 +13,11 @@ class TestUserInfo(TestCase):
 
     @responses.activate
     def test_valid_case(self):
-        with open('dataporten/tests/userinfo.json') as userinfo_file:
-            userinfo_dump = json.load(userinfo_file)
-
-        responses.add(
-            responses.GET,
-            'https://auth.dataporten.no/userinfo',
-            json=userinfo_dump,
-            status=200,
-        )
-
+        userinfo_dict = mock_userinfo_request()
         userinfo_return = userinfo('testac')
         self.assertEqual(
             userinfo_return,
-            userinfo_dump['user'],
+            userinfo_dict['user'],
         )
 
 
@@ -34,18 +26,9 @@ class TestGroups(TestCase):
 
     @responses.activate
     def test_valid_case(self):
-        with open('dataporten/tests/groups.json') as groups_file:
-            groups_dump = json.load(groups_file)
-
-        responses.add(
-            responses.GET,
-            'https://groups-api.dataporten.no/groups/me/groups',
-            json=groups_dump,
-            status=200,
-        )
-
+        groups_dict = mock_usergroups_request()
         userinfo_return = usergroups('testac')
         self.assertEqual(
             userinfo_return,
-            groups_dump,
+            groups_dict,
         )

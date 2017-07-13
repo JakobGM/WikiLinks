@@ -1,9 +1,18 @@
+from datetime import datetime
+
 from django.test import TestCase
 
 from freezegun import freeze_time
 
-from ..parsers import Course, Group, Membership
+from ..parsers import Course, Group, Membership, Semester, datetime_from
 
+class TestDatetimeFrom(TestCase):
+    def test_basic_correctness(self):
+        dt = datetime_from('2017-08-14T22:00:01Z')
+        self.assertEqual(
+            [dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second],
+            [2017, 8, 14, 22, 0, 1],
+        )
 
 class TestGroup(TestCase):
     study_program_json = {

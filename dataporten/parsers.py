@@ -1,5 +1,11 @@
 import datetime
-from typing import Dict, Any, Union
+from typing import Dict, Any
+
+def datetime_from(json_string: str) -> datetime.datetime:
+        return datetime.datetime.strptime(
+            json_string,
+            '%Y-%m-%dT%H:%M:%SZ',
+        )
 
 
 class Group:

@@ -182,3 +182,34 @@ class TestCourse(TestCase):
             }
         )
         self.assertTrue(non_finished_course.membership)
+
+
+@freeze_time('2017-08-27')
+class TestSemester(TestCase):
+    def setUp(self):
+        autumn_semester_date = datetime_from('2016-09-14T22:00:00Z')
+        spring_semester_date = datetime_from('2016-04-04T22:00:00Z')
+
+        self.autumn_semester = Semester(autumn_semester_date)
+        self.spring_semester = Semester(spring_semester_date)
+        self.present_semester = Semester.now()
+
+    def test_year_of_semester(self):
+        self.assertEqual(self.autumn_semester.year, 2016)
+        self.assertEqual(self.present_semester.year, 2017)
+
+    def test_semester_season(self):
+        self.assertEqual(self.autumn_semester.season, Semester.AUTUMN)
+        self.assertEqual(self.spring_semester.season, Semester.SPRING)
+
+    def test_subtracting_semesters(self):
+        same_semester_diff = self.present_semester - self.present_semester
+        same_season_diff = self.present_semester - self.autumn_semester
+        negative_diff = self.autumn_semester - self.present_semester
+        different_season_diff = self.autumn_semester - self.spring_semester
+        different_season_negative_diff = self.spring_semester - self.present_semester
+
+        self.assertEqual(
+            [same_semester_diff, same_season_diff, negative_diff, different_season_diff, different_season_negative_diff],
+            [0, 2, -2, 1, -3],
+        )

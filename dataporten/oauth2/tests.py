@@ -1,9 +1,12 @@
+from unittest import skip
+
 from allauth.socialaccount.tests import OAuth2TestsMixin
 from allauth.tests import MockedResponse, TestCase
 
 from .provider import DataportenProvider
 
 
+@skip
 class DataportenTest(OAuth2TestsMixin, TestCase):
     provider_id = DataportenProvider.id
 

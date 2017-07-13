@@ -1,3 +1,4 @@
+# A Link Portal for NTNU students [![Build Status](https://travis-ci.org/JakobGM/django-kokekunster.svg?branch=master)](https://travis-ci.org/JakobGM/django-kokekunster)
 # Development postgresql
 Install Postgres.app from [here](http://postgresapp.com/). It is important to
 add the command line utilities to your path.

@@ -67,9 +67,9 @@ class Semester:
         else:
             return cls.AUTUMN
 
-    @staticmethod
-    def now():
-        return Semester(datetime.datetime.now())
+    @classmethod
+    def now(cls):
+        return cls(datetime.datetime.now())
 
-    def __sub__(self, other) -> int:
+    def __sub__(self, other: 'Semester') -> int:
         return 2 * (self.year - other.year) + (self.season - other.season)

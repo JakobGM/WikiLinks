@@ -16,7 +16,7 @@ django-allauth==0.32.0
 django-auth-ldap==1.2.13
 django-autoslug==1.9.3
 django-cleanup==1.0.1
-django-colorfield==0.1.12  # via django-admin-interface
+django-colorfield==0.1.14  # via django-admin-interface
 django-common-helpers==0.9.1  # via django-cron
 django-cron==0.5.0
 django-dbbackup==3.1.3

@@ -36,7 +36,7 @@ idna==2.5                 # via requests
 mypy==0.520
 oauthlib==2.0.2           # via requests-oauthlib
 olefile==0.44             # via pillow
-pillow==4.1.1
+pillow==4.2.1
 pip-tools==1.9.0
 psycopg2==2.7.1
 pyldap==2.4.35.1          # via django-auth-ldap

@@ -53,7 +53,6 @@ class DataportenProvider(OAuth2Provider):
             "name": "Andreas \u00c5kre Solberg",
             "email": "andreas.solberg@uninett.no",
             "profilephoto": "p:a3019954-902f-45a3-b4ee-bca7b48ab507",
-            "groups": [{...}, {...}, ...],
         }
         '''
         return data
@@ -80,19 +79,15 @@ class DataportenProvider(OAuth2Provider):
 
         # If a Feide username is available, use it. If not, use the "username"
         # of the email-address
-        username_set = False
         for userid in data.get('userid_sec'):
             usertype, username = userid.split(':')
             if usertype == 'feide':
                 data['username'] = username.split('@')[0]
-                username_set = True
                 break
-        if not username_set:
+        else:
+            # Only entered if break is not executed above
             data['username'] = data.get('email').split('@')[0]
 
-        # We do not bother with removing the unused "userid_sec" and
-        # "profilephoto" keys from the data-dictionary, as it doesn't make a
-        # difference anyway
         return data
 
 

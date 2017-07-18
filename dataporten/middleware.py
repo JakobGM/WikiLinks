@@ -33,7 +33,6 @@ class DataportenGroupsMiddleware(object):
                     account__user=request.user,
                     account__provider='dataporten',
                 ).token
-                usergroups(token)
                 # TODO: Add proxy model to user which includes the usergroups
             except SocialToken.DoesNotExist:
                 # The user has not logged in with dataporten oAuth provider

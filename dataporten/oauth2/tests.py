@@ -1,12 +1,9 @@
-from unittest import skip
-
 from allauth.socialaccount.tests import OAuth2TestsMixin
 from allauth.tests import MockedResponse, TestCase
 
 from .provider import DataportenProvider
 
 
-@skip
 class DataportenTest(OAuth2TestsMixin, TestCase):
     provider_id = DataportenProvider.id
 
@@ -18,7 +15,6 @@ class DataportenTest(OAuth2TestsMixin, TestCase):
             'name': 'Andreas \u00c5kre Solberg',
             'email': 'andreas.solberg@uninett.no',
             'profilephoto': 'p:a3019954-902f-45a3-b4ee-bca7b48ab507',
-            'groups': [{}],
         }
 
     def get_login_response_json(self, with_refresh_token=True):
@@ -34,17 +30,18 @@ class DataportenTest(OAuth2TestsMixin, TestCase):
 
     def get_mocked_response(self):
         return MockedResponse(
-            200,
-            '''{
-            "user": {
-                "userid": "76a7a061-3c55-430d-8ee0-6f82ec42501f",
-                "userid_sec": ["feide:andreas@uninett.no"],
-                "name": "Andreas \u00c5kre Solberg",
-                "email": "andreas.solberg@uninett.no",
-                "profilephoto": "p:a3019954-902f-45a3-b4ee-bca7b48ab507"
-            },
-            "audience": "app123id"
-            }'''
+            status_code=200,
+            content='''{
+                "user": {
+                    "userid": "76a7a061-3c55-430d-8ee0-6f82ec42501f",
+                    "userid_sec": ["feide:andreas@uninett.no"],
+                    "name": "Andreas \u00c5kre Solberg",
+                    "email": "andreas.solberg@uninett.no",
+                    "profilephoto": "p:a3019954-902f-45a3-b4ee-bca7b48ab507"
+                },
+                "audience": "app123id"
+            }''',
+            headers={'content-type': 'application/json'},
             )
 
     def test_extract_uid(self):
@@ -68,4 +65,3 @@ class DataportenTest(OAuth2TestsMixin, TestCase):
         new_mock_data['userid_sec'] = []
         new_common_fields = self.provider.extract_common_fields(new_mock_data)
         self.assertEqual(new_common_fields['username'], 'andreas.solberg')
-

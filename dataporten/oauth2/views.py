@@ -1,6 +1,6 @@
-from django.core.exceptions import SuspiciousOperation
 import requests
 
+from allauth.socialaccount.providers.base import ProviderException
 from allauth.socialaccount.providers.oauth2.views import (
     OAuth2Adapter,
     OAuth2CallbackView,
@@ -16,7 +16,6 @@ class DataportenAdapter(OAuth2Adapter):
     authorize_url = 'https://auth.dataporten.no/oauth/authorization'
     profile_url = 'https://auth.dataporten.no/userinfo'
     groups_url = 'https://groups-api.dataporten.no/groups/'
-    redirect_uri_protocol = 'http'
 
     def complete_login(self, request, app, token, **kwargs):
         '''
@@ -42,24 +41,14 @@ class DataportenAdapter(OAuth2Adapter):
         # Raise exception for 4xx and 5xx response codes
         userinfo_response.raise_for_status()
 
-        # Groups endpoint, for documentation see:
-        # https://docs.dataporten.no/docs/groups/
-        groups_data = requests.get(
-            self.groups_url + 'me/groups',
-            headers=headers,
-        )
-        # Raise exception for 4xx and 5xx response codes
-        groups_data.raise_for_status()
-
         # The endpoint returns json-data and it needs to be decoded
         extra_data = userinfo_response.json()['user']
-        extra_data['groups'] = groups_data.json()
 
         # Finally test that the audience property matches the client id
         # for validification reasons, as instructed by the Dataporten docs
         # if the userinfo-response is used for authentication
         if userinfo_response.json()['audience'] != app.client_id:
-            raise SuspiciousOperation(
+            raise ProviderException(
                 'Dataporten returned a user with an audience field \
                  which does not correspond to the client id of the \
                  application.'

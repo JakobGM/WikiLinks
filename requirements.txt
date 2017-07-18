@@ -39,7 +39,7 @@ olefile==0.44             # via pillow
 pillow==4.2.1
 pip-tools==1.9.0
 psycopg2==2.7.1
-pyldap==2.4.35.1          # via django-auth-ldap
+pyldap==2.4.37          # via django-auth-ldap
 python-dateutil==2.6.1    # via freezegun
 python3-openid==3.1.0     # via django-allauth
 pytz==2017.2              # via django, django-dbbackup

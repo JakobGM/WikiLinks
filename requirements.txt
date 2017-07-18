@@ -45,7 +45,7 @@ python3-openid==3.1.0     # via django-allauth
 pytz==2017.2              # via django, django-dbbackup
 requests-cache==0.4.13
 requests-oauthlib==0.8.0  # via django-allauth
-requests==2.17.3
+requests==2.18.1
 responses==0.5.1
 rules==1.2.1
 six==1.10.0               # via bleach, django-dbbackup, django-extensions, dropbox, freezegun, html5lib, pip-tools, python-dateutil, responses

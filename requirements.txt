@@ -33,6 +33,7 @@ freezegun==0.3.9
 gunicorn==19.7.1
 html5lib==0.999999999     # via bleach
 idna==2.5                 # via requests
+mypy-extensions==0.3.0
 mypy==0.520
 oauthlib==2.0.2           # via requests-oauthlib
 olefile==0.44             # via pillow

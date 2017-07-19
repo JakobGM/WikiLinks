@@ -1,5 +1,37 @@
 import datetime
-from typing import Dict, Any
+from typing import List, Optional
+
+from mypy_extensions import TypedDict
+
+
+# All the required fields of the Dataporten
+# JSON representation of groups memberships
+class MembershipJSONBase(TypedDict):
+    basic: str  # NOQA
+    displayName: str
+    active: bool
+    fsroles: List[str]
+
+
+# Optional fields
+class MembershipJSON(MembershipJSONBase, total=False):
+    notAfter: str
+
+
+# All the required fields of the Dataporten
+# JSON representation of groups memberships
+class GroupJSONBase(TypedDict):
+    displayName: str
+    parent: str
+    url: str
+    id: str
+    type: str
+
+
+# Optional fields
+class GroupJSON(GroupJSONBase, total=False):
+    membership: MembershipJSON
+
 
 def datetime_from(json_string: str) -> datetime.datetime:
         return datetime.datetime.strptime(
@@ -8,20 +40,68 @@ def datetime_from(json_string: str) -> datetime.datetime:
         )
 
 
-class Group:
-    def __init__(self, json_group: Dict[str, Any]) -> None:
-        self.name = json_group.get('displayName', 'No display name')
-        self.url = json_group.get('url', None)
-        self.group_type = json_group['type'].split(':')[-1]
+def group_type(group: GroupJSON) -> str:
+    return group['type'].split(':')[-1]
 
-        if 'membership' in json_group:
-            self.membership = Membership(json_group['membership'])
+
+def group_factory(group: GroupJSON) -> 'BaseGroup':
+
+    """
+    Given a JSON Group structure, this function returns the most specific
+    object type, given the input
+    """
+
+    priorization = [Course]
+
+    for kls in priorization:
+        if kls.valid(group):
+            return kls(group)
+
+    return Group(group)
+
+
+class BaseGroup:
+
+    """
+    A basic class for behaviour present in all Dataporten groups,
+    intended for subclassing
+    """
+
+    DATAPORTEN_TYPE: Optional[str]
+
+    def __init__(self, group: GroupJSON) -> None:
+        if not self.valid(group):
+            raise TypeError('Invalid Group JSON structure')
+
+        self.name = group.get('displayName', 'No display name')
+        self.url = group.get('url', None)
+        self.group_type = group_type(group)
+
+        if 'membership' in group:
+            self.membership = Membership(group['membership'])
         else:
             self.membership = None
 
+    @classmethod
+    def valid(cls, group: GroupJSON) -> bool:
+        """ Subclasses can define their corresponding Dataporten type """
+        return cls.DATAPORTEN_TYPE == group_type(group)
+
+
+class Group(BaseGroup):
+
+    """ A fallback Group type """
+
+    @classmethod
+    def valid(cls, group: GroupJSON) -> bool:
+        # No restrictions are imposed on the JSON for the fallback group as
+        # long as the JSON passes through the __init__ method without
+        # throwing exceptions
+        return True
+
 
 class Membership:
-    def __init__(self, membership: Dict[str, Any]) -> None:
+    def __init__(self, membership: MembershipJSON) -> None:
         self.active = membership['active']
         if 'notAfter' in membership:
             self.end_time = datetime_from(membership['notAfter'])
@@ -30,10 +110,14 @@ class Membership:
             self.end_time = None
 
     def __bool__(self) -> bool:
+        """
+        The Membership object is truthy if the membership is not only active,
+        but also current (old memberships stay active)
+        """
         if not self.active:
             return False
         elif self.end_time is None:
-            # If there is no mention of an end date, we can assume it to be true
+            # If there is no end date, we can assume it to be true
             # This is often the case when there has not been set an examination
             # date yet
             return True
@@ -41,15 +125,11 @@ class Membership:
             return datetime.datetime.now() < self.end_time
 
 
-class Course(Group):
-    def __init__(self, json_group: Dict[str, Any]) -> None:
-        super().__init__(json_group)
-
-        # Assert that the group is in fact a course
-        if self.group_type != 'emne':
-            raise TypeError('Non-course group cast to Course')
-
-        self.code = json_group['id'].split(':')[-2]
+class Course(BaseGroup):
+    DATAPORTEN_TYPE = 'emne'
+    def __init__(self, group: GroupJSON) -> None:
+        super().__init__(group)
+        self.code = group['id'].split(':')[-2]
 
 
 class Semester:

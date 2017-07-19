@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.test import TestCase
+from dataporten.parsers import group_factory
 
 from freezegun import freeze_time
 
@@ -14,24 +15,53 @@ class TestDatetimeFrom(TestCase):
             [2017, 8, 14, 22, 0, 1],
         )
 
+
+# Examples of json structures received from Dataporten representing groups
+study_program_json = {
+    "displayName": "Fysikk og matematikk - masterstudium (5-årig)",
+    "membership": {
+        "basic": "member",
+        "displayName": "Student",
+        "active": True,
+        "fsroles": [
+            "STUDENT"
+        ]
+    },
+    "parent": "fc:org:ntnu.no",
+    "url": "http://www.ntnu.no/studier/mtfyma",
+    "id": "fc:fs:fs:prg:ntnu.no:MTFYMA",
+    "type": "fc:fs:prg",
+}
+
+course_json = {
+    "displayName": "Examen philosophicum for naturvitenskap og teknologi",
+    "id": "fc:fs:fs:emne:ntnu.no:EXPH0004:1",
+    "parent": "fc:org:ntnu.no",
+    "type": "fc:fs:emne",
+    "membership": {
+        "displayName": "Student",
+        "notAfter": "2014-12-14T23:00:00Z",
+        "active": True,
+        "fsroles": [
+            "STUDENT"
+        ],
+        "subjectRelations": "undervisning",
+        "basic": "member"
+    },
+    "url": "http://www.ntnu.no/exphil"
+}
+
+class TestGroupFactory(TestCase):
+    def test_class_types_produced(self):
+        study_program = group_factory(study_program_json)
+        self.assertIs(type(study_program), Group)
+
+        course = group_factory(course_json)
+        self.assertIs(type(course), Course)
+
 class TestGroup(TestCase):
-    study_program_json = {
-        "displayName": "Fysikk og matematikk - masterstudium (5-årig)",
-        "membership": {
-            "basic": "member",
-            "displayName": "Student",
-            "active": True,
-            "fsroles": [
-                "STUDENT"
-            ]
-        },
-        "parent": "fc:org:ntnu.no",
-        "url": "http://www.ntnu.no/studier/mtfyma",
-        "id": "fc:fs:fs:prg:ntnu.no:MTFYMA",
-        "type": "fc:fs:prg",
-    }
     def setUp(self):
-        self.group_example = Group(self.study_program_json)
+        self.group_example = Group(study_program_json)
 
     def test_properties_present(self):
         self.assertEqual(

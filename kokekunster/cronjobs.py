@@ -1,6 +1,7 @@
-from django.core import management
 from django.conf import settings
+from django.core import management
 from django_cron import CronJobBase, Schedule
+
 
 class Backup(CronJobBase):
     '''

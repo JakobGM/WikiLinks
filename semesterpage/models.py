@@ -1,16 +1,16 @@
-from django.db import models
-from django.core.exceptions import ValidationError
-from django.contrib.auth.models import User
-from django.conf import settings
-from django.core.urlresolvers import reverse
-
-from gettext import gettext as _
+import os
 from collections import defaultdict
+from gettext import gettext as _
+
+import subdomains.utils
 from autoslug import AutoSlugField
 from autoslug.utils import slugify
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
+from django.db import models
 from sanitizer.models import SanitizedCharField
-import subdomains.utils
-import os
 
 DEFAULT_STUDY_PROGRAM_SLUG = getattr(settings, 'DEFAULT_STUDY_PROGRAM_SLUG', 'fysmat')
 

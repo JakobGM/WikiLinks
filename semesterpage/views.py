@@ -1,13 +1,16 @@
-from django.shortcuts import render, redirect
-from django.core.exceptions import ValidationError
-from django.core.mail import mail_admins, EmailMessage
-from django.http import Http404
-from django.conf import settings
-from subdomains.utils import reverse
 from gettext import gettext as _
-from .models import StudyProgram, Semester, Options
-from .forms import LinkForm, FileForm
+
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.core.mail import EmailMessage, mail_admins
+from django.http import Http404
+from django.shortcuts import redirect, render
+from subdomains.utils import reverse
+
 from kokekunster.settings import ADMINS, SERVER_EMAIL
+
+from .forms import FileForm, LinkForm
+from .models import Options, Semester, StudyProgram
 
 DEFAULT_STUDY_PROGRAM_SLUG = getattr(settings, 'DEFAULT_STUDY_PROGRAM_SLUG', 'fysmat')
 DEFAULT_SEMESTER_PK = getattr(settings, 'DEFAULT_SEMESTER_PK', 1)

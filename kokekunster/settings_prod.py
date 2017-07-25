@@ -1,6 +1,5 @@
 import os
 
-
 # Settings for production environment
 
 DEBUG = False

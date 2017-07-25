@@ -1,7 +1,7 @@
+from django.contrib.auth.models import Group, User
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.contrib.auth.models import User, Group
-from django.core.exceptions import ObjectDoesNotExist
 
 from semesterpage.apps import create_contributor_groups
 from semesterpage.models import Contributor, Options

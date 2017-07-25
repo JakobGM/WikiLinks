@@ -1,10 +1,9 @@
 import json
 
+import responses
 from django.test import TestCase
 
-import responses
-
-from ..api import userinfo, usergroups
+from ..api import usergroups, userinfo
 from .utils import mock_usergroups_request, mock_userinfo_request
 
 

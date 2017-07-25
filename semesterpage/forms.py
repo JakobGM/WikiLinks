@@ -1,5 +1,6 @@
 from django import forms
-from semesterpage.models import CourseLink, Course
+
+from semesterpage.models import Course, CourseLink
 
 
 class LinkForm(forms.ModelForm):

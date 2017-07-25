@@ -1,10 +1,9 @@
 import logging
 
-from django.conf import settings
-
-from allauth.socialaccount.models import SocialToken
 import requests
 import requests_cache
+from allauth.socialaccount.models import SocialToken
+from django.conf import settings
 
 from .api import usergroups
 

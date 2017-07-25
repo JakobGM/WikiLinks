@@ -1,7 +1,8 @@
 """
 Custom object instance based permissions with django-rules
 """
-from rules import predicate, add_perm, is_superuser
+from rules import add_perm, is_superuser, predicate
+
 
 @predicate
 def has_contributor_access(user, object):

@@ -3,6 +3,7 @@ from typing import Any, Dict, List
 
 import responses
 
+
 def mock_userinfo_request() -> Dict[str, Any]:
     """
     Mocks the next request to the userinfo dataporten endpoint.

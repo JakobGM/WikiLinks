@@ -1,6 +1,8 @@
 from django.test import TestCase
-from django.urls import reverse, resolve
+from django.urls import resolve, reverse
+
 from .test_utils import populate_db
+
 
 class TestSemesterURLResolver(TestCase):
     def setUp(self):

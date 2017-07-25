@@ -1,16 +1,15 @@
-from django.contrib import admin
-from django.shortcuts import redirect
 from gettext import gettext as _
-from adminsortable2.admin import SortableInlineAdminMixin
-from rules.contrib.admin import ObjectPermissionsModelAdmin
-from semesterpage.models import SEMESTER
-from semesterpage.models import \
-                    StudyProgram, MainProfile, Semester, Course, \
-                    ResourceLinkList, CourseLink, ResourceLink, \
-                    CustomLinkCategory, Contributor, Options
 
+from adminsortable2.admin import SortableInlineAdminMixin
+from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
+from django.shortcuts import redirect
+from rules.contrib.admin import ObjectPermissionsModelAdmin
+
+from semesterpage.models import (SEMESTER, Contributor, Course, CourseLink, CustomLinkCategory, MainProfile, Options,
+                                 ResourceLink, ResourceLinkList, Semester, StudyProgram)
+
 
 class MainProfileInline(admin.TabularInline):
     """

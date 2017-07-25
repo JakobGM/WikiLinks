@@ -1,5 +1,7 @@
-from django.apps import AppConfig
 from gettext import gettext as _
+
+from django.apps import AppConfig
+
 
 class SemesterpageConfig(AppConfig):
     name = 'semesterpage'

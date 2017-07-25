@@ -1,6 +1,6 @@
 import os
-from kokekunster.settings import BASE_DIR
 
+from kokekunster.settings import BASE_DIR
 
 # Settings for development environment
 

@@ -1,11 +1,12 @@
 from datetime import datetime
 
 from django.test import TestCase
-from dataporten.parsers import group_factory
-
 from freezegun import freeze_time
 
+from dataporten.parsers import group_factory
+
 from ..parsers import Course, Group, Membership, Semester, datetime_from
+
 
 class TestDatetimeFrom(TestCase):
     def test_basic_correctness(self):

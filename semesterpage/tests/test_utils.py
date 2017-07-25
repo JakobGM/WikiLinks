@@ -1,4 +1,4 @@
-from ..models import StudyProgram, MainProfile, Semester
+from ..models import MainProfile, Semester, StudyProgram
 
 
 def populate_db():

@@ -32,3 +32,9 @@ mypy_extensions
 
 # Ability to use @freeze_time in unittests
 freezegun
+
+# For pytest-django interoperability
+pytest-django
+
+# Object factories for testing
+factory_boy

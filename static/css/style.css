@@ -1,464 +1,468 @@
 /* Resets & basic page setup */
 * {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-	font-family: 'Lato', sans-serif;
+  font-family: 'Lato', sans-serif;
 }
 
 /* Header (logo & site name) */
 header {
-	background: #333333;
+  background: #333333;
 }
 
 header a {
-	color: white;
+  color: white;
 }
 
 .wrap {
-	max-width: 1600px;
-	margin: 0 auto;
-	padding: 1em;
-	padding-left: 9%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 1em;
+  padding-left: 9%;
 }
 
 header .wrap {
-	display: -webkit-flex;
-	display: flex;
-	align-items: center;
+  display: -webkit-flex;
+  display: flex;
+  align-items: center;
 }
 
 header .logo {
-	width: 60px;
-	margin-right: 0.5em;
-	margin-bottom: 1em;
+  width: 60px;
+  margin-right: 0.5em;
+  margin-bottom: 1em;
 }
 
 header #mist {
-	fill: white;
+  fill: white;
 }
 
 header a:hover #pot {
-	fill: silver;
+  fill: silver;
 }
 
 header a:hover #stove {
-	fill: silver;
+  fill: silver;
 }
 
 header a:hover {
-	color: silver;
+  color: silver;
 }
 
 .thin {
-	font-weight: 300;
+  font-weight: 300;
 }
 
 header p {
-	font-weight: 300;
+  font-weight: 300;
 }
 
 body header .wrap {
-	padding-top: .7em;
-	padding-bottom: .7em;
+  padding-top: .7em;
+  padding-bottom: .7em;
 }
 
 /* Navigation */
 nav {
-	background: #7a7a7a;
-	color: white;
-	font-weight: 300;
+  background: #7a7a7a;
+  color: white;
+  font-weight: 300;
 }
 
 nav .wrap {
-	padding: 0.5em 0;
-	padding-left: 7%;
-	padding-right: 7%;
+  padding: 0.5em 0;
+  padding-left: 7%;
+  padding-right: 7%;
 }
 
 nav li {
-	display: inline-block;
-	padding-left: 1em;
-	white-space: nowrap;
-	position: relative;
-	top: -0.1em;
+  display: inline-block;
+  padding-left: 1em;
+  white-space: nowrap;
+  position: relative;
+  top: -0.1em;
 }
 
 nav a {
-	color: white;
-	text-decoration: none;
-	display: block;
+  color: white;
+  text-decoration: none;
+  display: block;
 }
 
 .arkiv img {
-	padding-left: 0.3em;
+  padding-left: 0.3em;
 }
 
 /* Spinning animation on hover for font-awesome icons */
 .link-icon-rotate:hover .fa {
-    -webkit-animation: fa-spin 5s infinite linear;
-    -moz-animation: fa-spin 5s infinite linear;
-    -o-animation: fa-spin 5s infinite linear;
-    animation: fa-spin 5s infinite linear;
+  -webkit-animation: fa-spin 5s infinite linear;
+  -moz-animation: fa-spin 5s infinite linear;
+  -o-animation: fa-spin 5s infinite linear;
+  animation: fa-spin 5s infinite linear;
 }
 
 /* Dropdown list on split semesters in navbar */
 .dropbtn:hover {
-	color: white;
+  color: white;
 }
 
 .dropdown-content {
-	display: none;
-	position: absolute;
-	z-index: 2; /* In order to be placed above the semesterpage content */
-	left: 0.3em;
-	background-color: #7a7a7a;
-	min-width: 6.5em;
-	box-shadow: 0px 8px 16px 0px rgba(122,122,122,0.25);
+  display: none;
+  position: absolute;
+  z-index: 2; /* In order to be placed above the semesterpage content */
+  left: 0.3em;
+  background-color: #7a7a7a;
+  min-width: 6.5em;
+  box-shadow: 0px 8px 16px 0px rgba(122,122,122,0.25);
 }
 
 .dropdown-content a {
-	color: white;
-	padding: 3px 12px;
-	text-decoration: none;
-	display: block;
-	text-align: left;
+  color: white;
+  padding: 3px 12px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
 }
 
 .dropdown-content a:first-child {
-	padding-top: 0.75em;
+  padding-top: 0.75em;
 }
 
 .dropdown-content a:last-child {
-	padding-bottom: 0.6em;
+  padding-bottom: 0.6em;
 }
 
 .dropdown:hover .dropdown-content {
-	display: block;
+  display: block;
 }
 
 /* Content */
 .content {
-	display: flex;
-	margin-top: 1em;
-	display: -webkit-flex;
-	flex-wrap: wrap;
-	-webkit-flex-wrap: wrap;
-	flex-wrap: wrap;
-	justify-content: center;
-	zoom: 0.935; /* Scaling to fit page on MacBook Pro */
-	-moz-transform: scale(0.935);
-	-moz-transform-origin: 50% 50% 0
+  display: flex;
+  margin-top: 1em;
+  display: -webkit-flex;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  justify-content: center;
+  zoom: 0.935; /* Scaling to fit page on MacBook Pro */
+  -moz-transform: scale(0.935);
+  -moz-transform-origin: 50% 50% 0
 }
 
 div.wrap.content {
-	margin-top: 0;
+  margin-top: 0;
 }
 
 .content article {
-	/*text-align: center;*/
-	padding: 1em;
-	width: 33.3333%;
-	padding-top: 1%;
-	white-space: nowrap; /* No line breaks in list items in a course element */
+  /*text-align: center;*/
+  padding: 1em;
+  width: 33.3333%;
+  padding-top: 1%;
+  white-space: nowrap; /* No line breaks in list items in a course element */
 }
 
 .content article ul {
-	margin-top: 1em;
-	font-size: 1.1em;
-	line-height: 1.5;
-	color: #666;
+  margin-top: 1em;
+  font-size: 1.1em;
+  line-height: 1.5;
+  color: #666;
 }
 
 .content article ul li {
-	font-size: 88%;
-	margin: -0.18em 0 0 0;
-	text-indent: -25px;
+  font-size: 88%;
+  margin: -0.18em 0 0 0;
+  text-indent: -25px;
 }
 
 /* Extending the clickable link area towards the left in order to include
 	 the bullet points */
 .content article ul li a {
-	display: block;
-	padding-left: 25px;
+  display: block;
+  padding-left: 25px;
 }
 
 .content article img {
-	height: 80px;
-	width: 80px;
-	text-align: center;
-	-webkit-filter: grayscale(1);
-	-webkit-filter: grayscale(100%);
-	filter: gray;
-	filter: grayscale(100%);
+  height: 80px;
+  width: 80px;
+  text-align: center;
+  -webkit-filter: grayscale(1);
+  -webkit-filter: grayscale(100%);
+  filter: gray;
+  filter: grayscale(100%);
 }
 
 a {
-	text-decoration: none;
-	color: black;
+  text-decoration: none;
+  color: black;
 }
 
 .content a:visited {
-	color: black;
+  color: black;
 }
 
 p.underkonstruksjon {
-	padding-top: 2em;
-	text-align: center;
+  padding-top: 2em;
+  text-align: center;
 }
 
 /* Styling for semester choice page */
 div.wrap.content.semester {
-	padding-left: 14%;
-	padding-top: 3%;
-	padding-bottom: 3%;
+  padding-left: 14%;
+  padding-top: 3%;
+  padding-bottom: 3%;
 }
 
 .content article .semester {
-	padding-left: 1.5em;
+  padding-left: 1.5em;
 }
 
 h1.semester {
-	text-align: center;
-	padding-top: 1em;
-	font-size: 175%;
+  text-align: center;
+  padding-top: 1em;
+  font-size: 175%;
 }
 
 p.semester {
-	text-align: center;
+  text-align: center;
 }
 
 /* On-hover effects for various elements */
 nav a:hover {
-	color: silver;
+  color: silver;
 }
 
 .content article .kategori:hover {
-	opacity: 0.4;
-	filter: alpha(opacity=40);
-	color: grey;
+  opacity: 0.4;
+  filter: alpha(opacity=40);
+  color: grey;
 }
 
 
 .content li a:hover {
-	color: black;
-	background: #eee;
+  color: black;
+  background: #eee;
 }
 
 .arkiv:hover {
-	opacity: 0.4;
-	filter: alpha(opacity=40);
+  opacity: 0.4;
+  filter: alpha(opacity=40);
 }
 
 /*Gear icon rotation on hover*/
 .tannhjul:hover {
-	-webkit-animation-name: rotate;
-	-webkit-animation-duration: 4s;
-	-webkit-animation-iteration-count: infinite;
-	-webkit-animation-timing-function: linear;
-	-moz-animation-name: rotate;
-	-moz-animation-duration: 4s;
-	-moz-animation-iteration-count: infinite;
-	-moz-animation-timing-function: linear;
-	animation-name: rotate;
-	animation-duration: 4s;
-	animation-iteration-count: infinite;
-	animation-timing-function: linear;
+  -webkit-animation-name: rotate;
+  -webkit-animation-duration: 4s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+  -moz-animation-name: rotate;
+  -moz-animation-duration: 4s;
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-timing-function: linear;
+  animation-name: rotate;
+  animation-duration: 4s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
 }
+
 @-webkit-keyframes rotate {
-    from {
-			-webkit-transform: rotate(0deg);
-			-webkit-transform-origin: 59% 50%;
-		}
-    to {
-			-webkit-transform: rotate(360deg);
-			-webkit-transform-origin: 59% 50%;
-		}
+  from {
+    -webkit-transform: rotate(0deg);
+    -webkit-transform-origin: 59% 50%;
+  }
+
+  to {
+    -webkit-transform: rotate(360deg);
+    -webkit-transform-origin: 59% 50%;
+  }
 }
+
 @keyframes rotate {
-	from {
-		-moz-transform: rotate(0deg);
-		-moz-transform-origin: 59% 50%;
-		transform: rotate(0deg);
-		transform-origin: 59% 50%;
-	}
-	to {
-		-moz-transform: rotate(360deg);
-		-moz-transform-origin: 59% 50%;
-		transform: rotate(360deg);
-		transform-origin: 59% 50%;
-	}
+  from {
+    -moz-transform: rotate(0deg);
+    -moz-transform-origin: 59% 50%;
+    transform: rotate(0deg);
+    transform-origin: 59% 50%;
+  }
+
+  to {
+    -moz-transform: rotate(360deg);
+    -moz-transform-origin: 59% 50%;
+    transform: rotate(360deg);
+    transform-origin: 59% 50%;
+  }
 }
 
 /* Footer */
 
 footer {
-	color: grey;
-	font-size: 75%;
-	text-align: center;
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	right: 0;
+  color: grey;
+  font-size: 75%;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
 .footer .navn {
-	color: black;
+  color: black;
 }
 
 /* Link request page */
 article form p {
-	padding-bottom: 0.6em;
+  padding-bottom: 0.6em;
 }
 
 .linkform article h2 {
-	padding-bottom: 0.2em;
+  padding-bottom: 0.2em;
 }
 
 .mandatory-notice {
-	color: grey;
-	font-size: smaller;
+  color: grey;
+  font-size: smaller;
 }
 
 /* Zoom to fit page on large resolutions */
 @media (min-width: 1580px) {
-	.wrap {
-		zoom: 1.07;
-	}
+  .wrap {
+    zoom: 1.07;
+  }
 }
 
 @media (min-width: 1900px) {
-	.wrap {
-		zoom: 1.15;
-	}
+  .wrap {
+    zoom: 1.15;
+  }
 }
 
 /* Responsive design (break points) */
 @media (max-width: 900px) {
-	.content article {
-		width: 50%;
-	}
+  .content article {
+    width: 50%;
+  }
 
-	footer {
-		position:relative;
-	}
+  footer {
+    position:relative;
+  }
 
 }
 
 @media (max-width: 500px) {
-	.wrap {
-		padding-left: 0%; /* For correct center allignment on mobile screens */
-	}
+  .wrap {
+    padding-left: 0%; /* For correct center allignment on mobile screens */
+  }
 
-	div.wrap.content.semester {
-		padding-left: 0%; /* For correct center allignment on mobile screens on the semester choice screen */
-	}
+  div.wrap.content.semester {
+    padding-left: 0%; /* For correct center allignment on mobile screens on the semester choice screen */
+  }
 
-	header .logo {
-		width: 40px;
-	}
+  header .logo {
+    width: 40px;
+  }
 
-	header h1 {
-		font-size: 1.5em;
-	}
+  header h1 {
+    font-size: 1.5em;
+  }
 
-	/* Main profile list on split semesters shown when clicked in navbar on mobile */
-	.dropdown-content {
-		position: relative;
-	}
+  /* Main profile list on split semesters shown when clicked in navbar on mobile */
+  .dropdown-content {
+    position: relative;
+  }
 
-	.dropdown-content a {
-		text-align: center;
-	}
+  .dropdown-content a {
+    text-align: center;
+  }
 
-	.dropdown:focus .dropdown-content {
-		display: inline;
-	}
+  .dropdown:focus .dropdown-content {
+    display: inline;
+  }
 
-	nav li {
-		display: block;
-		text-align: center;
-		padding: 0.35em;
-		position: relative;
-		left: -4%;
-		font-size: 140%;
-		border-bottom: 0.1em solid grey;
-	}
+  nav li {
+    display: block;
+    text-align: center;
+    padding: 0.35em;
+    position: relative;
+    left: -4%;
+    font-size: 140%;
+    border-bottom: 0.1em solid grey;
+  }
 
-	nav li:last-child {
-		border-bottom: none;
-	}
+  nav li:last-child {
+    border-bottom: none;
+  }
 
-	.content article {
-		width: 100%;
-		padding: 0.3em;
-	}
+  .content article {
+    width: 100%;
+    padding: 0.3em;
+  }
 
-	.content article ul a {
-		display: inline-block;
-		padding-right: 160%;
-	}
+  .content article ul a {
+    display: inline-block;
+    padding-right: 160%;
+  }
 
-	#site { overflow-x: hidden; }
+  #site { overflow-x: hidden; }
 
-	header .logo {
-		width: 60px;
-		margin-right: 1em;
-		margin-left: 20%;
-		margin-bottom: auto;
-		text-align: center;
-	}
+  header .logo {
+    width: 60px;
+    margin-right: 1em;
+    margin-left: 20%;
+    margin-bottom: auto;
+    text-align: center;
+  }
 
-	.content {
-		width:200px;
-		margin:0 auto;
-		text-align:left;
-		font-size: 150%;
-	}
+  .content {
+    width:200px;
+    margin:0 auto;
+    text-align:left;
+    font-size: 150%;
+  }
 
-	.content img {
-		margin-top: 1.5em; /* A bit more spacing between the courses on mobile */
-	}
+  .content img {
+    margin-top: 1.5em; /* A bit more spacing between the courses on mobile */
+  }
 
-	.content article ul {
-		margin-top: 0.3em;
-		margin-top: 0.3em;
-	}
+  .content article ul {
+    margin-top: 0.3em;
+    margin-top: 0.3em;
+  }
 }
 
 @media (min-width: 500px) {
-	.nav-right {
-		float: right;
-	}
+  .nav-right {
+    float: right;
+  }
 
-	.arkiv img {
-		position: relative;
-		padding-left: 0.3em;
-		top: 0.15em;
-	}
+  .arkiv img {
+    position: relative;
+    padding-left: 0.3em;
+    top: 0.15em;
+  }
 
-	.tannhjul {
-		position: relative;
-		right: -0.4em;
-	}
+  .tannhjul {
+    position: relative;
+    right: -0.4em;
+  }
 
-	#settings-link {
-		position: relative;
-		bottom: -0.12em;
-	}
+  #settings-link {
+    position: relative;
+    bottom: -0.12em;
+  }
 
-	#settings-link img {
-		position: relative;
-		padding-right: 0.6em;
-		top: 0.1em;
-	}
+  #settings-link img {
+    position: relative;
+    padding-right: 0.6em;
+    top: 0.1em;
+  }
 
-	#facebook a img {
-		position: relative;
-		top: 0.2em;
-		right: 0.14em;
-	}
+  #facebook a img {
+    position: relative;
+    top: 0.2em;
+    right: 0.14em;
+  }
 }

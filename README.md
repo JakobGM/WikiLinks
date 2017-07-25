@@ -37,6 +37,17 @@ within the project folder. Run the following commands:
 ./manage.py mediarestore
 ```
 
+###
+You can run the test suite like this:
+```
+py.test
+```
+
+And you can run CSS linting like so:
+```
+stylelint "**/*.css"
+```
+
 ## Production:
 ### Necessary cronjob for automatic backups
 ```

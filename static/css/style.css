@@ -97,9 +97,12 @@ nav a {
 	padding-left: 0.3em;
 }
 
-.tannhjul {
-	position: relative;
-	top: 0.25em;
+/* Spinning animation on hover for font-awesome icons */
+.link-icon-rotate:hover .fa {
+    -webkit-animation: fa-spin 5s infinite linear;
+    -moz-animation: fa-spin 5s infinite linear;
+    -o-animation: fa-spin 5s infinite linear;
+    animation: fa-spin 5s infinite linear;
 }
 
 /* Dropdown list on split semesters in navbar */
@@ -457,13 +460,5 @@ article form p {
 		position: relative;
 		top: 0.2em;
 		right: 0.14em;
-	}
-
-	.hotfix {
-		/*
-		The calendar had too much margin for logged in users,
-		and instead of fixing it properly, I just made this single li item hotfix :S
-		*/
-		margin-right: -0.7em;
 	}
 }

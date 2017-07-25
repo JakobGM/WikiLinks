@@ -54,23 +54,23 @@
             {% if user.is_authenticated %}
                 <li id="facebook" class="arkiv nav-right">
                     <a id="arkiv" href="/accounts/logout">
-                        <img src="{% static "semesterpage/img/logout.svg" %}" alt="exit door">  Logg ut
+                      <i class="fa fa-sign-out" aria-hidden="true"></i>  Logg ut
                     </a>
                 </li>
                 <li class="arkiv semestervalg nav-right">
-                    <a id="settings-link" title="Instillinger" href="{{ user.options.get_admin_url }}">
-                        <img class="tannhjul" src="{% static 'semesterpage/img/settings.svg' %}" alt="Tannhjul">Innstillinger
+                    <a id="settings-link" class="link-icon-rotate" title="Instillinger" href="{{ user.options.get_admin_url }}">
+                        <i class="fa fa-cog" aria-hidden="true"></i>  Innstillinger
                     </a>
                 </li>
-                <li class="arkiv nav-right hotfix">
+                <li class="arkiv nav-right">
                     <a id="arkiv" {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
-                        <img src="{% static "semesterpage/img/calendar.svg" %}" alt="kalender">  Timeplan
+                        <i class="fa fa-calendar" aria-hidden="true"></i>  Timeplan
                     </a>
                 </li>
                 {% block nav-userpage %}
                     <li class="arkiv nav-right">
                         <a id="arkiv" href="{{ user.options.get_absolute_url }}">
-                            <img src="{% static "semesterpage/img/profile.svg" %}" alt="kalender">  {{ user.username | title }}
+                            <i class="fa fa-graduation-cap" aria-hidden="true"></i>  {{ user.username | title }}
                         </a>
                     </li>
                 {% endblock %}

@@ -57,8 +57,8 @@ class DataportenUser(User):
     def dataporten(self):
         return DataportenGroupManager(self.token)
 
-    @classmethod
-    def valid_request(cls, request: HttpRequest) -> bool:
+    @staticmethod
+    def valid_request(request: HttpRequest) -> bool:
         if hasattr(request, 'user') and request.user.is_authenticated():
             return SocialToken.objects.filter(
                 account__user=request.user,

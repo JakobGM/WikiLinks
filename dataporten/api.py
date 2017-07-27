@@ -12,12 +12,12 @@ from mypy_extensions import TypedDict
 class MembershipJSONBase(TypedDict):
     basic: str  # NOQA
     displayName: str
-    active: bool
     fsroles: List[str]
 
 
 # Optional fields
 class MembershipJSON(MembershipJSONBase, total=False):
+    active: bool
     notAfter: str
     subjectRelations: Optional[str]
 

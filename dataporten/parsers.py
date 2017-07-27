@@ -75,7 +75,13 @@ class Group(BaseGroup):
 
 class Membership:
     def __init__(self, membership: MembershipJSON) -> None:
-        self.active = membership['active']
+        if 'active' in membership:
+            self.active = membership['active']
+        else:
+            # If there is no 'active' key, then the membership
+            # is implicitly active (it seems)
+            self.active = True
+
         if 'notAfter' in membership:
             self.end_time = datetime_from(membership['notAfter'])
             self.semester = Semester(self.end_time)

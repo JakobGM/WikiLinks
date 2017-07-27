@@ -3,8 +3,10 @@ import logging
 import requests
 import requests_cache
 from django.conf import settings
+from django.http import HttpRequest
 
 from .api import usergroups
+from .models import DataportenUser
 
 # Cache requests for 15 minutes
 if settings.DATAPORTEN_CACHE_REQUESTS:
@@ -21,14 +23,9 @@ class DataportenGroupsMiddleware(object):
     def __init__(self, get_response):
         self.get_response = get_response
 
-    def __call__(self, request):
+    def __call__(self, request: HttpRequest):
         return self.get_response(request)
 
-    def process_view(self, request, view_func, view_args, view_kwargs):
-        if hasattr(request, 'user') and request.user.is_authenticated():
-            try:
-                pass
-                # TODO: Add proxy model to user which includes the usergroups
-            except SocialToken.DoesNotExist:
-                # The user has not logged in with dataporten oAuth provider
-                return
+    def process_view(self, request: HttpRequest, *args, **kwargs):
+        if DataportenUser.valid_request(request):
+            request.user.__class__ = DataportenUser

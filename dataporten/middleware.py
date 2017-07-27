@@ -2,7 +2,6 @@ import logging
 
 import requests
 import requests_cache
-from allauth.socialaccount.models import SocialToken
 from django.conf import settings
 
 from .api import usergroups
@@ -28,10 +27,7 @@ class DataportenGroupsMiddleware(object):
     def process_view(self, request, view_func, view_args, view_kwargs):
         if hasattr(request, 'user') and request.user.is_authenticated():
             try:
-                token = SocialToken.objects.get(
-                    account__user=request.user,
-                    account__provider='dataporten',
-                ).token
+                pass
                 # TODO: Add proxy model to user which includes the usergroups
             except SocialToken.DoesNotExist:
                 # The user has not logged in with dataporten oAuth provider

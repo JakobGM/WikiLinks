@@ -162,6 +162,43 @@ class TestCourse(TestCase):
             "type": "fc:fs:emne",
         }
     )
+    non_finished_course = Course(
+        {
+            "displayName": "Algebra ",
+            "membership": {
+                "basic": "member",
+                "displayName": "Student",
+                "active": True,
+                "fsroles": [
+                    "STUDENT"
+                ]
+            },
+            "parent": "fc:org:ntnu.no",
+            "url": "http://wiki.math.ntnu.no/tma4150",
+            "id": "fc:fs:fs:emne:ntnu.no:TMA4150:1",
+            "type": "fc:fs:emne"
+        }
+    )
+    ongoing_course = Course(
+        {
+            "displayName": "Optimering I",
+            "membership": {
+                "notAfter": "2017-08-14T22:00:00Z",
+                "active": True,
+                "subjectRelations": "undervisning",
+                "basic": "member",
+                "fsroles": [
+                    "STUDENT"
+                ],
+                "displayName": "Student"
+            },
+            "parent": "fc:org:ntnu.no",
+            "url": "http://wiki.math.ntnu.no/tma4180",
+            "id": "fc:fs:fs:emne:ntnu.no:TMA4180:1",
+            "type": "fc:fs:emne"
+        }
+    )
+
     def test_course_code(self):
         self.assertEqual(
             self.finished_course.code,
@@ -173,46 +210,27 @@ class TestCourse(TestCase):
 
 
     def test_ongoing_course_with_end_time(self):
-        ongoing_course = Course(
-            {
-                "displayName": "Optimering I",
-                "membership": {
-                    "notAfter": "2017-08-14T22:00:00Z",
-                    "active": True,
-                    "subjectRelations": "undervisning",
-                    "basic": "member",
-                    "fsroles": [
-                        "STUDENT"
-                    ],
-                    "displayName": "Student"
-                },
-                "parent": "fc:org:ntnu.no",
-                "url": "http://wiki.math.ntnu.no/tma4180",
-                "id": "fc:fs:fs:emne:ntnu.no:TMA4180:1",
-                "type": "fc:fs:emne"
-            }
-        )
-        self.assertTrue(ongoing_course.membership)
+        self.assertTrue(self.ongoing_course.membership)
 
     def test_ongoing_course_without_end_time(self):
-        non_finished_course = Course(
-            {
-                "displayName": "Algebra ",
-                "membership": {
-                    "basic": "member",
-                    "displayName": "Student",
-                    "active": True,
-                    "fsroles": [
-                        "STUDENT"
-                    ]
-                },
-                "parent": "fc:org:ntnu.no",
-                "url": "http://wiki.math.ntnu.no/tma4150",
-                "id": "fc:fs:fs:emne:ntnu.no:TMA4150:1",
-                "type": "fc:fs:emne"
-            }
-        )
-        self.assertTrue(non_finished_course.membership)
+        self.assertTrue(self.non_finished_course.membership)
+
+    def test_split_on_membership(self):
+        courses = [
+            self.finished_course,
+            self.non_finished_course,
+            self.ongoing_course,
+        ]
+        active, inactive = Course.split_on_membership(courses)
+
+        assert self.finished_course.code in inactive.keys()
+        assert self.finished_course in inactive.values()
+
+        assert self.non_finished_course.code in active.keys()
+        assert self.non_finished_course in active.values()
+
+        assert self.ongoing_course.code in active.keys()
+        assert self.ongoing_course in active.values()
 
 
 @freeze_time('2017-08-27')

@@ -1,36 +1,7 @@
 import datetime
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
-from mypy_extensions import TypedDict
-
-
-# All the required fields of the Dataporten
-# JSON representation of groups memberships
-class MembershipJSONBase(TypedDict):
-    basic: str  # NOQA
-    displayName: str
-    active: bool
-    fsroles: List[str]
-
-
-# Optional fields
-class MembershipJSON(MembershipJSONBase, total=False):
-    notAfter: str
-
-
-# All the required fields of the Dataporten
-# JSON representation of groups memberships
-class GroupJSONBase(TypedDict):
-    displayName: str
-    parent: str
-    url: str
-    id: str
-    type: str
-
-
-# Optional fields
-class GroupJSON(GroupJSONBase, total=False):
-    membership: MembershipJSON
+from .api import GroupJSON, MembershipJSON
 
 
 def datetime_from(json_string: str) -> datetime.datetime:
@@ -68,6 +39,7 @@ class BaseGroup:
     """
 
     DATAPORTEN_TYPE: Optional[str]
+    NAME: str
 
     def __init__(self, group: GroupJSON) -> None:
         if not self.valid(group):
@@ -89,6 +61,7 @@ class BaseGroup:
 
 
 class Group(BaseGroup):
+    NAME = 'generic_groups'
 
     """ A fallback Group type """
 
@@ -127,9 +100,33 @@ class Membership:
 
 class Course(BaseGroup):
     DATAPORTEN_TYPE = 'emne'
+    NAME = 'courses'
+
     def __init__(self, group: GroupJSON) -> None:
         super().__init__(group)
         self.code = group['id'].split(':')[-2]
+
+    CourseDict = Dict[str, 'Course']
+
+    @classmethod
+    def split_on_membership(
+            cls,
+            courses: List['Course'],
+            ) -> Tuple[CourseDict, CourseDict]:
+
+        """
+        Return two dictionaries in a tuple (active, inactive,)
+        of the form Dict[course_code] = course_object
+        """
+
+        active, inactive = {}, {}
+        for course in courses:
+            if course.membership:
+                active[course.code] = course
+            else:
+                inactive[course.code] = course
+
+        return active, inactive
 
 
 class Semester:

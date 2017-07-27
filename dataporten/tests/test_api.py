@@ -7,6 +7,11 @@ from ..api import usergroups, userinfo
 from .utils import mock_usergroups_request, mock_userinfo_request
 
 
+class TestTypes(TestCase):
+    """ Should hit type definitions in order to catch syntax errors """
+    from ..api import GroupJSON
+
+
 class TestUserInfo(TestCase):
     """ Test dataporten userinfo endpoint """
 

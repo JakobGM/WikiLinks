@@ -1,3 +1,5 @@
+from django.contrib.auth.models import AnonymousUser
+
 import pytest
 import responses
 
@@ -27,12 +29,14 @@ def test_dataporten_user_groups(dataporten_user):
 
 
 @pytest.mark.django_db
-def test_dataporten_user_validation(rf, django_user, dataporten_user):
+def test_dataporten_user_validation(rf, django_user_model, dataporten_user):
     # pytest-django provides a RequestFactory fixture named rf
     request = rf.get('')
+
+    request.user = AnonymousUser()
     assert DataportenUser.valid_request(request) == False
 
-    request.user = django_user
+    request.user = django_user_model()
     assert DataportenUser.valid_request(request) == False
 
     request.user = dataporten_user

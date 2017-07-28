@@ -59,7 +59,7 @@ class DataportenUser(User):
 
     @staticmethod
     def valid_request(request: HttpRequest) -> bool:
-        if hasattr(request, 'user') and request.user.is_authenticated():
+        if hasattr(request, 'user') and request.user.is_authenticated:
             return SocialToken.objects.filter(
                 account__user=request.user,
                 account__provider='dataporten',

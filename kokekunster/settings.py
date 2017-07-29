@@ -241,7 +241,11 @@ if os.environ.get('PRODUCTION', None):
     from kokekunster.settings_prod import *
 else:
     # Development assistive apps
-    INSTALLED_APPS += ('django_extensions',)
+    INSTALLED_APPS += (
+            'debug_toolbar',
+            'django_extensions',
+    )
+    MIDDLEWARE = ('debug_toolbar.middleware.DebugToolbarMiddleware',) + MIDDLEWARE
     from kokekunster.settings_dev import *
 
 

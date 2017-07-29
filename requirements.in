@@ -38,3 +38,6 @@ pytest-django
 
 # Object factories for testing
 factory_boy
+
+# For debugging in the web browser
+django-debug-toolbar

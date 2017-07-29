@@ -59,3 +59,6 @@ DBBACKUP_STORAGE_OPTIONS = {
 
 # Use the PK for the localhost Site model here
 SITE_ID = 1
+
+# IPs which have access to the Django debug toolbar
+INTERNAL_IPS = ('127.0.0.1',)

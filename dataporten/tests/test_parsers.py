@@ -7,6 +7,7 @@ from ..parsers import (
         Course,
         Group,
         group_factory,
+        MainProfile,
         Membership,
         Semester,
         StudyProgram,
@@ -31,6 +32,10 @@ class TestGroupFactory:
     def test_course_factory(self, course_json):
         course = group_factory(course_json)
         assert type(course) is Course
+
+    def test_main_profile_factory(self, main_profile_json):
+        main_profile = group_factory(main_profile_json)
+        assert type(main_profile) is MainProfile
 
 
 class TestGroup:
@@ -201,6 +206,12 @@ class TestStudyProgram:
     def test_study_program_basic_properties(self, study_program_json):
         study_program = StudyProgram(study_program_json)
         assert study_program.code == 'MTFYMA'
+
+
+class TestMainProfile:
+    def test_main_profile_basic_properties(self, main_profile_json):
+        main_profile = MainProfile(main_profile_json)
+        assert main_profile.code == 'MTFYMA-IM'
 
 
 @freeze_time('2017-08-27')

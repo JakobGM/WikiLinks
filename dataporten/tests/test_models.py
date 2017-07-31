@@ -19,6 +19,9 @@ class TestDataportenGroupManager:
     def test_dataporten_study_program(self, dataporten):
         assert dataporten.study_programs[0].code == 'MTFYMA'
 
+    def test_dataporten_main_profile(self, dataporten):
+        assert dataporten.main_profiles[0].code == 'MTFYMA-IM'
+
 
 @pytest.mark.django_db
 def test_dataporten_user_token(dataporten_user):

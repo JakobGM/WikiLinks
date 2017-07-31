@@ -70,3 +70,19 @@ def course_json():
         "url": "http://www.ntnu.no/exphil"
     }
 
+@pytest.fixture
+def main_profile_json():
+    return {
+        "parent": "fc:org:ntnu.no",
+        "displayName": "Industriell matematikk",
+        "type": "fc:fs:str",
+        "membership": {
+            "displayName": "Student",
+            "fsroles": [
+                "STUDENT"
+            ],
+            "basic": "member",
+            "active": True
+        },
+        "id": "fc:fs:fs:str:ntnu.no:MTFYMA-IM"
+    }

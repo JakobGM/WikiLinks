@@ -3,9 +3,15 @@ from datetime import datetime
 from django.test import TestCase
 from freezegun import freeze_time
 
-from dataporten.parsers import group_factory
-
-from ..parsers import Course, Group, Membership, Semester, datetime_from
+from ..parsers import (
+        Course,
+        Group,
+        group_factory,
+        Membership,
+        Semester,
+        StudyProgram,
+        datetime_from,
+)
 
 
 class TestDatetimeFrom(TestCase):
@@ -17,69 +23,27 @@ class TestDatetimeFrom(TestCase):
         )
 
 
-# Examples of json structures received from Dataporten representing groups
-study_program_json = {
-    "displayName": "Fysikk og matematikk - masterstudium (5-årig)",
-    "membership": {
-        "basic": "member",
-        "displayName": "Student",
-        "active": True,
-        "fsroles": [
-            "STUDENT"
-        ]
-    },
-    "parent": "fc:org:ntnu.no",
-    "url": "http://www.ntnu.no/studier/mtfyma",
-    "id": "fc:fs:fs:prg:ntnu.no:MTFYMA",
-    "type": "fc:fs:prg",
-}
-
-course_json = {
-    "displayName": "Examen philosophicum for naturvitenskap og teknologi",
-    "id": "fc:fs:fs:emne:ntnu.no:EXPH0004:1",
-    "parent": "fc:org:ntnu.no",
-    "type": "fc:fs:emne",
-    "membership": {
-        "displayName": "Student",
-        "notAfter": "2014-12-14T23:00:00Z",
-        "active": True,
-        "fsroles": [
-            "STUDENT"
-        ],
-        "subjectRelations": "undervisning",
-        "basic": "member"
-    },
-    "url": "http://www.ntnu.no/exphil"
-}
-
-class TestGroupFactory(TestCase):
-    def test_class_types_produced(self):
+class TestGroupFactory:
+    def test_study_program_factory(self, study_program_json):
         study_program = group_factory(study_program_json)
-        self.assertIs(type(study_program), Group)
+        assert type(study_program) is StudyProgram
 
+    def test_course_factory(self, course_json):
         course = group_factory(course_json)
-        self.assertIs(type(course), Course)
+        assert type(course) is Course
 
-class TestGroup(TestCase):
-    def setUp(self):
-        self.group_example = Group(study_program_json)
 
-    def test_properties_present(self):
-        self.assertEqual(
-            self.group_example.name,
-            'Fysikk og matematikk - masterstudium (5-årig)',
-        )
-        self.assertEqual(
-            self.group_example.url,
-            'http://www.ntnu.no/studier/mtfyma',
-        )
-        self.assertEqual(
-            self.group_example.group_type,
-            'prg',
-        )
+class TestGroup:
+    def test_properties_present(self, study_program_json):
+        group_example = Group(study_program_json)
+        assert group_example.name == 'Fysikk og matematikk - masterstudium (5-årig)'
+        assert group_example.url == 'http://www.ntnu.no/studier/mtfyma'
+        assert group_example.group_type == 'prg'
 
-    def test_active_membership(self):
-        self.assertTrue(self.group_example.membership)
+    def test_active_membership(self, study_program_json):
+        group_example = Group(study_program_json)
+        assert group_example.membership
+
 
 class TestMembership(TestCase):
     def test_perpetual_membership(self):
@@ -231,6 +195,12 @@ class TestCourse(TestCase):
 
         assert self.ongoing_course.code in active.keys()
         assert self.ongoing_course in active.values()
+
+
+class TestStudyProgram:
+    def test_study_program_basic_properties(self, study_program_json):
+        study_program = StudyProgram(study_program_json)
+        assert study_program.code == 'MTFYMA'
 
 
 @freeze_time('2017-08-27')

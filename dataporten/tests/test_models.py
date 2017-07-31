@@ -5,14 +5,19 @@ import responses
 
 from .utils import mock_usergroups_request
 from ..models import DataportenGroupManager, DataportenUser
+from ..parsers import StudyProgram
 
 
-def test_dataporten_courses(dataporten):
-    assert 'EXPH0004' in dataporten.inactive_courses
-    assert 'EXPH0004' not in dataporten.active_courses
+class TestDataportenGroupManager:
+    def test_dataporten_courses(self, dataporten):
+        assert 'EXPH0004' in dataporten.inactive_courses
+        assert 'EXPH0004' not in dataporten.active_courses
 
-    assert 'TMA4180' not in dataporten.inactive_courses
-    assert 'TMA4180' in dataporten.active_courses
+        assert 'TMA4180' not in dataporten.inactive_courses
+        assert 'TMA4180' in dataporten.active_courses
+
+    def test_dataporten_study_program(self, dataporten):
+        assert dataporten.study_programs[0].code == 'MTFYMA'
 
 
 @pytest.mark.django_db

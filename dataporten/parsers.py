@@ -22,7 +22,7 @@ def group_factory(group: GroupJSON) -> 'BaseGroup':
     object type, given the input
     """
 
-    priorization = [Course]
+    priorization = [Course, StudyProgram]
 
     for kls in priorization:
         if kls.valid(group):
@@ -133,6 +133,14 @@ class Course(BaseGroup):
                 inactive[course.code] = course
 
         return active, inactive
+
+class StudyProgram(BaseGroup):
+    DATAPORTEN_TYPE = 'prg'
+    NAME = 'study_programs'
+
+    def __init__(self, group: GroupJSON) -> None:
+        super().__init__(group)
+        self.code = group['id'].split(':')[-1]
 
 
 class Semester:

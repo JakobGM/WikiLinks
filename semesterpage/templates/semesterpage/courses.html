@@ -1,5 +1,5 @@
 {% extends "base.html" %} {# TODO: Need to add link category and course static images based on model #}
-{% load static %}
+{% load rules static %}
 
 {% block navbar %}
 {% include "semesterpage/navbar.html" %}
@@ -18,7 +18,11 @@
 {% for link in course.links.all %}
   <li style="list-style-image: url('{% if link.custom_category %}{{ link.custom_category.thumbnail.url }}{% else %}{% static "semesterpage/link_categories/" %}{{ link.category }}{% endif %}');"><a href="{{ link.url }}">{{ link.title|safe }}</a></li>
 {% endfor %}
-{% if user.is_authenticated and course in user.contributor.accessible_courses %}
+
+
+{# The 'edit course' link is only shown to users who has access #}
+{% has_perm 'semesterpage.change_course' user course as can_edit_course %}
+{% if can_edit_course %}
     <li style="list-style-image: url('{% static "semesterpage/link_categories/change_course.svg" %}');"><a href="{{ course.get_admin_url }}">Rediger fag</a></li>
 {% endif %}
 

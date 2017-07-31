@@ -111,7 +111,7 @@ class ResourceLinkFactory(factory.django.DjangoModelFactory):
 
 
 class ContributorFactory(factory.django.DjangoModelFactory):
-    user = factory.SubFactory(DataportenUserFactory)
+    user = factory.SubFactory(DataportenUserFactory, contributor=None)
     access_level = 1
 
     class Meta:
@@ -119,7 +119,7 @@ class ContributorFactory(factory.django.DjangoModelFactory):
 
 
 class OptionsFactory(factory.django.DjangoModelFactory):
-    user = factory.SubFactory(DataportenUserFactory)
+    user = factory.SubFactory(DataportenUserFactory, options=None)
 
     class Meta:
         model = Options

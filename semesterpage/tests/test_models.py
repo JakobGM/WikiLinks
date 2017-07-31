@@ -2,10 +2,11 @@ from django.contrib.auth.models import Group, User
 from django.test import TestCase
 
 import pytest
+from freezegun import freeze_time
 
 from dataporten.models import DataportenUser
 from ..apps import create_contributor_groups
-from .factories import SemesterFactory
+from .factories import CourseFactory, SemesterFactory
 
 
 class TestUser(TestCase):
@@ -73,11 +74,35 @@ class TestResourceLink:
         assert resource_link.url == 'http://wolframalpha.com/'
 
 
+@freeze_time('2017-05-27')
 class TestContributor:
     @pytest.mark.django_db
     def test_contributor_factory(self, contributor):
         assert type(contributor.user) is DataportenUser
         assert contributor.access_level == 1
+
+    @pytest.mark.django_db
+    def test_dataporten_access(self, fysmat_user):
+        """
+        In this case, the user should be granted access to the
+        courses entirely based on the contents of:
+            dataporten.tests.groups.json
+        """
+        old_taken_course = CourseFactory(course_code='EXPH0004')
+        assert old_taken_course.check_access(fysmat_user)
+
+        active_course = CourseFactory(
+                full_name='unique name',
+                course_code='TMA4180',
+        )
+        assert active_course.check_access(fysmat_user)
+
+        non_taken_course = CourseFactory(
+                full_name='unique name 2',
+                course_code='XXX4200',
+        )
+        assert not non_taken_course.check_access(fysmat_user)
+
 
 
 class TestOptions:

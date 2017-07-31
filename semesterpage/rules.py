@@ -3,10 +3,13 @@ Custom object instance based permissions with django-rules
 """
 from rules import add_perm, is_superuser, predicate
 
+from dataporten.models import DataportenUser
+
 
 @predicate
 def has_contributor_access(user, object):
-    return user.contributor.has_contributor_access_to(object)
+    return user.is_authenticated \
+            and user.contributor.has_contributor_access_to(object)
 
 contributor_models = ['studyprogram', 'mainprofile',
                       'semester', 'course',

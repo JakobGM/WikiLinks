@@ -1,5 +1,10 @@
 import pytest
+import responses
 
+from dataporten.tests.conftest import dataporten, dataporten_user
+from dataporten.tests.utils import mock_usergroups_request
+from dataporten.models import DataportenGroupManager
+from dataporten.tests.factories import DataportenUserFactory
 from .factories import (
         StudyProgramFactory,
         MainProfileFactory,
@@ -12,6 +17,13 @@ from .factories import (
         OptionsFactory,
 )
 
+@pytest.fixture
+def fysmat_user(dataporten_user, dataporten):
+    """
+    Dataporten user with courses given in dataporten.tests.groups.json
+    """
+    dataporten_user.dataporten = dataporten
+    return dataporten_user
 
 @pytest.fixture
 def study_program():

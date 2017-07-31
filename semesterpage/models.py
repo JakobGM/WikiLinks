@@ -2,15 +2,19 @@ import os
 from collections import defaultdict
 from gettext import gettext as _
 
-import subdomains.utils
-from autoslug import AutoSlugField
-from autoslug.utils import slugify
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Q
+
+import subdomains.utils
+from autoslug import AutoSlugField
+from autoslug.utils import slugify
 from sanitizer.models import SanitizedCharField
+
+from dataporten.models import DataportenUser
 
 DEFAULT_STUDY_PROGRAM_SLUG = getattr(settings, 'DEFAULT_STUDY_PROGRAM_SLUG', 'fysmat')
 
@@ -652,10 +656,23 @@ class Contributor(models.Model):
             raise RuntimeError('Invalid contributor access level.')
 
     def accessible_courses(self):
+        # If the user has access to a 'parent object', i.e. the related
+        # semester, then we grant access to all children
+        parent_access = Q(semesters__in=self.accessible_semesters())
+
         # Also includes courses where the contributor is part of the contributors ManyToManyField,
         # which the user is added to if he/she created the course
-        return Course.objects.filter(semesters__in=self.accessible_semesters()) | \
-               Course.objects.filter(contributors__in=[self])
+        earlier_contributor = Q(contributors__in=[self])
+        access_criterion = parent_access | earlier_contributor
+
+        # If the user has taken the course, according to dataporten,
+        # we grant access
+        if isinstance(self.user, DataportenUser):
+            finished_course = Q(course_code__in=self.user.dataporten.inactive_courses)
+            active_course = Q(course_code__in=self.user.dataporten.active_courses)
+            access_criterion = access_criterion | finished_course | active_course
+
+        return Course.objects.filter(access_criterion)
 
     def accessible_resource_link_lists(self):
         return ResourceLinkList.objects.filter(study_programs__in=self.accessible_study_programs())

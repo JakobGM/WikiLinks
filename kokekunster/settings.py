@@ -12,9 +12,6 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
-import ldap
-from django_auth_ldap.config import LDAPSearch, PosixGroupType
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -107,39 +104,7 @@ WSGI_APPLICATION = 'kokekunster.wsgi.application'
 AUTHENTICATION_BACKENDS = (
     'rules.permissions.ObjectPermissionBackend',
     'django.contrib.auth.backends.ModelBackend',
-    'django_auth_ldap.backend.LDAPBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
-)
-
-# Vakidate LDAP server's certificate
-ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
-
-AUTH_LDAP_SERVER_URI = 'ldaps://at.ntnu.no'
-
-# Allow all groups
-AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-    'ou=groups,dc=ntnu,dc=no', ldap.SCOPE_SUBTREE, '(objectClass=posixGroup)'
-)
-
-# Map LDAP attributes to User model attributes
-AUTH_LDAP_USER_ATTR_MAP = {
-    'first_name': 'givenName',
-    'last_name': 'sn',
-    'email': 'mail',
-}
-
-# Parse groups as Posix
-AUTH_LDAP_GROUP_TYPE = PosixGroupType()
-
-# When user logs in, update new information from LDAP server
-AUTH_LDAP_ALWAYS_UPDATE_USER = True
-
-# Don't create LDAP groups as django groups
-AUTH_LDAP_MIRROR_GROUPS = False
-
-# Allow all users
-AUTH_LDAP_USER_SEARCH = LDAPSearch(
-    'ou=people,dc=ntnu,dc=no ', ldap.SCOPE_SUBTREE, '(uid=%(user)s)'
 )
 
 

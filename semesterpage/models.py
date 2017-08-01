@@ -282,9 +282,11 @@ class Course(LinkList):
     Contains a specific course with a logo for display on the semesterpage.
     Can be connected to several different semesters.
     """
+    # We do a lot of filtering by course_code, so we index this collumn
     course_code = models.CharField(
         _('emnekode'),
         unique=True,
+        db_index=True,
         max_length=10,
         help_text=_('F.eks. "TDT4102"')
     )

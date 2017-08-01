@@ -325,6 +325,14 @@ class Course(LinkList):
             except IndexError:
                 return reverse('semesterpage-homepage')
 
+    def save(self, *args, **kwargs):
+        """
+        Custom save method in order to guarantee that the course code 'TMA2400'
+        is entirely capaitalized.
+        """
+        self.course_code = self.course_code.upper()
+        super(Course, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.course_code + ' - ' + self.full_name
 

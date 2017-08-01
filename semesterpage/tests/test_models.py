@@ -6,6 +6,7 @@ from freezegun import freeze_time
 
 from dataporten.models import DataportenUser
 from ..apps import create_contributor_groups
+from ..models import Course
 from .factories import CourseFactory, SemesterFactory
 
 
@@ -53,6 +54,13 @@ class TestCourse:
     def test_creation_of_course_with_many_to_many_field(self, course):
         assert course.display_name == 'C++'
         assert course.semesters.all()[0].number == 1
+
+    @pytest.mark.django_db
+    def test_capitalize_course_code(self):
+        course = CourseFactory.build()
+        course.course_code = 'tma2422'
+        course.save()
+        assert course.course_code == 'TMA2422'
 
 
 class TestResourceLinkList:

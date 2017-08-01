@@ -229,6 +229,8 @@ class LinkList(models.Model):
         max_length=60,
         help_text=_('F.eks. "Prosedyre- og Objektorientert Programmering"')
     )
+    # When display name is set as blank, the display name is deduced
+    # from full_name instead
     display_name = models.CharField(
         _('visningsnavn'),
         max_length=60,
@@ -336,6 +338,12 @@ class Course(LinkList):
         super(Course, self).save(*args, **kwargs)
 
     def __str__(self):
+        if self.display_name:
+            return self.display_name
+        else:
+            return self.full_name
+
+    def __repr__(self):
         return self.course_code + ' - ' + self.full_name
 
     class Meta:

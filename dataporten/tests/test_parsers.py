@@ -110,96 +110,39 @@ class TestMembership(TestCase):
         self.assertFalse(limited_membership)
 
 
-@freeze_time('2016-01-01')
-class TestCourse(TestCase):
-    finished_course = Course(
-        {
-            "displayName": "Examen philosophicum for naturvitenskap og teknologi",
-            "membership": {
-                "notAfter": "2014-12-14T23:00:00Z",
-                "active": True,
-                "subjectRelations": "undervisning",
-                "basic": "member",
-                "fsroles": [
-                    "STUDENT"
-                ],
-                "displayName": "Student"
-            },
-            "parent": "fc:org:ntnu.no",
-            "url": "http://www.ntnu.no/exphil",
-            "id": "fc:fs:fs:emne:ntnu.no:EXPH0004:1",
-            "type": "fc:fs:emne",
-        }
-    )
-    non_finished_course = Course(
-        {
-            "displayName": "Algebra ",
-            "membership": {
-                "basic": "member",
-                "displayName": "Student",
-                "active": True,
-                "fsroles": [
-                    "STUDENT"
-                ]
-            },
-            "parent": "fc:org:ntnu.no",
-            "url": "http://wiki.math.ntnu.no/tma4150",
-            "id": "fc:fs:fs:emne:ntnu.no:TMA4150:1",
-            "type": "fc:fs:emne"
-        }
-    )
-    ongoing_course = Course(
-        {
-            "displayName": "Optimering I",
-            "membership": {
-                "notAfter": "2017-08-14T22:00:00Z",
-                "active": True,
-                "subjectRelations": "undervisning",
-                "basic": "member",
-                "fsroles": [
-                    "STUDENT"
-                ],
-                "displayName": "Student"
-            },
-            "parent": "fc:org:ntnu.no",
-            "url": "http://wiki.math.ntnu.no/tma4180",
-            "id": "fc:fs:fs:emne:ntnu.no:TMA4180:1",
-            "type": "fc:fs:emne"
-        }
-    )
+@freeze_time('2017-01-01')
+class TestCourse:
+    def test_course_code(self, finished_course):
+        assert finished_course.code == 'EXPH0004'
 
-    def test_course_code(self):
-        self.assertEqual(
-            self.finished_course.code,
-            'EXPH0004',
-        )
+    def test_finished_course(self, finished_course):
+        assert not finished_course.membership
+        assert finished_course.semester.year == 2014
 
-    def test_finished_course(self):
-        self.assertFalse(self.finished_course.membership)
+    def test_ongoing_course_with_end_time(self, ongoing_course):
+        assert ongoing_course.membership
+        assert ongoing_course.semester.year == 2017
 
+    def test_ongoing_course_without_end_time(self, non_finished_course):
+        assert non_finished_course.membership
+        assert non_finished_course.semester.year == 2017
 
-    def test_ongoing_course_with_end_time(self):
-        self.assertTrue(self.ongoing_course.membership)
-
-    def test_ongoing_course_without_end_time(self):
-        self.assertTrue(self.non_finished_course.membership)
-
-    def test_split_on_membership(self):
+    def test_split_on_membership(self, finished_course, non_finished_course, ongoing_course):
         courses = [
-            self.finished_course,
-            self.non_finished_course,
-            self.ongoing_course,
+            finished_course,
+            non_finished_course,
+            ongoing_course,
         ]
         active, inactive = Course.split_on_membership(courses)
 
-        assert self.finished_course.code in inactive.keys()
-        assert self.finished_course in inactive.values()
+        assert finished_course.code in inactive.keys()
+        assert finished_course in inactive.values()
 
-        assert self.non_finished_course.code in active.keys()
-        assert self.non_finished_course in active.values()
+        assert non_finished_course.code in active.keys()
+        assert non_finished_course in active.values()
 
-        assert self.ongoing_course.code in active.keys()
-        assert self.ongoing_course in active.values()
+        assert ongoing_course.code in active.keys()
+        assert ongoing_course in active.values()
 
 
 class TestStudyProgram:

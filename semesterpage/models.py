@@ -665,12 +665,12 @@ class Contributor(models.Model):
         earlier_contributor = Q(contributors__in=[self])
         access_criterion = parent_access | earlier_contributor
 
-        # If the user has taken the course, according to dataporten,
-        # we grant access
+        # If the user has recently taken the course, according to dataporten,
+        # we grant access. Here, recently means either the current semester,
+        # or the last one
         if isinstance(self.user, DataportenUser):
-            finished_course = Q(course_code__in=self.user.dataporten.inactive_courses)
-            active_course = Q(course_code__in=self.user.dataporten.active_courses)
-            access_criterion = access_criterion | finished_course | active_course
+            recent_course = Q(course_code__in=self.user.dataporten.courses.less_semesters_ago(than=2))
+            access_criterion = access_criterion | recent_course
 
         return Course.objects.filter(access_criterion)
 

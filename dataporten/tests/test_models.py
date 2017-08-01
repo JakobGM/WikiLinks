@@ -2,25 +2,60 @@ from django.contrib.auth.models import AnonymousUser
 
 import pytest
 import responses
+from freezegun import freeze_time
 
 from .utils import mock_usergroups_request
-from ..models import DataportenGroupManager, DataportenUser
+from ..models import (
+        DataportenGroupManager,
+        CourseManager,
+        DataportenUser,
+)
 from ..parsers import StudyProgram
 
 
+@freeze_time('2016-01-01')
 class TestDataportenGroupManager:
     def test_dataporten_courses(self, dataporten):
-        assert 'EXPH0004' in dataporten.inactive_courses
-        assert 'EXPH0004' not in dataporten.active_courses
+        # End time date in past
+        assert 'EXPH0004' in dataporten.courses.finished
+        assert 'EXPH0004' in dataporten.courses
+        assert 'EXPH0004' not in dataporten.courses.active
 
-        assert 'TMA4180' not in dataporten.inactive_courses
-        assert 'TMA4180' in dataporten.active_courses
+        # End time date in future
+        assert 'TMA4150' not in dataporten.courses.finished
+        assert 'TMA4150' in dataporten.courses
+        assert 'TMA4150' in dataporten.courses.active
+
+        # No end time, implied future date
+        assert 'TMA4180' not in dataporten.courses.finished
+        assert 'TMA4180' in dataporten.courses
+        assert 'TMA4180' in dataporten.courses.active
 
     def test_dataporten_study_program(self, dataporten):
         assert dataporten.study_programs[0].code == 'MTFYMA'
 
     def test_dataporten_main_profile(self, dataporten):
         assert dataporten.main_profiles[0].code == 'MTFYMA-IM'
+
+
+@freeze_time('2017-01-01')
+class TestCourseManager:
+    def test_less_semesters_ago(self, finished_course, course_last_semester, ongoing_course):
+        courses = [
+            finished_course,
+            course_last_semester,
+            ongoing_course,
+        ]
+        course_manager = CourseManager(courses)
+
+        assert course_manager.less_semesters_ago(than=1) \
+                == [ongoing_course.code]
+
+        assert course_manager.less_semesters_ago(than=2) \
+                == [course_last_semester.code, ongoing_course.code]
+
+        assert course_manager.less_semesters_ago(than=20) \
+                == [finished_course.code, course_last_semester.code, ongoing_course.code]
 
 
 @pytest.mark.django_db

@@ -41,3 +41,6 @@ factory_boy
 
 # For debugging in the web browser
 django-debug-toolbar
+
+# Analogous to defaultdict
+defaultlist

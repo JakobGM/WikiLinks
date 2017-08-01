@@ -88,17 +88,30 @@ class TestContributor:
         courses entirely based on the contents of:
             dataporten.tests.groups.json
         """
+        # Users do not have access to really old courses
         old_taken_course = CourseFactory(course_code='EXPH0004')
-        assert old_taken_course.check_access(fysmat_user)
+        assert not old_taken_course.check_access(fysmat_user)
 
+        # This course is in the state of being taken,
+        # thus access should be granted
         active_course = CourseFactory(
                 full_name='unique name',
                 course_code='TMA4180',
         )
         assert active_course.check_access(fysmat_user)
 
-        non_taken_course = CourseFactory(
+        # This course is from the previous semester,
+        # and we grant access
+        recent_course = CourseFactory(
                 full_name='unique name 2',
+                course_code='TMA4145',
+        )
+        assert active_course.check_access(fysmat_user)
+
+        # This course does not even exist, and access
+        # should not be granted
+        non_taken_course = CourseFactory(
+                full_name='unique name 3',
                 course_code='XXX4200',
         )
         assert not non_taken_course.check_access(fysmat_user)

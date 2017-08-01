@@ -1,14 +1,15 @@
 from collections import defaultdict
-from typing import DefaultDict, List, Type
+from typing import DefaultDict, List, Type, Tuple, Dict
 
 from django.contrib.auth.models import User
 from django.http import HttpRequest
 from django.utils.functional import cached_property
 
 from allauth.socialaccount.models import SocialToken
+from defaultlist import defaultlist
 
 from .api import usergroups
-from .parsers import Course, BaseGroup, group_factory
+from .parsers import Course, BaseGroup, group_factory, Semester
 
 class DataportenGroupManager:
     """
@@ -31,8 +32,33 @@ class DataportenGroupManager:
         for name, groups in categorized_groups.items():
             setattr(self, name, groups)
 
-        self.active_courses, self.inactive_courses = \
-                Course.split_on_membership(self.courses)
+        self.courses = CourseManager(self.courses)  # type: ignore
+
+
+class CourseManager:
+    def __init__(self, courses: List[Course]) -> None:
+        self.courses = {course.code: course for course in courses}
+        self.semesters_ago: List[Tuple[int, str]] = []
+        now = Semester.now()
+
+        for course in courses:
+            ago = now - course.semester
+            # ago = ago if ago >= 0 else 0
+            self.semesters_ago.append((ago, course.code,))
+
+    @property
+    def active(self) -> List[str]:
+        return [code for ago, code in self.semesters_ago if ago == 0]
+
+    @property
+    def finished(self) -> List[str]:
+        return [code for ago, code in self.semesters_ago if ago > 0]
+
+    def less_semesters_ago(self, than) -> List[str]:
+        return [code for ago, code in self.semesters_ago if ago < than]
+
+    def __contains__(self, course_code: str) -> bool:
+        return course_code in self.courses
 
 
 class DataportenUser(User):

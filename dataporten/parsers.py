@@ -104,6 +104,14 @@ class Membership:
             return datetime.datetime.now() < self.end_time
 
 
+def next_holiday() -> datetime.datetime:
+    now = datetime.datetime.now()
+    if 1 <= now.month <= 6:
+        return datetime.datetime(year=now.year, month=6, day=10)
+    else:
+        return datetime.datetime(year=now.year, month=12, day=22)
+
+
 class Course(BaseGroup):
     DATAPORTEN_TYPE = 'emne'
     NAME = 'courses'
@@ -111,6 +119,11 @@ class Course(BaseGroup):
     def __init__(self, group: GroupJSON) -> None:
         super().__init__(group)
         self.code = group['id'].split(':')[-2]
+
+        if self.membership is not None and self.membership.end_time:
+            self.semester = Semester(self.membership.end_time)
+        else:
+            self.semester = Semester(next_holiday())
 
     CourseDict = Dict[str, 'Course']
 

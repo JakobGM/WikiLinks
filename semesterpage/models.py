@@ -226,13 +226,14 @@ class LinkList(models.Model):
     full_name = models.CharField(
         _('fullt navn'),
         unique=True,
-        max_length=60,
+        max_length=120,
         help_text=_('F.eks. "Prosedyre- og Objektorientert Programmering"')
     )
     # When display name is set as blank, the display name is deduced
     # from full_name instead
     display_name = models.CharField(
         _('visningsnavn'),
+        blank=True,
         max_length=60,
         help_text=_('F.eks. "C++"')
     )
@@ -254,6 +255,7 @@ class LinkList(models.Model):
     )
     homepage = models.URLField(
         _('Fagets hjemmeside'),
+        blank=True,
         help_text=_('F.eks. "http://www.phys.ntnu.no/fysikkfag/". '
                     'Denne lenken kan besøkes ved å trykke på ikonet til faget.')
     )
@@ -338,10 +340,32 @@ class Course(LinkList):
         super(Course, self).save(*args, **kwargs)
 
     def __str__(self):
+        """
+        Gives the name of the course, used as the title of the course in templates.
+        Is generated such that it does fit in the column representation in the HTML/CSS.
+        """
+        # If display name is set, use this in the template
         if self.display_name:
             return self.display_name
-        else:
+
+        # If the full name is short enough, just use it
+        if len(self.full_name) <= 12:
             return self.full_name
+
+        # Upper case acronym of the full name
+        acronym = ''.join(
+            word[0]
+            for word
+            in self.full_name.split()
+        ).upper()
+
+        # One letter acronyms don't make sense
+        if len(acronym) > 1:
+            return acronym
+
+        # Last option:
+        # Truncate the full name with ellipses
+        return self.full_name[0:11] + '...'
 
     def __repr__(self):
         return self.course_code + ' - ' + self.full_name

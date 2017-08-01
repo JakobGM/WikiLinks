@@ -45,8 +45,8 @@ class BaseGroup:
         if not self.valid(group):
             raise TypeError('Invalid Group JSON structure')
 
-        self.name = group.get('displayName', 'No display name')
-        self.url = group.get('url', None)
+        self.name = group.get('displayName', 'No display name').strip()
+        self.url = group.get('url', '')
         self.group_type = group_type(group)
 
         if 'membership' in group:

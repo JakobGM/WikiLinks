@@ -9,8 +9,8 @@ from subdomains.utils import reverse
 
 from kokekunster.settings import ADMINS, SERVER_EMAIL
 
-from .forms import FileForm, LinkForm
-from .models import Options, Semester, StudyProgram
+from .adapters import sync_dataporten_courses_with_db
+from .models import Course, Options, Semester, StudyProgram
 
 DEFAULT_STUDY_PROGRAM_SLUG = getattr(settings, 'DEFAULT_STUDY_PROGRAM_SLUG', 'fysmat')
 DEFAULT_SEMESTER_PK = getattr(settings, 'DEFAULT_SEMESTER_PK', 1)
@@ -110,9 +110,12 @@ def studentpage(request, homepage):
 
     # Boolean for changing the logo if the domain is fysmat.no
     is_fysmat = 'fysmat' in request.get_host().lower()
+    dataporten_courses = request.user.dataporten.courses
+    sync_dataporten_courses_with_db(dataporten_courses.all)
 
     return render(request, 'semesterpage/userpage-courses.html',
-                  {'semester': options,
+                  {'semester': request.user.dataporten,
+                   'courses': Course.objects.filter(course_code__in=dataporten_courses.active).all(),
                    'study_programs': StudyProgram.objects.filter(published=True),
                    'calendar_name': get_calendar_name(request),
                    'is_fysmat': is_fysmat,
@@ -185,13 +188,18 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM_SLUG, main_profile=Non
     # Boolean for changing the logo if the domain is fysmat.no
     is_fysmat = 'fysmat' in request.get_host().lower()
 
-    return render(request, 'semesterpage/courses.html',
-                  {'semester': _semester,
-                   'study_programs': StudyProgram.objects.filter(published=True),
-                    'calendar_name': get_calendar_name(request),
-                   'is_fysmat': is_fysmat,
-                   'user' : request.user}
-                  )
+    return render(
+        request,
+        'semesterpage/courses.html',
+        {
+            'semester': _semester,
+            'courses': _semester.courses.all(),
+            'study_programs': StudyProgram.objects.filter(published=True),
+            'calendar_name': get_calendar_name(request),
+            'is_fysmat': is_fysmat,
+            'user' : request.user,
+        },
+    )
 
 
 def profile(request):

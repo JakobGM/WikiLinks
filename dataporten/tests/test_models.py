@@ -18,17 +18,17 @@ class TestDataportenGroupManager:
     def test_dataporten_courses(self, dataporten):
         # End time date in past
         assert 'EXPH0004' in dataporten.courses.finished
-        assert 'EXPH0004' in dataporten.courses
+        assert 'EXPH0004' in dataporten.courses.all
         assert 'EXPH0004' not in dataporten.courses.active
 
         # End time date in future
         assert 'TMA4150' not in dataporten.courses.finished
-        assert 'TMA4150' in dataporten.courses
+        assert 'TMA4150' in dataporten.courses.all
         assert 'TMA4150' in dataporten.courses.active
 
         # No end time, implied future date
         assert 'TMA4180' not in dataporten.courses.finished
-        assert 'TMA4180' in dataporten.courses
+        assert 'TMA4180' in dataporten.courses.all
         assert 'TMA4180' in dataporten.courses.active
 
     def test_dataporten_study_program(self, dataporten):

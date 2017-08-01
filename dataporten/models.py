@@ -37,7 +37,7 @@ class DataportenGroupManager:
 
 class CourseManager:
     def __init__(self, courses: List[Course]) -> None:
-        self.courses = {course.code: course for course in courses}
+        self.all = {course.code: course for course in courses}
         self.semesters_ago: List[Tuple[int, str]] = []
         now = Semester.now()
 

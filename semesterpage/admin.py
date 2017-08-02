@@ -90,13 +90,13 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
             return request.user.contributor.accessible_courses()
 
     def get_fieldsets(self, request, obj=None):
-        fields = ('full_name', 'display_name', 'course_code', 'homepage', 'safe_logo',)
+        fields = ('display_name', 'homepage', 'safe_logo',)
         if request.user.contributor.access_level >= SEMESTER or request.user.is_superuser:
             # Only people with contributor access to semesters need to be able to select semesters on the course object
             fields += ('semesters',)
         if request.user.is_superuser:
             # SVG logos and contributors should only be changed by superusers
-            fields += ('unsafe_logo', 'contributors', 'created_by',)
+            fields += ('full_name', 'course_code', 'unsafe_logo', 'contributors', 'created_by',)
         return (
             (_('Fagdetaljer'), {
             'classes': ('collapse',),

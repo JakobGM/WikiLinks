@@ -30,6 +30,13 @@ def homepage(request):
             subdomain=None, kwargs={'study_program': request.subdomain}
         ))
     else:
+        # If the student has visited a student page before, redirect
+        if request.session.get('homepage', ''):
+            return redirect(reverse(
+                'semesterpage-studyprogram',
+                args=(request.session.get('homepage'),)
+            ))
+
         semester_pk = request.session.get('semester_pk', DEFAULT_SEMESTER_PK)
         _semester = Semester.objects.get(pk=semester_pk)
         # Determine if it is a semester with a main profile or not, and redirect accordingly
@@ -104,7 +111,7 @@ def main_profile_view(request, study_program, main_profile):
 
 def studentpage(request, homepage):
     try:
-        options = Options.objects.get(homepage_slug=homepage)
+        options = Options.objects.get(user__username=homepage)
     except Options.DoesNotExist:
         raise Http404(_('Fant ingen studieprogram eller brukerside med navnet "%s"') % homepage)
 
@@ -112,6 +119,9 @@ def studentpage(request, homepage):
     is_fysmat = 'fysmat' in request.get_host().lower()
     dataporten_courses = request.user.dataporten.courses
     sync_dataporten_courses_with_db(dataporten_courses.all)
+
+    # Save homepage in session for automatic redirect on next visit
+    request.session['homepage'] = homepage
 
     return render(request, 'semesterpage/userpage-courses.html',
                   {'semester': request.user.dataporten,
@@ -178,6 +188,10 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM_SLUG, main_profile=Non
         # Save the deliberate change of location by user in the session, as the semester has been found successfully
         request.session['semester_pk'] = _semester.pk
         request.session['study_program_slug'] = _semester.study_program.slug
+
+        # Delete studentpage slug in order to prevent redirection to it
+        request.session['homepage'] = ''
+
         if _semester.main_profile:
             request.session['main_profile_slug'] = _semester.main_profile.slug
         else:
@@ -203,11 +217,10 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM_SLUG, main_profile=Non
 
 
 def profile(request):
-    options = request.user.options
-    if options.self_chosen_semester is None and not options.self_chosen_courses.exists() or not options.homepage_slug:
-        return redirect(reverse('admin:semesterpage_options_change', args=(options.id,)))
-    else:
-        return redirect(reverse('semesterpage-studyprogram', args=(request.user.options.homepage_slug,)))
+    """
+    This view receives newly logged in users through django-allauth
+    """
+    return redirect(reverse('semesterpage-studyprogram', args=(request.user.username,)))
 
 
 def get_calendar_name(request):

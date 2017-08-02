@@ -750,23 +750,6 @@ class Options(models.Model):
         related_name='options',
         verbose_name=_('bruker')
     )
-    homepage = models.CharField(
-        max_length=60,
-        unique=True,
-        verbose_name=_('hjemmesidenavn'),
-        blank=True,
-        null=True,
-        help_text=_('Fagene du velger nedenfor vil dukke opp på hjemmesiden din. '
-                    'Du kan besøke din personlige semesterside på '
-                    'kokekunster.no/hjemmesidenavn.')
-    )
-    homepage_slug = AutoSlugField(
-        populate_from='homepage',
-        always_update=True,
-        unique=True,
-        blank=True,
-        null=True
-    )
     self_chosen_semester = models.ForeignKey(
         Semester,
         blank=True,
@@ -844,12 +827,7 @@ class Options(models.Model):
         return reverse('admin:%s_%s_change' % info, args=(self.pk,))
 
     def get_absolute_url(self):
-        if self.homepage:
-            return reverse('semesterpage-studyprogram', args=(self.homepage_slug,))
-        elif self.self_chosen_semester is not None:
-            return self.self_chosen_semester.get_absolute_url()
-        else:
-            return reverse('semesterpage-homepage')
+        return reverse('semesterpage-studyprogram', args=(self.user.username,))
 
     def __str__(self):
         return self.user.first_name + ' ' + self.user.last_name

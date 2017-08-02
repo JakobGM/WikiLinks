@@ -27,7 +27,7 @@
 {# The 'edit course' link is only shown to users who has access #}
 {% has_perm 'semesterpage.change_course' user course as can_edit_course %}
 {% if can_edit_course %}
-    <li style="list-style-image: url('{% static "semesterpage/link_categories/change_course.svg" %}');"><a href="{{ course.get_admin_url }}">Rediger fag</a></li>
+    <li style="list-style-image: url('{% static "semesterpage/link_categories/change_course.svg" %}');"><a class="edit-link" href="{{ course.get_admin_url }}">Rediger fag</a></li>
 {% endif %}
 
 </ul>

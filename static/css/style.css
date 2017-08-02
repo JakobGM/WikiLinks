@@ -204,6 +204,19 @@ a {
   color: black;
 }
 
+/* The edit links are slightly grey in order to tell them apart from proper course links */
+.edit-item {
+  color: red;
+}
+.edit-link {
+  text-decoration: none;
+  color: #757575;
+}
+
+.edit-link:visited {
+  color: #757575;
+}
+
 p.underkonstruksjon {
   padding-top: 2em;
   text-align: center;

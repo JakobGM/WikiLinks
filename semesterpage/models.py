@@ -757,7 +757,10 @@ class Options(models.Model):
         default=None,
         related_name='students',
         verbose_name=_('semester'),
-        help_text=_('Alle fagene til dette semesteret vil dukke opp på hjemmesiden din.')
+        help_text=_(
+            'Alle fagene til dette semesteret vil dukke opp på hjemmesiden din,'
+            ' i tillegg til de fagene du er opmeldt i.'
+        ),
     )
     self_chosen_courses = models.ManyToManyField(
         Course,
@@ -814,10 +817,13 @@ class Options(models.Model):
         only returning the courses from self_chosen_courses.
         """
         if self.self_chosen_semester:
-            return (self.self_chosen_semester.courses.all() | self.self_chosen_courses.all()).distinct()
+            return (
+                self.self_chosen_semester.courses.all() |\
+                self.self_chosen_courses.all()
+            ).distinct()
         else:
             # Semester not set by the user
-            return self.self_chosen_courses
+            return self.self_chosen_courses.all()
 
     def check_access(self, user):
         return self.user == user

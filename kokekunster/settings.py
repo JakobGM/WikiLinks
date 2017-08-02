@@ -106,6 +106,12 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+# Allows users to logout on get requests, making it possible
+# to log out without a form confirmation or use of javascript
+# Allows other websites to log out users, but is not considered
+# a threat for the moment
+ACCOUNT_LOGOUT_ON_GET = True
+
 
 # Controls the life time of the session
 ACCOUNT_SESSION_REMEMBER = True

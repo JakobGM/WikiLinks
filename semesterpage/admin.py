@@ -195,8 +195,7 @@ class UserAdmin(BaseUserAdmin):
 class OptionsAdmin(ObjectPermissionsModelAdmin):
     model = Options
     can_delete = False
-    exclude = ('user',)
-    filter_horizontal = ('self_chosen_courses',)
+    exclude = ('user', 'self_chosen_courses',)
 
     def get_queryset(self, request):
         """

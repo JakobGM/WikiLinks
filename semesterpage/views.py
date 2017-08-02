@@ -9,6 +9,7 @@ from subdomains.utils import reverse
 
 from kokekunster.settings import ADMINS, SERVER_EMAIL
 
+from dataporten.models import DataportenUser
 from .adapters import sync_dataporten_courses_with_db
 from .models import Course, Options, Semester, StudyProgram
 
@@ -117,15 +118,21 @@ def studentpage(request, homepage):
 
     # Boolean for changing the logo if the domain is fysmat.no
     is_fysmat = 'fysmat' in request.get_host().lower()
-    dataporten_courses = request.user.dataporten.courses
-    sync_dataporten_courses_with_db(dataporten_courses.all)
+
+    if request.user.is_authenticated and isinstance(request.user, DataportenUser):
+        # Set options.self_chosen_courses based on the information from dataporten
+        dataporten_courses = request.user.dataporten.courses
+        sync_dataporten_courses_with_db(dataporten_courses.all)
+
+        courses = Course.objects.filter(course_code__in=dataporten_courses.active).all()
+        request.user.options.self_chosen_courses.set(courses)
 
     # Save homepage in session for automatic redirect on next visit
     request.session['homepage'] = homepage
 
     return render(request, 'semesterpage/userpage-courses.html',
-                  {'semester': request.user.dataporten,
-                   'courses': Course.objects.filter(course_code__in=dataporten_courses.active).all(),
+                  {'semester': options,
+                   'courses': options.courses,
                    'study_programs': StudyProgram.objects.filter(published=True),
                    'calendar_name': get_calendar_name(request),
                    'is_fysmat': is_fysmat,

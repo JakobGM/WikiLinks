@@ -312,6 +312,7 @@ class Course(LinkList):
         related_name='created_courses',
         blank=True,
         null=True,
+        on_delete=models.SET_NULL,
         help_text=_('Hvem som opprettet faget.')
     )
     # The unique id provided from dataporten, intended for future db_index when the entire
@@ -789,7 +790,6 @@ class Options(models.Model):
         Course,
         default=None,
         related_name='active_students',
-        null=True,
         blank=True,
         verbose_name=_('dataporten fag'),
         help_text=_('Aktive fag fra dataporten'),

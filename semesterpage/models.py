@@ -314,6 +314,15 @@ class Course(LinkList):
         null=True,
         help_text=_('Hvem som opprettet faget.')
     )
+    # The unique id provided from dataporten, intended for future db_index when the entire
+    # database has been provided with dataporten_uid
+    dataporten_uid = models.CharField(
+        _('dataporten uid'),
+        unique=True,
+        null=True,
+        max_length=60,
+        help_text=_('Dataporten unik id'),
+    )
 
     def check_access(self, user):
         return self in user.contributor.accessible_courses()
@@ -615,6 +624,7 @@ class Contributor(models.Model):
     """
     A student contributor connected to a given semester, with a one-to-one relationship to the User model. Has an access_level
     field used to grant edit and delete permissions to Semesterpage models in the admin panel.
+    All permissions relevant data goes into this model, while any user preference related data goes into Options.
     """
     user = models.OneToOneField(
         User,
@@ -759,7 +769,7 @@ class Options(models.Model):
         verbose_name=_('semester'),
         help_text=_(
             'Alle fagene til dette semesteret vil dukke opp på hjemmesiden din,'
-            ' i tillegg til de fagene du er opmeldt i.'
+            ' i tillegg til de fagene du har valgt nedenfor.'
         ),
     )
     self_chosen_courses = models.ManyToManyField(
@@ -768,8 +778,21 @@ class Options(models.Model):
         related_name='students',
         blank=True,
         verbose_name=_('fag'),
-        help_text=_('Her kan du velge ekstra fag som ikke er en del av semesteret ditt, '
-                    'eller evt. lage en helt egen fagkombinasjon.')
+        help_text=_('Dette er fagene som vises på profilsiden din.'),
+    )
+
+    # The following dataporten field saves the last observed data from dataporten.
+    # This is not intended for authentification, but rather for knowing when the
+    # dataporten data has changed, such that 'self_chosen_courses' can be updated.
+    # See .adapters.sync_options_of_user_with_dataporten
+    active_dataporten_courses = models.ManyToManyField(
+        Course,
+        default=None,
+        related_name='active_students',
+        null=True,
+        blank=True,
+        verbose_name=_('dataporten fag'),
+        help_text=_('Aktive fag fra dataporten'),
     )
     calendar_name = models.CharField(
         _('1024-kalendernavn'),
@@ -815,6 +838,7 @@ class Options(models.Model):
         any additional courses from self_chosen_courses.
         It also handles the case when the user has not selected a semester,
         only returning the courses from self_chosen_courses.
+        self_chosen_courses is sometimes populated by dataporten.
         """
         if self.self_chosen_semester:
             return (
@@ -826,7 +850,7 @@ class Options(models.Model):
             return self.self_chosen_courses.all()
 
     def check_access(self, user):
-        return self.user == user
+        return self.user.username == user.username
 
     def get_admin_url(self):
         info = (self._meta.app_label, self._meta.model_name)

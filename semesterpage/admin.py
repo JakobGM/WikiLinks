@@ -96,7 +96,7 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
             fields += ('semesters',)
         if request.user.is_superuser:
             # SVG logos and contributors should only be changed by superusers
-            fields += ('full_name', 'course_code', 'unsafe_logo', 'contributors', 'created_by',)
+            fields += ('full_name', 'course_code', 'unsafe_logo', 'contributors', 'created_by', 'dataporten_uid',)
         return (
             (_('Fagdetaljer'), {
             'classes': ('collapse',),
@@ -195,7 +195,8 @@ class UserAdmin(BaseUserAdmin):
 class OptionsAdmin(ObjectPermissionsModelAdmin):
     model = Options
     can_delete = False
-    exclude = ('user', 'self_chosen_courses',)
+    filter_horizontal = ('self_chosen_courses',)
+    exclude = ('user', 'active_dataporten_courses',)
 
     def get_queryset(self, request):
         """

@@ -47,6 +47,7 @@ class BaseGroup:
 
         self.name = group.get('displayName', 'No display name').strip()
         self.url = group.get('url', '')
+        self.uid = group['id']
         self.group_type = group_type(group)
 
         if 'membership' in group:

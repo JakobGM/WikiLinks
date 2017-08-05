@@ -3,6 +3,7 @@ from gettext import gettext as _
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage, mail_admins
+from django.contrib.auth.models import User
 from django.http import Http404
 from django.shortcuts import redirect, render
 from subdomains.utils import reverse
@@ -10,7 +11,10 @@ from subdomains.utils import reverse
 from kokekunster.settings import ADMINS, SERVER_EMAIL
 
 from dataporten.models import DataportenUser
-from .adapters import sync_dataporten_courses_with_db
+from .adapters import (
+    sync_dataporten_courses_with_db,
+    sync_options_of_user_with_dataporten,
+)
 from .models import Course, Options, Semester, StudyProgram
 
 DEFAULT_STUDY_PROGRAM_SLUG = getattr(settings, 'DEFAULT_STUDY_PROGRAM_SLUG', 'fysmat')
@@ -111,28 +115,35 @@ def main_profile_view(request, study_program, main_profile):
 
 
 def studentpage(request, homepage):
+    # NB! In the following view function, user and request.user is not necessarily
+    # the same user. This should become more clear in the next refactoring
     try:
-        options = Options.objects.get(user__username=homepage)
-    except Options.DoesNotExist:
+        # The homepage is given by the (Feide) username
+        user = User.objects.select_related('options', 'contributor').get(username=homepage)
+    except User.DoesNotExist:
         raise Http404(_('Fant ingen studieprogram eller brukerside med navnet "%s"') % homepage)
 
     # Boolean for changing the logo if the domain is fysmat.no
     is_fysmat = 'fysmat' in request.get_host().lower()
 
     if request.user.is_authenticated and isinstance(request.user, DataportenUser):
-        # Set options.self_chosen_courses based on the information from dataporten
+        # The user is authenticated through dataporten, and we use this opportunity
+        # to update/create new course model objects from the dataporten data.
         dataporten_courses = request.user.dataporten.courses
-        sync_dataporten_courses_with_db(dataporten_courses.all)
+        sync_dataporten_courses_with_db(courses=dataporten_courses.all)
 
-        courses = Course.objects.filter(course_code__in=dataporten_courses.active).all()
-        request.user.options.self_chosen_courses.set(courses)
+        # And to add potentially new active courses to the student's
+        # self_chosen_courses in order to make it more up to date.
+        # And/or remove newly finished courses.
+        sync_options_of_user_with_dataporten(user=request.user)
+        user.refresh_from_db()
 
     # Save homepage in session for automatic redirect on next visit
     request.session['homepage'] = homepage
 
     return render(request, 'semesterpage/userpage-courses.html',
-                  {'semester': options,
-                   'courses': options.courses,
+                  {'semester': user.options,
+                   'courses': user.options.courses,
                    'study_programs': StudyProgram.objects.filter(published=True),
                    'calendar_name': get_calendar_name(request),
                    'is_fysmat': is_fysmat,

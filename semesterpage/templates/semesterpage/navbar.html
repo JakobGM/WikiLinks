@@ -45,15 +45,15 @@
                 {% endfor %}
             {% endblock %}
             {% if semester.study_program.has_archive %}
-                <li class="arkiv">
-                    <a id="arkiv" href="{{ semester.get_archive_url }}">
+                <li>
+                    <a href="{{ semester.get_archive_url }}">
                         <img src="{% static "semesterpage/img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv
                     </a>
                 </li>
             {% endif %}
             {% if user.is_authenticated %}
-                <li id="facebook" class="arkiv nav-right">
-                    <a id="arkiv" href="/accounts/logout">
+                <li class="arkiv nav-right">
+                    <a href="/accounts/logout">
                       <i class="fa fa-sign-out" aria-hidden="true"></i>  Logg ut
                     </a>
                 </li>
@@ -63,25 +63,25 @@
                     </a>
                 </li>
                 <li class="arkiv nav-right">
-                    <a id="arkiv" {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
+                    <a {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
                         <i class="fa fa-calendar" aria-hidden="true"></i>  Timeplan
                     </a>
                 </li>
                 {% block nav-userpage %}
                     <li class="arkiv nav-right">
-                        <a id="arkiv" href="{{ user.options.get_absolute_url }}">
+                        <a href="{{ user.options.get_absolute_url }}">
                             <i class="fa fa-graduation-cap" aria-hidden="true"></i>  {{ user.username | title }}
                         </a>
                     </li>
                 {% endblock %}
             {% else %}
-                <li id="facebook" class="arkiv nav-right">
-                    <a id="arkiv" href="{% provider_login_url "dataporten" %}" style="color: #CFFFB3;">
+                <li class="arkiv nav-right">
+                    <a href="{% provider_login_url "dataporten" %}" style="color: #CFFFB3;">
                         <i class="fa fa-sign-in" aria-hidden="true"></i> Logg inn
                     </a>
                 </li>
                 <li class="arkiv nav-right">
-                    <a id="arkiv" {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
+                    <a {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
                         <i class="fa fa-calendar" aria-hidden="true"></i>  Timeplan
                     </a>
                 </li>

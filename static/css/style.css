@@ -66,6 +66,10 @@ body header .wrap {
   padding-bottom: 0.7em;
 }
 
+header #header-text {
+  color: #7a7a7a;
+}
+
 /* Navigation */
 nav {
   background: #7a7a7a;
@@ -91,10 +95,6 @@ nav a {
   color: white;
   text-decoration: none;
   display: block;
-}
-
-.arkiv img {
-  padding-left: 0.3em;
 }
 
 /* Spinning animation on hover for font-awesome icons */
@@ -445,33 +445,5 @@ article form p {
 @media (min-width: 500px) {
   .nav-right {
     float: right;
-  }
-
-  .arkiv img {
-    position: relative;
-    padding-left: 0.3em;
-    top: 0.15em;
-  }
-
-  .tannhjul {
-    position: relative;
-    right: -0.4em;
-  }
-
-  #settings-link {
-    position: relative;
-    bottom: -0.12em;
-  }
-
-  #settings-link img {
-    position: relative;
-    padding-right: 0.6em;
-    top: 0.1em;
-  }
-
-  #facebook a img {
-    position: relative;
-    top: 0.2em;
-    right: 0.14em;
   }
 }

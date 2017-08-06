@@ -1,4 +1,5 @@
 import os
+import raven
 
 # Settings for production environment
 
@@ -48,4 +49,12 @@ ADMINS = (
 DBBACKUP_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
 DBBACKUP_STORAGE_OPTIONS = {
     'oauth2_access_token': os.environ['DROPBOX_ACCESS_TOKEN'],
+}
+
+# Sentry related settings
+RAVEN_CONFIG = {
+    'dsn': os.environ['SENTRY_DSN'],
+    # If you are using git, you can also automatically configure the
+    # release based on the git info.
+    'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
 }

@@ -177,8 +177,14 @@ DATAPORTEN_CACHE_PATH = 'tmp/'
 # Determine run environment based on the environment variable 'PRODUCTION', and load proper settings
 
 if os.environ.get('PRODUCTION', None):
-    # Use djange_cron to run dbbackup every day
-    INSTALLED_APPS += ('django_cron',)
+    INSTALLED_APPS += (
+        # Use djange_cron to run dbbackup every day
+        'django_cron',
+
+        # Sentry error logging service
+        'raven.contrib.django.raven_compat',
+    )
+
     CRON_CLASSES = [
         'kokekunster.cronjobs.Backup',
     ]

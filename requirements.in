@@ -43,3 +43,6 @@ django-debug-toolbar
 
 # Analogous to defaultdict
 defaultlist
+
+# For sentry error logging SaaS
+raven

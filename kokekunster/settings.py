@@ -33,7 +33,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'widget_tweaks',
     'adminsortable2',
     'rules.apps.AutodiscoverRulesConfig',
     'allauth',

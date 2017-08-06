@@ -141,14 +141,16 @@ def studentpage(request, homepage):
     # Save homepage in session for automatic redirect on next visit
     request.session['homepage'] = homepage
 
-    return render(request, 'semesterpage/userpage-courses.html',
-                  {'semester': user.options,
-                   'courses': user.options.courses,
-                   'study_programs': StudyProgram.objects.filter(published=True),
-                   'calendar_name': get_calendar_name(request),
-                   'is_fysmat': is_fysmat,
-                   'user': request.user}
-                  )
+    return render(request, 'semesterpage/userpage-courses.html', {
+           'semester': user.options,
+           'courses': user.options.courses,
+           'study_programs': StudyProgram.objects.filter(published=True),
+           'calendar_name': get_calendar_name(request),
+           'is_fysmat': is_fysmat,
+           'user': request.user,
+           'header_text': f' / {user.username}',
+       }
+    )
 
 
 def simple_semester(request, study_program, semester_number):

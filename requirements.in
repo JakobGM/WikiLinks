@@ -14,7 +14,6 @@ django-storages
 django-cron
 gunicorn
 psycopg2
-django-widget-tweaks
 Pillow
 pip-tools
 django-extensions

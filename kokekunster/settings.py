@@ -18,11 +18,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Application definition
 
 INSTALLED_APPS = (
+    # Must be before django.contrib.admin
     'admin_interface',
-    'flat',
+    'flat_responsive',
     'colorfield',
+
     # Used for backing up data to Dropbox and importing prod data
     'dbbackup',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

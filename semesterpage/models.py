@@ -861,7 +861,7 @@ class Options(models.Model):
         return reverse('semesterpage-studyprogram', args=(self.user.username,))
 
     def __str__(self):
-        return self.user.first_name + ' ' + self.user.last_name
+        return self.user.username.title()
 
     class Meta(Link.Meta):
         verbose_name = _('instillinger')

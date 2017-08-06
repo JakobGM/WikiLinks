@@ -119,6 +119,10 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
     def response_change(self, request, obj):
         return redirect(obj.get_absolute_url())
 
+    def has_delete_permission(self, request, obj=None):
+        # Don't allow students to delete courses
+        return request.user.is_superuser
+
     def save_model(self, request, obj, form, change):
         obj.save()
         if change is False and not obj.semesters.exists():
@@ -209,6 +213,10 @@ class OptionsAdmin(ObjectPermissionsModelAdmin):
 
     def response_change(self, request, obj):
         return redirect(obj.get_absolute_url())
+
+    def has_delete_permission(self, request, obj=None):
+        # Don't allow students to delete their own options model object
+        return request.user.is_superuser
 
 
 admin.site.register(StudyProgram, StudyProgramAdmin)

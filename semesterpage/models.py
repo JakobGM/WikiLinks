@@ -646,6 +646,7 @@ class Contributor(models.Model):
         blank=True,
         null=True,
         default=None,
+        on_delete=models.SET_NULL,
         related_name='contributors',
         verbose_name=_('bidragsytersemester')
     )
@@ -766,6 +767,7 @@ class Options(models.Model):
         blank=True,
         null=True,
         default=None,
+        on_delete=models.SET_NULL,
         related_name='students',
         verbose_name=_('semester'),
         help_text=_(

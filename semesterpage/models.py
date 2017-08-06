@@ -225,7 +225,6 @@ class LinkList(models.Model):
     """
     full_name = models.CharField(
         _('fullt navn'),
-        unique=True,
         max_length=120,
         help_text=_('F.eks. "Prosedyre- og Objektorientert Programmering"')
     )

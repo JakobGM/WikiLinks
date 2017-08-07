@@ -123,9 +123,6 @@ def studentpage(request, homepage):
     except User.DoesNotExist:
         raise Http404(_('Fant ingen studieprogram eller brukerside med navnet "%s"') % homepage)
 
-    # Boolean for changing the logo if the domain is fysmat.no
-    is_fysmat = 'fysmat' in request.get_host().lower()
-
     if request.user.is_authenticated and isinstance(request.user, DataportenUser):
         # The user is authenticated through dataporten, and we use this opportunity
         # to update/create new course model objects from the dataporten data.
@@ -146,7 +143,6 @@ def studentpage(request, homepage):
            'courses': user.options.courses,
            'study_programs': StudyProgram.objects.filter(published=True),
            'calendar_name': get_calendar_name(request),
-           'is_fysmat': is_fysmat,
            'user': request.user,
            'header_text': f' / {user.username}',
        }
@@ -219,9 +215,6 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM_SLUG, main_profile=Non
         request.session['semester_number_slug'] = _semester.number
         request.session['homepage'] = ''  # Delete saved homepage
 
-    # Boolean for changing the logo if the domain is fysmat.no
-    is_fysmat = 'fysmat' in request.get_host().lower()
-
     return render(
         request,
         'semesterpage/courses.html',
@@ -230,7 +223,6 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM_SLUG, main_profile=Non
             'courses': _semester.courses.all(),
             'study_programs': StudyProgram.objects.filter(published=True),
             'calendar_name': get_calendar_name(request),
-            'is_fysmat': is_fysmat,
             'user' : request.user,
         },
     )

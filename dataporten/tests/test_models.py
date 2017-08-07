@@ -57,6 +57,15 @@ class TestCourseManager:
         assert course_manager.less_semesters_ago(than=20) \
                 == [finished_course.code, course_last_semester.code, ongoing_course.code]
 
+    @freeze_time('1900-01-01')
+    def test_semester_in_future(self, ongoing_course):
+        """
+        The Course manager needs to behave correctly when it is presented with a course
+        which ends in the next semester.
+        """
+        course_manager = CourseManager([ongoing_course])
+        assert ongoing_course.code in course_manager.active
+
 
 @pytest.mark.django_db
 def test_dataporten_user_token(dataporten_user):

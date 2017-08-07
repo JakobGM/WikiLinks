@@ -43,12 +43,11 @@ class CourseManager:
 
         for course in courses:
             ago = now - course.semester
-            # ago = ago if ago >= 0 else 0
             self.semesters_ago.append((ago, course.code,))
 
     @property
     def active(self) -> List[str]:
-        return [code for ago, code in self.semesters_ago if ago == 0]
+        return [code for ago, code in self.semesters_ago if ago <= 0]
 
     @property
     def finished(self) -> List[str]:
@@ -56,9 +55,6 @@ class CourseManager:
 
     def less_semesters_ago(self, than) -> List[str]:
         return [code for ago, code in self.semesters_ago if ago < than]
-
-    def __contains__(self, course_code: str) -> bool:
-        return course_code in self.courses
 
 
 class DataportenUser(User):

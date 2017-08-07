@@ -64,16 +64,16 @@ class TestCourse:
 
     def test_string_representation(self):
         course = Course(display_name='disp name given as a long string')
-        assert str(course) == 'disp name given as a long string'
+        assert course.short_name == 'disp name given as a long string'
 
         course = Course(full_name='nameshort')
-        assert str(course) == 'nameshort'
+        assert course.short_name == 'nameshort'
 
         course = Course(full_name='A very Long Course name but Acronymable')
-        assert str(course) == 'AVLCNBA'
+        assert course.short_name == 'AVLCNBA'
 
         course = Course(full_name='Thisisanonacronymablelongcoursename')
-        assert str(course) == 'Thisisanona...'
+        assert course.short_name == 'Thisisanona...'
 
 
 class TestResourceLinkList:

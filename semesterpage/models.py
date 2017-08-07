@@ -348,7 +348,8 @@ class Course(LinkList):
         self.course_code = self.course_code.upper()
         super(Course, self).save(*args, **kwargs)
 
-    def __str__(self):
+    @property
+    def short_name(self):
         """
         Gives the name of the course, used as the title of the course in templates.
         Is generated such that it does fit in the column representation in the HTML/CSS.
@@ -376,7 +377,7 @@ class Course(LinkList):
         # Truncate the full name with ellipses
         return self.full_name[0:11] + '...'
 
-    def __repr__(self):
+    def __str__(self):
         return self.course_code + ' - ' + self.full_name
 
     class Meta:

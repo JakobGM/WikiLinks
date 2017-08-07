@@ -16,7 +16,7 @@
   {% else %}
     {% include "semesterpage/course_logo.svg" with course=course only %}
   {% endif %}
-    <h2>{{ course }}</h2></a>
+    <h2>{{ course.short_name }}</h2></a>
 <ul>
 
 {% for link in course.links.all %}

@@ -761,19 +761,6 @@ class Options(models.Model):
         related_name='options',
         verbose_name=_('bruker')
     )
-    self_chosen_semester = models.ForeignKey(
-        Semester,
-        blank=True,
-        null=True,
-        default=None,
-        on_delete=models.SET_NULL,
-        related_name='students',
-        verbose_name=_('semester'),
-        help_text=_(
-            'Alle fagene til dette semesteret vil dukke opp på hjemmesiden din,'
-            ' i tillegg til de fagene du har valgt nedenfor.'
-        ),
-    )
     self_chosen_courses = models.ManyToManyField(
         Course,
         default=None,
@@ -806,49 +793,25 @@ class Options(models.Model):
 
     @property
     def study_program(self):
-        try:
-            return self.self_chosen_semester.study_program
-        except AttributeError:
-            # Semester not set by the user
-            return StudyProgram.objects.get(slug=DEFAULT_STUDY_PROGRAM_SLUG)
+        return StudyProgram.objects.get(slug=DEFAULT_STUDY_PROGRAM_SLUG)
 
     @property
     def main_profile(self):
-        try:
-            return self.self_chosen_semester.main_profile
-        except AttributeError:
-            # Semester not set by the user
-            return MainProfile.objects.none()
+        return MainProfile.objects.none()
 
     def get_archive_url(self):
-        if self.self_chosen_semester:
-            # Returns the archive link of the chosen semester
-            return self.self_chosen_semester.get_archive_url()
-        else:
-            # Returns the link to the root of the archive site
-            return subdomains.utils.reverse(
-                'semesterpage-homepage',
-                subdomain='arkiv',
-            )
+        # Returns the link to the root of the archive site
+        return subdomains.utils.reverse(
+            'semesterpage-homepage',
+            subdomain='arkiv',
+        )
 
     @property
     def courses(self):
         """
-        The courses that should be displayed to the user.
-        It is the set of the courses from the user's self_chosen_semester and
-        any additional courses from self_chosen_courses.
-        It also handles the case when the user has not selected a semester,
-        only returning the courses from self_chosen_courses.
-        self_chosen_courses is sometimes populated by dataporten.
+        The courses that should be displayed to the user on their homepage.
         """
-        if self.self_chosen_semester:
-            return (
-                self.self_chosen_semester.courses.all() |\
-                self.self_chosen_courses.all()
-            ).distinct()
-        else:
-            # Semester not set by the user
-            return self.self_chosen_courses.all()
+        return self.self_chosen_courses.all()
 
     def check_access(self, user):
         return self.user.username == user.username

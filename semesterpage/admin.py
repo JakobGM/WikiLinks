@@ -123,6 +123,9 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
         # Don't allow students to delete courses
         return request.user.is_superuser
 
+    def has_add_permission(self, request, obj=None):
+        return request.user.is_superuser
+
     def save_model(self, request, obj, form, change):
         obj.save()
         if change is False and not obj.semesters.exists():

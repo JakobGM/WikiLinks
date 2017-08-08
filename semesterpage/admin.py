@@ -75,6 +75,7 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
     list_filter = ('semesters',)
     search_fields = ('full_name', 'display_name', 'course_code',)
     filter_horizontal = ('semesters', 'contributors',)
+    view_on_site = False
     # Without this  'contributors' exclude, the save_model() method won't work properly,
     # that might be the case for created_by too, but that hasn't been tested yet
     inlines = [CourseLinkInline]
@@ -117,6 +118,14 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     def response_change(self, request, obj):
+        """
+        Where to send the user when the user saves the course.
+        """
+        if obj in request.user.options.self_chosen_courses.all():
+            # The course is part of the students homepage.
+            return redirect(request.user.options.get_absolute_url())
+
+        # Delegate to the course object how to show itself.
         return redirect(obj.get_absolute_url())
 
     def has_delete_permission(self, request, obj=None):

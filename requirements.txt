@@ -53,7 +53,7 @@ raven==6.1.0
 requests-cache==0.4.13
 requests-oauthlib==0.8.0  # via django-allauth
 requests==2.18.3
-responses==0.6.1
+responses==0.7.0
 rules==1.2.1
 six==1.10.0               # via bleach, django-dbbackup, django-extensions, dropbox, faker, freezegun, html5lib, pip-tools, python-dateutil, responses
 sqlparse==0.2.3           # via django-debug-toolbar

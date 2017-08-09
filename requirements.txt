@@ -46,7 +46,7 @@ pip-tools==1.9.0
 psycopg2==2.7.3
 py==1.4.34                # via pytest
 pytest-django==3.1.2
-pytest==3.2.0             # via pytest-django
+pytest==3.2.1             # via pytest-django
 python-dateutil==2.6.1    # via faker, freezegun
 python3-openid==3.1.0     # via django-allauth
 pytz==2017.2              # via django, django-dbbackup

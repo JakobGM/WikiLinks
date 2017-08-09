@@ -27,6 +27,17 @@ def upload_path(instance, filename):
     """
     return os.path.join(instance.__class__.__name__, slugify(str(instance)), filename)
 
+def norwegian_slugify(text: str) -> str:
+    """
+    Given a norwegian phrase, replace norwegian characters
+    with latin characters
+    """
+    replacements = [('æ', 'e'), ('ø', 'o'), ('å', 'a')]
+    for (nor, eng) in replacements:
+        text = text.replace(nor, eng)
+
+    return text
+
 
 class StudyProgram(models.Model):
     """
@@ -43,7 +54,7 @@ class StudyProgram(models.Model):
         help_text=_('F.eks. "Fysmat"')
     )
     slug = AutoSlugField(
-        populate_from='display_name',
+        populate_from=lambda sp: norwegian_slugify(sp.display_name),
         always_update=True,
         unique=True
     )
@@ -127,7 +138,7 @@ class MainProfile(models.Model):
         verbose_name=_('studieprogram')
     )
     slug = AutoSlugField(
-        populate_from='display_name',
+        populate_from=lambda mp: norwegian_slugify(mp.display_name),
         always_update=True,
         unique_with='study_program'
     )

@@ -12,7 +12,7 @@ class OptionsForm(forms.ModelForm):
     """
 
     self_chosen_courses = forms.ModelMultipleChoiceField(
-        label=_('Dine fag'),
+        label=_('Skriv inn dine fag'),
         queryset=Course.objects.all(),
         widget=autocomplete.ModelSelect2Multiple(
             url='semesterpage-course-autocomplete',
@@ -24,6 +24,13 @@ class OptionsForm(forms.ModelForm):
             },
         )
     )
+
+    def __init__(self, *args, **kwargs):
+        super(OptionsForm, self).__init__(*args, **kwargs)
+        self.fields['self_chosen_courses'].help_text = _(
+            'Tast inn fagkode eller fagnavn for å legge til et nytt fag\
+             på hjemmesiden din.'
+        )
 
     class Meta:
         model = Options

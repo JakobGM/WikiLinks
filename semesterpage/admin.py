@@ -232,6 +232,11 @@ class OptionsAdmin(ObjectPermissionsModelAdmin):
         # Don't allow students to delete their own options model object
         return request.user.is_superuser
 
+    class Media:
+        css = {
+            'all': ('css/disable_save_and_continue_editing_button.css',)
+        }
+
 
 admin.site.register(StudyProgram, StudyProgramAdmin)
 admin.site.register(Course, CourseAdmin)

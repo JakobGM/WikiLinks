@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 from dal import autocomplete
 
@@ -11,11 +12,12 @@ class OptionsForm(forms.ModelForm):
     """
 
     self_chosen_courses = forms.ModelMultipleChoiceField(
+        label=_('Dine fag'),
         queryset=Course.objects.all(),
         widget=autocomplete.ModelSelect2Multiple(
             url='semesterpage-course-autocomplete',
             attrs = {
-                'data-placeholder': 'Tast inn fagkode eller fagnavn',
+                'data-placeholder': _('Tast inn fagkode eller fagnavn'),
 
                 # Only trigger autocompletion after 3 characters have been typed
                 'data-minimum-input-length': 3,

@@ -5,87 +5,91 @@
 <nav>
     <div class="wrap">
         <ul>
-            {% block nav-studyprograms %}
-                <li class="dropdown">
-                    <a href="#" class="dropbtn">
-                        <img src="{% static "semesterpage/img/list-menu.svg" %}" alt="dropdown">&nbsp;&nbsp;{{ semester.study_program.display_name | title }}&nbsp;&nbsp;
-                    </a>
-                    <div class="dropdown-content">
-                        {% for study_program in study_programs %}
-                            <a href="{{ study_program.get_absolute_url }}">{% if study_program == semester.study_program %}<b>{% endif %}{{ study_program.display_name | title }}{% if study_program == semester.study_program %}</b>{% endif %}</a>
-                        {% endfor %}
-                    </div>
-                </li>
-            {% endblock %}
-            {% block nav-semesters %}
-                {% for simple_semester in semester.study_program.simple_semesters %}
-                    <li><a href="{{ simple_semester.get_absolute_url }}">
-                        {% if simple_semester.number == semester.number %}
-                            <b>{{ simple_semester.number }}. Semester</b>
-                        {% else %}
-                            {{ simple_semester.number }}. Semester
-                        {% endif %}
-                    </a></li>
-                {% endfor %}
-                {% for number, split_semesters in semester.study_program.grouped_split_semesters %}
-                    <li class="dropdown">
-                        <a href="#" class="dropbtn">
-                            {% if number == semester.number %}
-                                <b>{{ number }}. Semester</b>
-                            {% else %}
-                                {{ number }}. Semester
-                            {% endif %}
-                        </a>
-                        <div class="dropdown-content">
-                            {% for split_semester in split_semesters %}
-                                <a href="{{ split_semester.get_absolute_url }}">{% if split_semester == semester %}<b>{% endif %}{{ split_semester.main_profile.display_name }}{% if split_semester == semester %}</b>{% endif %}</a>
-                            {% endfor %}
-                        </div>
-                    </li>
-                {% endfor %}
-            {% endblock %}
-            {% if semester.study_program.has_archive %}
-                <li>
-                    <a href="{{ semester.get_archive_url }}">
-                        <img src="{% static "semesterpage/img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv
-                    </a>
-                </li>
-            {% endif %}
-            {% if user.is_authenticated %}
-                <li class="arkiv nav-right">
-                    <a href="/accounts/logout">
-                      <i class="fa fa-sign-out" aria-hidden="true"></i>  Logg ut
-                    </a>
-                </li>
-                <li class="arkiv nav-right">
-                    <a id="settings-link" class="link-icon-rotate" title="Instillinger" href="{{ user.options.get_admin_url }}">
-                        <i class="fa fa-plus" aria-hidden="true"></i>  Velg fag
-                    </a>
-                </li>
-                <li class="arkiv nav-right">
-                    <a {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
-                        <i class="fa fa-calendar" aria-hidden="true"></i>  Timeplan
-                    </a>
-                </li>
-                {% block nav-userpage %}
-                    <li class="arkiv nav-right">
-                        <a href="{{ user.options.get_absolute_url }}">
-                            <i class="fa fa-graduation-cap" aria-hidden="true"></i>  {{ user.username | title }}
-                        </a>
-                    </li>
-                {% endblock %}
-            {% else %}
-                <li class="arkiv nav-right">
-                    <a href="{% provider_login_url "dataporten" %}" style="color: #CFFFB3;">
-                        <i class="fa fa-sign-in" aria-hidden="true"></i> Logg inn
-                    </a>
-                </li>
-                <li class="arkiv nav-right">
-                    <a {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
-                        <i class="fa fa-calendar" aria-hidden="true"></i>  Timeplan
-                    </a>
-                </li>
-            {% endif %}
+            <div id="left-nav-items">
+              {% block nav-studyprograms %}
+                  <li class="dropdown">
+                      <a href="#" class="dropbtn">
+                          <img src="{% static "semesterpage/img/list-menu.svg" %}" alt="dropdown">&nbsp;&nbsp;{{ semester.study_program.display_name | title }}&nbsp;&nbsp;
+                      </a>
+                      <div class="dropdown-content">
+                          {% for study_program in study_programs %}
+                              <a href="{{ study_program.get_absolute_url }}">{% if study_program == semester.study_program %}<b>{% endif %}{{ study_program.display_name | title }}{% if study_program == semester.study_program %}</b>{% endif %}</a>
+                          {% endfor %}
+                      </div>
+                  </li>
+              {% endblock %}
+              {% block nav-semesters %}
+                  {% for simple_semester in semester.study_program.simple_semesters %}
+                      <li><a href="{{ simple_semester.get_absolute_url }}">
+                          {% if simple_semester.number == semester.number %}
+                              <b>{{ simple_semester.number }}. Semester</b>
+                          {% else %}
+                              {{ simple_semester.number }}. Semester
+                          {% endif %}
+                      </a></li>
+                  {% endfor %}
+                  {% for number, split_semesters in semester.study_program.grouped_split_semesters %}
+                      <li class="dropdown">
+                          <a href="#" class="dropbtn">
+                              {% if number == semester.number %}
+                                  <b>{{ number }}. Semester</b>
+                              {% else %}
+                                  {{ number }}. Semester
+                              {% endif %}
+                          </a>
+                          <div class="dropdown-content">
+                              {% for split_semester in split_semesters %}
+                                  <a href="{{ split_semester.get_absolute_url }}">{% if split_semester == semester %}<b>{% endif %}{{ split_semester.main_profile.display_name }}{% if split_semester == semester %}</b>{% endif %}</a>
+                              {% endfor %}
+                          </div>
+                      </li>
+                  {% endfor %}
+              {% endblock %}
+              {% if semester.study_program.has_archive %}
+                  <li>
+                      <a href="{{ semester.get_archive_url }}">
+                          <img src="{% static "semesterpage/img/arkiv_nav.svg" %}" alt="arkiv">  Arkiv
+                      </a>
+                  </li>
+              {% endif %}
+            </div>
+            <div id="right-nav-items">
+              {% if user.is_authenticated %}
+                  <li class="arkiv">
+                      <a href="/accounts/logout">
+                        <i class="fa fa-sign-out" aria-hidden="true"></i>  Logg ut
+                      </a>
+                  </li>
+                  <li class="arkiv">
+                      <a id="settings-link" class="link-icon-rotate" title="Instillinger" href="{{ user.options.get_admin_url }}">
+                          <i class="fa fa-plus" aria-hidden="true"></i>  Velg fag
+                      </a>
+                  </li>
+                  <li class="arkiv">
+                      <a {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
+                          <i class="fa fa-calendar" aria-hidden="true"></i>  Timeplan
+                      </a>
+                  </li>
+                  {% block nav-userpage %}
+                      <li class="arkiv">
+                          <a href="{{ user.options.get_absolute_url }}">
+                              <i class="fa fa-graduation-cap" aria-hidden="true"></i>  {{ user.username | title }}
+                          </a>
+                      </li>
+                  {% endblock %}
+              {% else %}
+                  <li class="arkiv">
+                      <a href="{% provider_login_url "dataporten" %}" style="color: #CFFFB3;">
+                          <i class="fa fa-sign-in" aria-hidden="true"></i> Logg inn
+                      </a>
+                  </li>
+                  <li class="arkiv">
+                      <a {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
+                          <i class="fa fa-calendar" aria-hidden="true"></i>  Timeplan
+                      </a>
+                  </li>
+              {% endif %}
+           </div>
         </ul>
     </div>
 </nav>

@@ -78,6 +78,11 @@ nav {
   background: #7a7a7a;
   color: white;
   font-weight: 300;
+
+  /* Expand navbar when nav items wraps */
+  /* overflow: overlay; */
+  display: table;
+  width: 100%;
 }
 
 nav .wrap {
@@ -154,10 +159,6 @@ nav a {
   zoom: 0.935; /* Scaling to fit page on MacBook Pro */
   -moz-transform: scale(0.935);
   -moz-transform-origin: 50% 50% 0;
-}
-
-div.wrap.content {
-  margin-top: 0;
 }
 
 .content article {
@@ -402,7 +403,14 @@ article form p {
 }
 
 @media (min-width: 500px) {
-  .nav-right {
+  /* On non-mobile screens, we split the navbar into two parts, left and right */
+  #left-nav-items {
+    display: inline;
+  }
+
+  #right-nav-items {
+    display: inline;
     float: right;
+    padding-bottom: 0.5em;
   }
 }

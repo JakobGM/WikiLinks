@@ -38,6 +38,19 @@
 </article>
 {% endfor %}
 
+<!-- Invite the user to log in in order to choose electives, if desirable -->
+{% if semester.has_electives %}
+<article>
+  <a class="kategori" href="{{ electives_url }}">
+    <img src="{% static "semesterpage/img/electives.svg" %}">
+    <h2> Valgfag </h2>
+  </a>
+  <ul>
+    <li style="list-style-image: url('{% static "semesterpage/link_categories/black_plus.svg" %}');"><a href="{{ electives_url }}">Velg dine valgfag</a></li>
+  </ul>
+</article>
+{% endif %}
+
 {% for rll in semester.study_program.resource_link_lists %}
 <article>
 <a class="kategori" href="{{ rll.homepage }}">

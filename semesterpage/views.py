@@ -221,6 +221,14 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM_SLUG, main_profile=Non
         request.session['semester_number_slug'] = _semester.number
         request.session['homepage'] = ''  # Delete saved homepage
 
+    # Where to send users if the semester has electives
+    electives_url = ''
+    if _semester.has_electives:
+        if request.user.is_authenticated:
+            electives_url = request.user.options.get_admin_url()
+        else:
+            electives_url = '/accounts/dataporten/login'
+
     return render(
         request,
         'semesterpage/courses.html',
@@ -229,6 +237,7 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM_SLUG, main_profile=Non
             'courses': _semester.courses.all(),
             'study_programs': StudyProgram.objects.filter(published=True),
             'calendar_name': get_calendar_name(request),
+            'electives_url': electives_url,
             'user' : request.user,
         },
     )

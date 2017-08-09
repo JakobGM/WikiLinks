@@ -24,7 +24,7 @@ class SemesterInline(admin.TabularInline):
     Semester Inline in StudyProgramAdmin
     """
     model = Semester
-    fields = ('number', 'main_profile', 'published',)
+    fields = ('number', 'main_profile', 'has_electives', 'published',)
 
 class StudyProgramAdmin(ObjectPermissionsModelAdmin):
     list_display = ('full_name', 'display_name',)

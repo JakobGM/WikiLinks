@@ -170,12 +170,18 @@ class Semester(models.Model):
         related_name='semesters',
         verbose_name=_('hovedprofil')
     )
+    has_electives = models.BooleanField(
+        _('valgfag'),
+        default=False,
+        help_text=_('Huk av hvis dette semesteret har valgfag. I så fall vises et ekstra generisk "valgfag" på '
+                    'nettsiden til semesteret, hvor brukeren bes om å logge på for å velge valgfagene.'),
+    )
     published = models.BooleanField(
         _('publisert'),
         default=False,
         help_text=_('Semesteret dukker ikke opp i navigasjonsbaren før det er publisert, men det er fortsatt mulig å '
                     'besøke semesteret manuelt (URL: kokekunster.no/studieprogram/hovedprofil/semesternummer) for å '
-                    'teste resultatet før du publiserer.')
+                    'teste resultatet før du publiserer.'),
     )
 
 

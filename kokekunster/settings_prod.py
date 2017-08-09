@@ -44,11 +44,10 @@ ADMINS = (
   (os.environ['ADMIN_NAME'], os.environ['ADMIN_EMAIL']),
 )
 
-# Backup using the django-storages and the dropbox package
-
-DBBACKUP_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
+# Using filesystem backup, since the dropbox integration is broken
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {
-    'oauth2_access_token': os.environ['DROPBOX_ACCESS_TOKEN'],
+    'location': os.path.join(os.path.dirname(os.pardir), 'tmp'),
 }
 
 # Sentry related settings

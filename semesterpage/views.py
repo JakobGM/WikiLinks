@@ -119,7 +119,11 @@ def studentpage(request, homepage):
     # the same user. This should become more clear in the next refactoring
     try:
         # The homepage is given by the (Feide) username
-        user = User.objects.select_related('options', 'contributor').get(username=homepage)
+        user = User.objects\
+                .select_related('options', 'contributor')\
+                .prefetch_related('options__self_chosen_courses__links')\
+                .get(username=homepage)
+
     except User.DoesNotExist:
         raise Http404(_('Fant ingen studieprogram eller brukerside med navnet "%s"') % homepage)
 

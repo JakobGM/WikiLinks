@@ -83,6 +83,7 @@ class StudyProgram(models.Model):
         """
         Get the ResourceLinkLists, falling back on the default ones if there are no custom ones for the study program
         """
+        # TODO: Return QuerySets instead, making prefetch_related possible.
         if self._resource_link_lists.exists():
             _resource_link_lists = self._resource_link_lists.all()
         else:

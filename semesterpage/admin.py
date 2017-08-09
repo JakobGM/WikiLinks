@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from rules.contrib.admin import ObjectPermissionsModelAdmin
 
-from semesterpage.models import (SEMESTER, Contributor, Course, CourseLink, CustomLinkCategory, MainProfile, Options,
+from .forms import OptionsForm
+from .models import (SEMESTER, Contributor, Course, CourseLink, CustomLinkCategory, MainProfile, Options,
                                  ResourceLink, ResourceLinkList, Semester, StudyProgram)
 
 
@@ -210,6 +211,7 @@ class UserAdmin(BaseUserAdmin):
 
 class OptionsAdmin(ObjectPermissionsModelAdmin):
     model = Options
+    form = OptionsForm
     can_delete = False
     filter_horizontal = ('self_chosen_courses',)
     exclude = ('user', 'active_dataporten_courses',)

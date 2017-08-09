@@ -18,6 +18,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Application definition
 
 INSTALLED_APPS = (
+    # Must be before any admin apps
+    'dal',
+    'dal_select2',
+
     # Must be before django.contrib.admin
     'admin_interface',
     'flat_responsive',

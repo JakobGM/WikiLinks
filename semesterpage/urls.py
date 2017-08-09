@@ -8,6 +8,10 @@ urlpatterns = [
     #url(r'^komfyr/login/$', views.homepage),
     url(r'^www/$', views.homepage),
     url(r'^oppdater/', include(admin.site.urls)),
+
+    # For autocompletion of Courses in admin, with django-autocomplete-light
+    url(r'^course-autocomplete/$', views.CourseAutocomplete.as_view(), name='semesterpage-course-autocomplete'),
+
     url(r'^accounts/profile/', views.profile, name='semesterpage-profile'),
     url(r'^kalender/(?P<calendar_name>[-\w]+)/$', views.calendar, name='semesterpage-calendar'),
     url(r'^(?P<study_program>[-\w]+)/(?P<semester_number>[1-9]|10|11|12)/$', views.simple_semester, name='semesterpage-simplesemester'),

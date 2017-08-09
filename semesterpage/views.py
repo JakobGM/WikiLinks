@@ -4,12 +4,14 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage, mail_admins
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import redirect, render
+
+from dal import autocomplete
 from subdomains.utils import reverse
 
 from kokekunster.settings import ADMINS, SERVER_EMAIL
-
 from dataporten.models import DataportenUser
 from .adapters import (
     sync_dataporten_courses_with_db,
@@ -287,3 +289,30 @@ def calendar(request, calendar_name):
         request.user.options.calendar_name = calendar_name
         request.user.options.save()
     return redirect(to='https://ntnu.1024.no/' + calendar_name)
+
+
+class CourseAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        """
+        Returns a queryset used for autocompletion, restricted based
+        on the user input.
+        """
+        # Only let logged in users access all the course information
+        if not self.request.user.is_authenticated():
+            return Course.objects.none()
+
+        # Don't autocomplete courses which are already chosen
+        already_chosen = Q(
+            pk__in=self.request.user.options.self_chosen_courses.all(),
+        )
+        qs = Course.objects.exclude(already_chosen)
+
+        # If the user has started entering input, start restricting
+        # the choices available for autocompletion.
+        if self.q:
+            course_code = Q(course_code__istartswith=self.q)
+            full_name = Q(full_name__istartswith=self.q)
+            display_name = Q(display_name__startswith=self.q)
+            qs = qs.filter(course_code | full_name | display_name)
+
+        return qs

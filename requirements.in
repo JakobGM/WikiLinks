@@ -45,3 +45,6 @@ defaultlist
 
 # For sentry error logging SaaS
 raven
+
+# For autocompletion in django admin and forms
+django-autocomplete-light

@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from django.contrib.auth.models import Group, User
 from django.test import TestCase
 
@@ -6,8 +8,13 @@ from freezegun import freeze_time
 
 from dataporten.models import DataportenUser
 from ..apps import create_contributor_groups
-from ..models import Course
-from .factories import CourseFactory, SemesterFactory
+from ..models import Course, norwegian_slugify
+from .factories import (
+        CourseFactory,
+        SemesterFactory,
+        StudyProgramFactory,
+        MainProfileFactory,
+)
 
 
 class TestUser(TestCase):
@@ -35,11 +42,21 @@ class TestStudyProgram:
     def test_study_program_factory(self, study_program):
         assert study_program.display_name == 'Fysmat'
 
+    @pytest.mark.django_db
+    def test_slug_field(self):
+        study_program = StudyProgramFactory(display_name='åøæ aoe åøæ')
+        assert study_program.slug == 'aoe-aoe-aoe'
+
 
 class TestMainProfile:
     @pytest.mark.django_db
     def test_main_profile_factory(self, main_profile):
         assert main_profile.display_name == 'InMat'
+
+    @pytest.mark.django_db
+    def test_slug_field(self):
+        main_profile = MainProfileFactory(display_name='åøæ aoe åøæ')
+        assert main_profile.slug == 'aoe-aoe-aoe'
 
 
 class TestSemester:
@@ -143,3 +160,11 @@ class TestOptions:
     @pytest.mark.django_db
     def test_options_factory(self, options):
         assert type(options.user) is DataportenUser
+
+
+def test_norwegian_slugify():
+    norwegian_phrase = 'aoe åøæ åøæ test'
+    instance = Mock(display_name=norwegian_phrase)
+
+    english_phrase = norwegian_slugify(instance)
+    assert english_phrase == 'aoe aoe aoe test'

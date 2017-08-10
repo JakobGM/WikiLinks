@@ -9,7 +9,7 @@
               {% block nav-studyprograms %}
                   <li class="dropdown">
                       <a href="#" class="dropbtn">
-                          <img src="{% static "semesterpage/img/list-menu.svg" %}" alt="dropdown">&nbsp;&nbsp;{{ semester.study_program.display_name | title }}&nbsp;&nbsp;
+                        <i class="fa fa-caret-right" aria-hidden="true"></i>&nbsp;&nbsp;Bytt studie (<b>{{ semester.study_program.display_name | title }}</b>)&nbsp;&nbsp;
                       </a>
                       <div class="dropdown-content">
                           {% for study_program in study_programs %}
@@ -19,31 +19,36 @@
                   </li>
               {% endblock %}
               {% block nav-semesters %}
+              <li class="dropdown">
+                    <a href="#" class="dropbtn">
+                      <i class="fa fa-caret-right" aria-hidden="true"></i>&nbsp;&nbsp;Bytt semester (<b>{{ semester.number }}</b>)&nbsp;&nbsp;
+                    </a>
+                    <div class="dropdown-content semesters">
                   {% for simple_semester in semester.study_program.simple_semesters %}
-                      <li><a href="{{ simple_semester.get_absolute_url }}">
+                      <a href="{{ simple_semester.get_absolute_url }}">
                           {% if simple_semester.number == semester.number %}
-                              <b>{{ simple_semester.number }}. Semester</b>
+                              <b>{{ simple_semester.number }}. semester</b>
                           {% else %}
-                              {{ simple_semester.number }}. Semester
+                              {{ simple_semester.number }}. semester
                           {% endif %}
-                      </a></li>
+                      </a>
                   {% endfor %}
+
                   {% for number, split_semesters in semester.study_program.grouped_split_semesters %}
-                      <li class="dropdown">
-                          <a href="#" class="dropbtn">
-                              {% if number == semester.number %}
-                                  <b>{{ number }}. Semester</b>
-                              {% else %}
-                                  {{ number }}. Semester
-                              {% endif %}
+                  <div class="split-semester">
+                          <a href="#" class="second-dropbtn">
+                                  {{ number }}.&nbsp;&nbsp;semester&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i class="fa fa-caret-right" aria-hidden="true"></i>
                           </a>
-                          <div class="dropdown-content">
+                          <div class="second-dropdown-content">
                               {% for split_semester in split_semesters %}
                                   <a href="{{ split_semester.get_absolute_url }}">{% if split_semester == semester %}<b>{% endif %}{{ split_semester.main_profile.display_name }}{% if split_semester == semester %}</b>{% endif %}</a>
                               {% endfor %}
                           </div>
-                      </li>
+                  </div>
                   {% endfor %}
+
+                    </div>
+              </li>
               {% endblock %}
               {% if semester.study_program.has_archive %}
                   <li>

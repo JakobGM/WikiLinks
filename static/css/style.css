@@ -123,6 +123,18 @@ nav a {
   position: absolute;
   z-index: 2; /* In order to be placed above the semesterpage content */
   left: 0.3em;
+  padding-left: 0.7em;
+  background-color: #7a7a7a;
+  min-width: 10.5em;
+  box-shadow: 0 8px 16px 0 rgba(122, 122, 122, 0.25);
+}
+
+.second-dropdown-content {
+  display: none;
+  position: absolute;
+  z-index: 2; /* In order to be placed above the semesterpage content */
+  left: 9.5em;
+  margin-top: -2em;
   background-color: #7a7a7a;
   min-width: 6.5em;
   box-shadow: 0 8px 16px 0 rgba(122, 122, 122, 0.25);
@@ -136,6 +148,20 @@ nav a {
   text-align: left;
 }
 
+.split-semester a {
+  color: white;
+  padding: 3px 12px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.semesters {
+  min-width: 9.5em;
+  padding-left: 0.7em;
+  padding-bottom: 0.6em;
+}
+
 .dropdown-content a:first-child {
   padding-top: 0.75em;
 }
@@ -145,6 +171,14 @@ nav a {
 }
 
 .dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.split-semester {
+  margin-top: -0.5em;
+}
+
+.split-semester:hover .second-dropdown-content {
   display: block;
 }
 
@@ -358,6 +392,12 @@ article form p {
 
   .dropdown:focus .dropdown-content {
     display: inline;
+  }
+
+  /* Do not expand split semesters to the right, but rather below */
+  .second-dropdown-content {
+    position: inherit;
+    padding-top: 1.7em;
   }
 
   nav li {

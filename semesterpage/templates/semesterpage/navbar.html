@@ -79,14 +79,14 @@
                   {% block nav-userpage %}
                       <li class="arkiv">
                           <a href="{{ user.options.get_absolute_url }}">
-                              <i class="fa fa-graduation-cap" aria-hidden="true"></i>  {{ user.username | title }}
+                              <i class="fa fa-graduation-cap" aria-hidden="true"></i>  {{ user.username | title }}s fag
                           </a>
                       </li>
                   {% endblock %}
               {% else %}
                   <li class="arkiv">
                       <a href="{% provider_login_url "dataporten" %}" style="color: #CFFFB3;">
-                          <i class="fa fa-sign-in" aria-hidden="true"></i> Logg inn
+                          <i class="fa fa-sign-in" aria-hidden="true"></i> Dine fag
                       </a>
                   </li>
                   <li class="arkiv">

@@ -15,6 +15,7 @@
                           {% for study_program in study_programs %}
                               <a href="{{ study_program.get_absolute_url }}">{% if study_program == semester.study_program %}<b>{% endif %}{{ study_program.display_name | title }}{% if study_program == semester.study_program %}</b>{% endif %}</a>
                           {% endfor %}
+                          <a href="{% if user.is_authenticated %}{{ user.options.get_absolute_url }}{% else %}{% provider_login_url "dataporten" %}{% endif %}">Annet...</a>
                       </div>
                   </li>
               {% endblock %}

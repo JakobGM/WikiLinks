@@ -5,8 +5,9 @@ from semesterpage import views
 
 urlpatterns = [
     url(r'^$', views.homepage, name='semesterpage-homepage'),
-    #url(r'^komfyr/login/$', views.homepage),
     url(r'^www/$', views.homepage),
+
+    # Admin page for contributors
     url(r'^oppdater/', include(admin.site.urls)),
 
     # For autocompletion of Courses in admin, with django-autocomplete-light

@@ -92,6 +92,14 @@ class TestCourse:
         course = Course(full_name='Thisisanonacronymablelongcoursename')
         assert course.short_name == 'Thisisanona...'
 
+    def test_course_url_property(self):
+        course = CourseFactory.build(homepage='example.org')
+        assert course.url == 'example.org'
+
+        course.homepage = ''
+        course.pk = 1
+        assert course.url == '/oppdater/semesterpage/course/1/change/'
+
 
 class TestResourceLinkList:
     @pytest.mark.django_db

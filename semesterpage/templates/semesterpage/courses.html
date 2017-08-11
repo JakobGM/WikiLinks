@@ -10,7 +10,7 @@
 
 {% for course in courses %}
 <article>
-<a class="kategori" href="{{ course.homepage }}">
+<a class="kategori" href="{{ course.url }}">
   {% if course.logo %}
     <img src="{{ course.logo.url }}">
   {% else %}

@@ -396,6 +396,18 @@ class Course(LinkList):
         # Truncate the full name with ellipses
         return self.full_name[0:11] + '...'
 
+    @property
+    def url(self) -> str:
+        """
+        Gives the url which the course logo and header should redirect to. If
+        the course has no homepage url set, it should redirect to the course
+        admin instead.
+        """
+        if self.homepage:
+            return self.homepage
+        else:
+            return self.get_admin_url()
+
     def __str__(self):
         return self.course_code + ' - ' + self.full_name
 

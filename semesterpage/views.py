@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage, mail_admins
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import Http404
+from django.http import Http404, HttpResponse, HttpRequest
 from django.shortcuts import redirect, render
 
 from dal import autocomplete

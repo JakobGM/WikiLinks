@@ -1,11 +1,13 @@
 from gettext import gettext as _
 
-from adminsortable2.admin import SortableInlineAdminMixin
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from rules.contrib.admin import ObjectPermissionsModelAdmin
+
+from adminsortable2.admin import SortableInlineAdminMixin
 
 from .forms import OptionsForm
 from .models import (SEMESTER, Contributor, Course, CourseLink, CustomLinkCategory, MainProfile, Options,
@@ -265,3 +267,6 @@ admin.site.register(CustomLinkCategory, CustomLinkCategoryAdmin)
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(Options, OptionsAdmin)
+
+# Use the settings LOGIN_REQUIRED for admin login
+admin.site.login = login_required(admin.site.login)

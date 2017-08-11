@@ -28,9 +28,9 @@
 {% has_perm 'semesterpage.change_course' user course as can_edit_course %}
 {% if can_edit_course %}
   {% if course.links.all %}
-    <li style="list-style-image: url('{% static "semesterpage/link_categories/change_course.svg" %}');"><a class="edit-link" href="{{ course.get_admin_url }}">Rediger lenker</a></li>
+    <li style="list-style-image: url('{% static "semesterpage/link_categories/change_course.svg" %}');"><a class="edit-link" href="{{ course.get_admin_url }}">Rediger lenker{% if not course.display_name %} / fagnavn{% endif %}</a></li>
   {% else %}
-    <li style="list-style-image: url('{% static "semesterpage/link_categories/plus.svg" %}');"><a class="edit-link" href="{{ course.get_admin_url }}">Legg til lenker</a></li>
+  <li style="list-style-image: url('{% static "semesterpage/link_categories/plus.svg" %}');"><a class="edit-link" href="{{ course.get_admin_url }}">Legg til lenker{% if not course.display_name %} / fagnavn{% endif %}</a></li>
   {% endif %}
 {% endif %}
 

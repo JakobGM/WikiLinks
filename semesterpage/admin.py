@@ -97,15 +97,26 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
 
     def get_fieldsets(self, request, obj=None):
         fields = ('display_name', 'homepage', 'safe_logo',)
+
         if request.user.contributor.access_level >= SEMESTER or request.user.is_superuser:
-            # Only people with contributor access to semesters need to be able to select semesters on the course object
+            # Only people with contributor access to semesters need to be able
+            # to select semesters on the course object
             fields += ('semesters',)
+
         if request.user.is_superuser:
             # SVG logos and contributors should only be changed by superusers
             fields += ('full_name', 'course_code', 'unsafe_logo', 'contributors', 'created_by', 'dataporten_uid',)
+
+        # Only collapse the Course details section of the admin if the course
+        # has been given a display name and a homepage url.
+        if obj.display_name and obj.homepage:
+            classes = ('collapse',)
+        else:
+            classes = ()
+
         return (
             (_('Fagdetaljer'), {
-            'classes': ('collapse',),
+            'classes': classes,
             'fields': fields,
             }),
         )

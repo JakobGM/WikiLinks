@@ -66,8 +66,9 @@ class ResourceLinkInline(SortableInlineAdminMixin, admin.TabularInline):
     See documentation for CourseLinkInline
     """
     model = ResourceLink
-    # Must include order here in order to prevent a 'required field' bug for empty links in the inline.
-    # It is not shown in the admin panel anyhow due to the mixin.
+    # Must include order here in order to prevent a 'required field' bug for
+    # empty links in the inline.  It is not shown in the admin panel anyhow due
+    # to the mixin.
     fields = ('title', 'url', 'category', 'custom_category', 'order',)
 
 
@@ -77,14 +78,17 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
     search_fields = ('full_name', 'display_name', 'course_code',)
     filter_horizontal = ('semesters', 'contributors',)
     view_on_site = False
-    # Without this  'contributors' exclude, the save_model() method won't work properly,
-    # that might be the case for created_by too, but that hasn't been tested yet
+    # Without this  'contributors' exclude, the save_model() method won't work
+    # properly, that might be the case for created_by too, but that hasn't been
+    # tested yet
     inlines = [CourseLinkInline]
 
     def get_queryset(self, request):
         """
-        Restrict the displayed model instances in the admin view as specifically as possible based on the fields in
-        semesterpage.models.contributor, which is related one-to-one to the User model.
+        Restrict the displayed model instances in the admin view as
+        specifically as possible based on the fields in
+        semesterpage.models.contributor, which is related one-to-one to the
+        User model.
         """
         if request.user.is_superuser:
             return super().get_queryset(request)
@@ -147,6 +151,11 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
         if change is False:
             # Set creator without calling save() again by using update() instead
             Course.objects.filter(pk=obj.pk).update(created_by=request.user.contributor)
+
+    class Media:
+        css = {
+            'all': ('css/disable_save_and_continue_editing_button.css',)
+        }
 
 
 class ResourceLinkListAdmin(ObjectPermissionsModelAdmin):

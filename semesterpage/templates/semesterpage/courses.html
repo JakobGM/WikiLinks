@@ -23,14 +23,17 @@
 <li style="list-style-image: url('{% if link.custom_category %}{{ link.custom_category.thumbnail.url }}{% elif link.category %}{% static "semesterpage/link_categories/" %}{{ link.category }}{% else %}{% static "semesterpage/link_categories/link.svg" %}{% endif %}');"><a href="{{ link.url }}">{{ link.title|safe }}</a></li>
 {% endfor %}
 
+{% for file in course.files.all %}
+  <li style="list-style-image: url('{% static "semesterpage/link_categories/file.svg" %}');"><a href="{{ file.file.url }}">{{ file.display_name|safe }}</a></li>
+{% endfor %}
 
 {# The 'edit course' link is only shown to users who has access #}
 {% has_perm 'semesterpage.change_course' user course as can_edit_course %}
 {% if can_edit_course %}
-  {% if course.links.all %}
+  {% if course.links.all or course.files.all %}
     <li style="list-style-image: url('{% static "semesterpage/link_categories/change_course.svg" %}');"><a class="edit-link" href="{{ course.get_admin_url }}">Rediger lenker{% if not course.display_name %} / fagnavn{% endif %}</a></li>
   {% else %}
-  <li style="list-style-image: url('{% static "semesterpage/link_categories/plus.svg" %}');"><a class="edit-link" href="{{ course.get_admin_url }}">Legg til lenker{% if not course.display_name %} / fagnavn{% endif %}</a></li>
+    <li style="list-style-image: url('{% static "semesterpage/link_categories/plus.svg" %}');"><a class="edit-link" href="{{ course.get_admin_url }}">Legg til lenker{% if not course.display_name %} / fagnavn{% endif %}</a></li>
   {% endif %}
 {% endif %}
 

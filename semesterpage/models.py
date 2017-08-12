@@ -417,6 +417,50 @@ class Course(LinkList):
         verbose_name_plural = _('fag')
 
 
+def course_file_path(instance, filename):
+    return os.path.join('fagfiler', slugify(instance.course.course_code), filename)
+
+
+class CourseFile(models.Model):
+    course = models.ForeignKey(
+        Course,
+        related_name='files',
+    )
+    file = models.FileField(
+        upload_to=course_file_path,
+    )
+    author = models.ForeignKey(
+        User,
+        blank=True,
+        null=True,
+        related_name='course_uploads',
+    )
+    display_name = models.CharField(
+        _('visningsnavn'),
+        blank=True,
+        null=False,
+        max_length=60,
+        help_text=_('F.eks. "Kompendium"'),
+    )
+    order = models.PositiveSmallIntegerField(
+        _('rekkefølge'),
+        default=0,
+        blank=False,
+        null=False,
+        help_text=_('Bestemmer hvilken rekkefølge filene skal vises i. Lavest kommer først.'),
+    )
+
+    @property
+    def url(self):
+        return self.file.url
+
+
+    class Meta:
+        verbose_name = _('fil')
+        verbose_name_plural = _('filer')
+        ordering = ('order',)
+
+
 class ResourceLinkList(LinkList):
     """
     Used to portray resource links which are common across all the semesters.

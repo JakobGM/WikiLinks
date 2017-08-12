@@ -1,4 +1,5 @@
 from gettext import gettext as _
+from os.path import basename
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -11,7 +12,7 @@ from adminsortable2.admin import SortableInlineAdminMixin
 
 from .forms import OptionsForm
 from .models import (SEMESTER, Contributor, Course, CourseLink, CustomLinkCategory, MainProfile, Options,
-                                 ResourceLink, ResourceLinkList, Semester, StudyProgram)
+                     ResourceLink, ResourceLinkList, Semester, StudyProgram, CourseFile)
 
 
 class MainProfileInline(admin.TabularInline):
@@ -74,6 +75,17 @@ class ResourceLinkInline(SortableInlineAdminMixin, admin.TabularInline):
     fields = ('title', 'url', 'category', 'custom_category', 'order',)
 
 
+class CourseFileInline(SortableInlineAdminMixin, admin.TabularInline):
+    model = CourseFile
+    extra = 1
+
+    def get_fields(self, request, obj=None):
+        fields = ('file', 'display_name', 'order',)
+        if request.user.is_superuser:
+            fields += ('author',)
+        return fields
+
+
 class CourseAdmin(ObjectPermissionsModelAdmin):
     list_display = ('course_code', 'full_name', 'display_name',)
     list_filter = ('semesters',)
@@ -83,7 +95,27 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
     # Without this  'contributors' exclude, the save_model() method won't work
     # properly, that might be the case for created_by too, but that hasn't been
     # tested yet
-    inlines = [CourseLinkInline]
+    inlines = [CourseLinkInline, CourseFileInline]
+
+    def save_formset(self, request, form, formset, change):
+        """
+        Override save_formset to include author (request.user) of _new_ file
+        """
+        if formset.model == CourseFile and change:
+            instances = formset.save(commit=False)
+            for file in instances:
+                if not file.pk:
+                    # Instance does not have PK if created now
+                    file.author = request.user
+                    file.save()
+
+                if not file.display_name:
+                    # Set file title to the filename in case it is left empty
+                    file.title = basename(file.file.name)
+
+        # Need to call super to include built-in save_formset
+        # Django-admin-sortable2 needed this
+        super(CourseAdmin, self).save_formset(request, form, formset, change)
 
     def get_queryset(self, request):
         """

@@ -54,6 +54,9 @@ INSTALLED_APPS = (
     'subdomains',
     'semesterpage',
     'django_cleanup',
+
+    # File upload
+    'attachments',
 )
 
 MIDDLEWARE = (

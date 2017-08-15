@@ -4,18 +4,19 @@ import factory
 from dataporten.tests.factories import DataportenUserFactory
 
 from ..models import (
-        StudyProgram,
-        MainProfile,
-        Semester,
-        LinkList,
+        Contributor,
         Course,
-        ResourceLinkList,
+        CourseLink,
+        CourseUpload,
         CustomLinkCategory,
         Link,
-        CourseLink,
-        ResourceLink,
-        Contributor,
+        LinkList,
+        MainProfile,
         Options,
+        ResourceLink,
+        ResourceLinkList,
+        Semester,
+        StudyProgram,
 )
 
 
@@ -67,6 +68,16 @@ class CourseFactory(factory.django.DjangoModelFactory):
             # in the many-to-many relationship
             for semester in extracted:
                 self.semesters.add(semester)
+
+
+class CourseUploadFactory(factory.django.DjangoModelFactory):
+    course = factory.SubFactory(CourseFactory)
+    file = factory.django.FileField(filename='user_upload.pdf')
+    author = factory.SubFactory(DataportenUserFactory)
+    display_name = ''
+
+    class Meta:
+        model = CourseUpload
 
 
 class ResourceLinkListFactory(factory.django.DjangoModelFactory):

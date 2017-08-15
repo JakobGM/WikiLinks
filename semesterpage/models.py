@@ -1,4 +1,5 @@
 import os
+from os.path import basename
 from collections import defaultdict
 from gettext import gettext as _
 
@@ -417,14 +418,22 @@ class Course(LinkList):
         verbose_name_plural = _('fag')
 
 
-def course_file_path(instance, filename):
-    return os.path.join('fagfiler', slugify(instance.course.course_code), filename)
+def course_file_path(instance: 'CourseUpload', filename: str) -> str:
+    """
+    Returns the file path of a user uploaded course file, used in the upload_to
+    parameter of the FileField.
+    """
+    return os.path.join(
+        'fagfiler',
+        slugify(instance.course.course_code).upper(),
+        filename,
+    )
 
 
-class CourseFile(models.Model):
+class CourseUpload(models.Model):
     course = models.ForeignKey(
         Course,
-        related_name='files',
+        related_name='uploads',
     )
     file = models.FileField(
         upload_to=course_file_path,
@@ -447,12 +456,25 @@ class CourseFile(models.Model):
         default=0,
         blank=False,
         null=False,
-        help_text=_('Bestemmer hvilken rekkefølge filene skal vises i. Lavest kommer først.'),
+        help_text=_(
+            'Bestemmer hvilken rekkefølge filene skal vises i. Lavest kommer '
+            'først.'
+        ),
     )
 
     @property
-    def url(self):
+    def url(self) -> str:
         return self.file.url
+
+    @property
+    def filename(self) -> str:
+        return basename(self.file.name)
+
+    def __str__(self) -> str:
+        if self.display_name:
+            return self.display_name
+        else:
+            return self.filename
 
 
     class Meta:

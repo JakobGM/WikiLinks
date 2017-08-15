@@ -214,7 +214,10 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
 
     class Media:
         css = {
-            'all': ('css/disable_save_and_continue_editing_button.css',)
+            'all': (
+                'css/disable_save_and_continue_editing_button.css',
+                'css/disable_breadcrumbs_in_admin.css',
+            )
         }
 
 
@@ -303,7 +306,10 @@ class OptionsAdmin(ObjectPermissionsModelAdmin):
 
     class Media:
         css = {
-            'all': ('css/disable_save_and_continue_editing_button.css',)
+            'all': (
+                'css/disable_save_and_continue_editing_button.css',
+                'css/disable_breadcrumbs_in_admin.css',
+            )
         }
 
 

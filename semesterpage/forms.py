@@ -12,7 +12,7 @@ class OptionsForm(forms.ModelForm):
     """
 
     self_chosen_courses = forms.ModelMultipleChoiceField(
-        label=_('Skriv inn dine fag'),
+        label=_('Skriv inn fagene du tar nå'),
         queryset=Course.objects.all(),
         widget=autocomplete.ModelSelect2Multiple(
             url='semesterpage-course-autocomplete',

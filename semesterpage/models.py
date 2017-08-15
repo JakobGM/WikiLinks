@@ -254,7 +254,8 @@ class LinkList(models.Model):
         _('visningsnavn'),
         blank=True,
         max_length=60,
-        help_text=_('F.eks. "C++"')
+        help_text=_('Dette er teksten som vises under logen til faget i '
+                    'fagoversikten. F.eks. "C++".'),
     )
     safe_logo = models.ImageField(
         verbose_name=_('logo'),

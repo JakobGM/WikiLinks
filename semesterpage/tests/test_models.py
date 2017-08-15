@@ -11,6 +11,7 @@ from ..apps import create_contributor_groups
 from ..models import Course, norwegian_slugify
 from .factories import (
         CourseFactory,
+        CourseUploadFactory,
         SemesterFactory,
         StudyProgramFactory,
         MainProfileFactory,
@@ -99,6 +100,28 @@ class TestCourse:
         course.homepage = ''
         course.pk = 1
         assert course.url == '/oppdater/semesterpage/course/1/change/'
+
+
+class TestCourseUpload:
+    @pytest.mark.django_db
+    def test_url(self):
+        upload = CourseUploadFactory(course__course_code='TFY4200')
+        assert upload.url == '/media/fagfiler/TFY4200/user_upload.pdf'
+
+        # Need to delete the file in order to prevent collisions on the
+        # file name during the next test run
+        upload.file.delete()
+
+    def test_filename(self):
+        upload = CourseUploadFactory.build()
+        assert upload.filename == 'user_upload.pdf'
+
+    def test_str_representation(self):
+        upload = CourseUploadFactory.build()
+        assert str(upload) == 'user_upload.pdf'
+
+        upload.display_name = 'user given name'
+        assert str(upload) == 'user given name'
 
 
 class TestResourceLinkList:

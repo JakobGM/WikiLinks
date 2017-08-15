@@ -470,6 +470,9 @@ class CourseUpload(models.Model):
     def filename(self) -> str:
         return basename(self.file.name)
 
+    def check_access(self, user):
+        return self in user.contributor.accessible_course_uploads()
+
     def __str__(self) -> str:
         if self.display_name:
             return self.display_name
@@ -772,6 +775,11 @@ class Contributor(models.Model):
         if self.user.is_superuser:
             return True
         else:
+            # This check was the only way to fix a bug related to
+            # CourseUploadInline for non superusers. The inline never appears
+            # if this is not done. TODO: Find the reason why.
+            if object is None:
+                return True
             try:
                 return object.check_access(self.user)
             except AttributeError:
@@ -833,6 +841,9 @@ class Contributor(models.Model):
 
     def accessible_course_links(self):
         return CourseLink.objects.filter(course__in=self.accessible_courses())
+
+    def accessible_course_uploads(self):
+        return CourseUpload.objects.filter(course__in=self.accessible_courses())
 
     def accessible_resource_links(self):
         return ResourceLink.objects.filter(resource_link_list__study_programs__in=self.accessible_study_programs())

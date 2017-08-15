@@ -93,7 +93,7 @@ class CourseUploadInline(SortableInlineAdminMixin, admin.TabularInline):
     extra = 1
 
     def get_fields(self, request, obj=None):
-        fields = ('file', 'display_name', 'order',)
+        fields = ('display_name', 'file', 'order',)
         if request.user.is_superuser:
             fields += ('author',)
         return fields
@@ -122,6 +122,10 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
                 if not upload.pk:
                     # Instance does not have PK if created now
                     upload.author = request.user
+                    upload.save()
+
+                if not upload.display_name:
+                    upload.display_name = upload.filename
                     upload.save()
 
         # Need to call super to include built-in save_formset

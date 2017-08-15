@@ -61,11 +61,13 @@
             </div>
             <div id="right-nav-items">
               {% if user.is_authenticated %}
-                  <li class="arkiv">
-                      <a href="/accounts/logout">
-                        <i class="fa fa-sign-out" aria-hidden="true"></i>  Logg ut
-                      </a>
-                  </li>
+                  {% block nav-userpage %}
+                      <li class="arkiv">
+                          <a href="{{ user.options.get_absolute_url }}">
+                              <i class="fa fa-graduation-cap" aria-hidden="true"></i>  {{ user.username | title }}s fag
+                          </a>
+                      </li>
+                  {% endblock %}
                   <li class="arkiv">
                       <a id="settings-link" class="link-icon-rotate" title="Instillinger" href="{{ user.options.get_admin_url }}">
                           <i class="fa fa-plus" aria-hidden="true"></i>  Velg fag
@@ -76,22 +78,20 @@
                           <i class="fa fa-calendar" aria-hidden="true"></i>  Timeplan
                       </a>
                   </li>
-                  {% block nav-userpage %}
-                      <li class="arkiv">
-                          <a href="{{ user.options.get_absolute_url }}">
-                              <i class="fa fa-graduation-cap" aria-hidden="true"></i>  {{ user.username | title }}s fag
-                          </a>
-                      </li>
-                  {% endblock %}
-              {% else %}
                   <li class="arkiv">
-                      <a href="{% provider_login_url "dataporten" %}" style="color: #CFFFB3;">
-                          <i class="fa fa-sign-in" aria-hidden="true"></i> Dine fag
+                      <a href="/accounts/logout">
+                        <i class="fa fa-sign-out" aria-hidden="true"></i>  Logg ut
                       </a>
                   </li>
+              {% else %}
                   <li class="arkiv">
                       <a {% if calendar_name %}href="https://ntnu.1024.no/{{ calendar_name }}"{% else %}onclick="calendarRedirect()" href="#"{% endif %}>
                           <i class="fa fa-calendar" aria-hidden="true"></i>  Timeplan
+                      </a>
+                  </li>
+                  <li class="arkiv">
+                      <a href="{% provider_login_url "dataporten" %}" style="color: #CFFFB3;">
+                          <i class="fa fa-sign-in" aria-hidden="true"></i> Dine fag
                       </a>
                   </li>
               {% endif %}

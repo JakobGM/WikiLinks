@@ -261,7 +261,7 @@ class LinkList(models.Model):
         upload_to=upload_path,
         help_text=_('Bildet vises over alle lenkene knyttet til faget. '
                     'NB! Bildet skaleres automatisk til å bli kvadratisk, '
-                    'SVG bilder er ikke tillatt.'),
+                    '.svg bilder er ikke støttet.'),
         blank=True,
         null=True
     )

@@ -15,6 +15,10 @@ urlpatterns = [
 
     url(r'^accounts/profile/', views.profile, name='semesterpage-profile'),
     url(r'^kalender/(?P<calendar_name>[-\w]+)/$', views.calendar, name='semesterpage-calendar'),
+
+    # View for updating a course homepage url from user input
+    url(r'^ny_faghjemmeside/(?P<course_pk>\d+)/$', views.new_course_url, name='semesterpage-new_homepage_url'),
+
     url(r'^(?P<study_program>[-\w]+)/(?P<semester_number>[1-9]|10|11|12)/$', views.simple_semester, name='semesterpage-simplesemester'),
     url(r'^(?P<study_program>[-\w]+)/(?P<main_profile>[-\w]+)/(?P<semester_number>[1-9]|10|11|12)/$', views.semester, name='semesterpage-semester'),
     url(r'^(?P<study_program>[-\w]+)/(?P<main_profile>[-\w]+)/$', views.main_profile_view, name='semesterpage-mainprofile'),

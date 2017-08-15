@@ -9,6 +9,7 @@ from django.http import Http404, HttpResponse, HttpRequest
 from django.shortcuts import redirect, render
 
 from dal import autocomplete
+from rules.contrib.views import permission_required, objectgetter
 from subdomains.utils import reverse
 
 from kokekunster.settings import ADMINS, SERVER_EMAIL
@@ -298,6 +299,28 @@ def calendar(request, calendar_name):
         request.user.options.calendar_name = calendar_name
         request.user.options.save()
     return redirect(to='https://ntnu.1024.no/' + calendar_name)
+
+
+@permission_required(
+    'semesterpage.change_course',
+    fn=objectgetter(Course, 'course_pk'),
+)
+def new_course_url(request, course_pk: str) -> HttpResponse:
+    """
+    A user has specified a URL for a course which previously had none.
+    This should be saved to the Course model object before redirecting
+    to the course homepage.
+    """
+    homepage_url = request.GET.get('homepage_url', '')
+
+    # Need to prevent relative links
+    if not homepage_url[:5] == 'http':
+        homepage_url = 'http://' + homepage_url
+
+    course = Course.objects.get(pk=int(course_pk))
+    course.homepage = homepage_url
+    course.save(update_fields=['homepage'])
+    return redirect(course.homepage)
 
 
 class CourseAutocomplete(autocomplete.Select2QuerySetView):

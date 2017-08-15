@@ -9,8 +9,9 @@
 <div class="wrap content">
 
 {% for course in courses %}
+{% has_perm 'semesterpage.change_course' user course as can_edit_course %}
 <article>
-<a class="kategori" href="{{ course.url }}">
+  <a class="kategori" {% if not course.homepage and can_edit_course %}onclick="courseHomepageRedirect({{ course.pk }})"{% else %}href="{{ course.url }}"{% endif %}>
   {% if course.logo %}
     <img src="{{ course.logo.url }}">
   {% else %}
@@ -28,7 +29,6 @@
 {% endfor %}
 
 {# The 'edit course' link is only shown to users who has access #}
-{% has_perm 'semesterpage.change_course' user course as can_edit_course %}
 {% if can_edit_course %}
   {% if course.links.all or course.uploads.all %}
     <li style="list-style-image: url('{% static "semesterpage/link_categories/change_course.svg" %}');"><a class="edit-link" href="{{ course.get_admin_url }}">Rediger lenker{% if not course.display_name %} / fagnavn{% endif %}</a></li>

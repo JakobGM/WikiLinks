@@ -555,6 +555,7 @@ class CustomLinkCategory(models.Model):
 #       semesterpage/static/semesterpage/link_categories/
 TASKS = 'tasks.svg'
 SOLUTIONS = 'solutions.svg'
+BLACKBOARD = 'blackboard.svg'
 VIDEOS = 'videos.svg'
 TIMETABLE = 'timetable.svg'
 SYLLABUS = 'syllabus.svg'
@@ -573,6 +574,7 @@ CHEMISTRY = 'chemistry.svg'
 # Descriptive text of the link category choices
 DEFAULT_LINK_CATEGORIES = (
     (TASKS, _('Øvinger og prosjekter')),
+    (BLACKBOARD, _('Blackboard')),
     (SOLUTIONS, _('Løsningsforslag')),
     (VIDEOS, _('Videoforelesninger')),
     (TIMETABLE, _('Framdrifts- og timeplaner')),

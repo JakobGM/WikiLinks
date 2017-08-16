@@ -78,6 +78,9 @@ ROOT_URLCONF = 'kokekunster.urls'
 # When django requires a log in, redirect to dataporten
 LOGIN_URL = '/accounts/dataporten/login'
 
+# When logging out, redirect to homepage
+LOGOUT_REDIRECT_URL = '/'
+
 
 # A dictionary of urlconf module paths, keyed by their subdomain.
 # https://django-subdomains.readthedocs.io/en/latest/

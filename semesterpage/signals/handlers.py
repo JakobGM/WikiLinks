@@ -7,10 +7,7 @@ from django.http import HttpRequest
 from allauth.account.signals import user_logged_in
 
 from dataporten.models import DataportenUser
-from semesterpage.adapters import (
-    sync_dataporten_courses_with_db,
-    sync_options_of_user_with_dataporten,
-)
+from semesterpage.adapters import reconcile_dataporten_data
 from semesterpage.apps import create_contributor_groups
 from semesterpage.models import Contributor, Options
 
@@ -78,7 +75,9 @@ def set_groups(user):
         group.user_set.remove(user)
 
 @receiver(user_logged_in)
-def reconsile_dataporten_data(request: HttpRequest, user: User, **kwargs) -> None:
+def dataporten_sync_at_login(
+        request: HttpRequest,
+        user: User, **kwargs) -> None:
     """
     When a user logs in, we syncronize all the data received from dataporten
     with the database. Specifically creating new courses and setting the
@@ -87,4 +86,4 @@ def reconsile_dataporten_data(request: HttpRequest, user: User, **kwargs) -> Non
     # The django-allauth middleware is before the dataporten middleware,
     # so we need to set the proxy model manually.
     user.__class__ = DataportenUser
-    reconsile_dataporten_data(user)
+    reconcile_dataporten_data(user)

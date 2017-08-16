@@ -32,6 +32,10 @@ class DataportenGroupManager:
         for name, groups in categorized_groups.items():
             setattr(self, name, groups)
 
+        # TODO: Here we should use the NullObject-pattern instead
+        if not hasattr(self, 'courses'):
+            self.courses = []
+
         self.courses = CourseManager(self.courses)  # type: ignore
 
 

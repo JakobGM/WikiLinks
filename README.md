@@ -1,4 +1,4 @@
-# A Link Portal for NTNU students [![Build Status](https://travis-ci.org/JakobGM/django-kokekunster.svg?branch=master)](https://travis-ci.org/JakobGM/django-kokekunster) [![Coverage Status](https://coveralls.io/repos/github/JakobGM/django-kokekunster/badge.svg?branch=master)](https://coveralls.io/github/JakobGM/django-kokekunster?branch=master) [![Code Health](https://landscape.io/github/JakobGM/django-kokekunster/master/landscape.svg?style=flat)](https://landscape.io/github/JakobGM/django-kokekunster/master)
+# A Link Portal for NTNU students [![Build Status](https://travis-ci.org/JakobGM/WikiLinks.svg?branch=master)](https://travis-ci.org/JakobGM/WikiLinks) [![Coverage Status](https://coveralls.io/repos/github/JakobGM/WikiLinks/badge.svg?branch=master)](https://coveralls.io/github/JakobGM/WikiLinks?branch=master)
 
 A link portal written in Django. The site features:
 - Responsive design using CSS flex box

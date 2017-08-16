@@ -17,7 +17,7 @@
 {% block nav-userpage %}
     <li class="arkiv nav-right">
         <a href="{{ user.options.get_absolute_url }}">
-            <i class="fa fa-graduation-cap" aria-hidden="true"></i>  <b>{{ user.username | title }}s fag</b>
+          <i class="fa fa-graduation-cap" aria-hidden="true"></i> {{ own_homepage }} {% if semester == user.options %}<b>{% endif %}{{ user.username | title }}s fag{% if semester == user.options %}</b>{% endif %}
         </a>
     </li>
 {% endblock %}

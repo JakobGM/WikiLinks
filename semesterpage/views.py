@@ -14,10 +14,7 @@ from subdomains.utils import reverse
 
 from kokekunster.settings import ADMINS, SERVER_EMAIL
 from dataporten.models import DataportenUser
-from .adapters import (
-    sync_dataporten_courses_with_db,
-    sync_options_of_user_with_dataporten,
-)
+from .adapters import reconcile_dataporten_data
 from .models import Course, Options, Semester, StudyProgram
 
 DEFAULT_STUDY_PROGRAM_SLUG = getattr(settings, 'DEFAULT_STUDY_PROGRAM_SLUG', 'fysmat')
@@ -130,16 +127,13 @@ def studentpage(request, homepage):
     except User.DoesNotExist:
         raise Http404(_('Fant ingen studieprogram eller brukerside med navnet "%s"') % homepage)
 
-    if request.user.is_authenticated and isinstance(request.user, DataportenUser):
-        # The user is authenticated through dataporten, and we use this opportunity
-        # to update/create new course model objects from the dataporten data.
-        dataporten_courses = request.user.dataporten.courses
-        sync_dataporten_courses_with_db(courses=dataporten_courses.all)
-
-        # And to add potentially new active courses to the student's
-        # self_chosen_courses in order to make it more up to date.
-        # And/or remove newly finished courses.
-        sync_options_of_user_with_dataporten(user=request.user)
+    if request.user.is_authenticated \
+            and isinstance(request.user, DataportenUser) \
+            and request.user.username == homepage:
+        # We ensure normalization between dataporten and the database,
+        # since we have an authenticated dataporten user which tries to acces
+        # his/her own homepage.
+        reconcile_dataporten_data(request.user)
         user.refresh_from_db()
 
     # Save homepage in session for automatic redirect on next visit

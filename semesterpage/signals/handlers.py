@@ -2,7 +2,15 @@ from django.contrib.auth.models import Group, User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.http import HttpRequest
 
+from allauth.account.signals import user_logged_in
+
+from dataporten.models import DataportenUser
+from semesterpage.adapters import (
+    sync_dataporten_courses_with_db,
+    sync_options_of_user_with_dataporten,
+)
 from semesterpage.apps import create_contributor_groups
 from semesterpage.models import Contributor, Options
 
@@ -68,3 +76,15 @@ def set_groups(user):
         group.user_set.add(user)
     for group in contributor_groups[user.contributor.access_level+1:]:
         group.user_set.remove(user)
+
+@receiver(user_logged_in)
+def reconsile_dataporten_data(request: HttpRequest, user: User, **kwargs) -> None:
+    """
+    When a user logs in, we syncronize all the data received from dataporten
+    with the database. Specifically creating new courses and setting the
+    active courses of the user's options model.
+    """
+    # The django-allauth middleware is before the dataporten middleware,
+    # so we need to set the proxy model manually.
+    user.__class__ = DataportenUser
+    reconsile_dataporten_data(user)

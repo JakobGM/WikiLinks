@@ -7,6 +7,15 @@ from dataporten.parsers import Course as ParsedCourse
 from .models import Course
 from dataporten.models import DataportenUser
 
+def reconcile_dataporten_data(user: DataportenUser) -> None:
+    """
+    Syncs the information gathered from dataporten from this specific user.
+    Updates the user's options and creates new courses in the database if new
+    courses are encountered.
+    """
+    sync_dataporten_courses_with_db(user.dataporten.courses.all)
+    sync_options_of_user_with_dataporten(user=user)
+
 def sync_dataporten_courses_with_db(courses: Dict[str, ParsedCourse]):
     # Course codes that the dataporten user has taken
     course_codes = courses.keys()

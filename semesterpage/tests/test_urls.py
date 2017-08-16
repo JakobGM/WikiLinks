@@ -8,7 +8,6 @@ from .factories import (
     SemesterFactory,
     StudyProgramFactory,
 )
-from .test_utils import populate_db
 
 
 def test_simple_semester():

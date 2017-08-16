@@ -49,6 +49,7 @@ DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {
     'location': os.path.join(os.path.dirname(os.pardir), 'tmp'),
 }
+BACKUP_TIMES = ['3:00', '7:00', '12:00', '15:00', '18:00']
 
 # Sentry related settings
 RAVEN_CONFIG = {

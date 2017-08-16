@@ -13,7 +13,7 @@ cookies==2.2.1            # via responses
 defaultlist==0.1.0
 defusedxml==0.5.0         # via python3-openid
 django-admin-interface==0.5.1
-django-admin-sortable2==0.6.14
+django-admin-sortable2==0.6.15
 django-allauth==0.32.0
 django-autocomplete-light==3.2.9
 django-autoslug==1.9.3
@@ -36,7 +36,7 @@ first==2.0.1              # via pip-tools
 freezegun==0.3.9
 gunicorn==19.7.1
 html5lib==0.999999999     # via bleach
-idna==2.5                 # via requests
+idna==2.6                 # via requests
 mypy-extensions==0.3.0
 mypy==0.521
 oauthlib==2.0.2           # via requests-oauthlib
@@ -46,15 +46,15 @@ pip-tools==1.9.0
 psycopg2==2.7.3
 py==1.4.34                # via pytest
 pytest-django==3.1.2
-pytest==3.2.0             # via pytest-django
+pytest==3.2.1             # via pytest-django
 python-dateutil==2.6.1    # via faker, freezegun
 python3-openid==3.1.0     # via django-allauth
 pytz==2017.2              # via django, django-dbbackup
 raven==6.1.0
 requests-cache==0.4.13
 requests-oauthlib==0.8.0  # via django-allauth
-requests==2.18.3
-responses==0.6.1
+requests==2.18.4
+responses==0.7.0
 rules==1.2.1
 six==1.10.0               # via bleach, django-dbbackup, django-extensions, dropbox, faker, freezegun, html5lib, pip-tools, python-dateutil, responses
 sqlparse==0.2.3           # via django-debug-toolbar

@@ -27,6 +27,12 @@ header a {
   color: white;
 }
 
+header a:hover img {
+  -webkit-filter: opacity(0.6);
+  -webkit-filter: opacity(60%);
+  filter: opacity(60%);
+}
+
 .wrap {
   max-width: 1600px;
   margin: 0 auto;

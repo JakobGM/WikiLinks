@@ -7,6 +7,9 @@ urlpatterns = [
     url(r'^$', views.homepage, name='semesterpage-homepage'),
     url(r'^www/$', views.homepage),
 
+    # Overwrite the django admin login url in order to respect next parameters
+    url(r'^oppdater/login/', views.admin_login),
+
     # Admin page for contributors
     url(r'^oppdater/', include(admin.site.urls)),
 

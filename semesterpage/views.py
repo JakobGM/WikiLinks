@@ -3,6 +3,7 @@ from gettext import gettext as _
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage, mail_admins
+from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -303,6 +304,22 @@ def calendar(request, calendar_name):
         request.user.options.calendar_name = calendar_name
         request.user.options.save()
     return redirect(to='https://ntnu.1024.no/' + calendar_name)
+
+def admin_login(request: HttpRequest) -> HttpResponse:
+    """
+    The admin site login is wrapped in the login_required decorator. This way
+    we can link directly to admin pages, and non-authenticated users will be
+    sent to settings.LOGIN_URL with an appropiate ?next=... parameter instead.
+    Unfortunately, the django admin does not respect the query redirect
+    parameter, so this view intercepts the view logic and redirects if the user
+    has returned from a successful login.
+    """
+    if request.user.is_authenticated and 'next' in request.GET:
+        # The user has returned from the login provider
+        return redirect(request.GET['next'])
+    else:
+        # The user has not yet performed the login
+        return admin.site.login(request)
 
 
 @permission_required(

@@ -3,10 +3,11 @@ from gettext import gettext as _
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage, mail_admins
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpRequest
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, reverse as django_reverse
 
 from dal import autocomplete
 from rules.contrib.views import permission_required, objectgetter
@@ -238,11 +239,20 @@ def semester(request, study_program=DEFAULT_STUDY_PROGRAM_SLUG, main_profile=Non
     )
 
 
+@login_required
 def profile(request):
     """
-    This view receives newly logged in users through django-allauth
+    This view receives newly logged in users through django-allauth. It
+    redirects to the options admin url if the student has not selected their
+    active courses, and redirects to their student page elsewise.
     """
-    return redirect(reverse('semesterpage-studyprogram', args=(request.user.username,)))
+    if not request.user.options.last_user_modification:
+        return redirect(request.user.options.get_admin_url())
+    else:
+        return redirect(django_reverse(
+            'semesterpage-studyprogram',
+            args=(request.user.username,)
+        ))
 
 
 def get_calendar_name(request):

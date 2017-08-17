@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import Mock
 
 from django.contrib.auth.models import Group, User
@@ -7,36 +8,42 @@ import pytest
 from freezegun import freeze_time
 
 from dataporten.models import DataportenUser
+from dataporten.tests.factories import UserFactory
 from ..apps import create_contributor_groups
 from ..models import Course, norwegian_slugify
 from .factories import (
         CourseFactory,
         CourseUploadFactory,
+        MainProfileFactory,
+        OptionsFactory,
         SemesterFactory,
         StudyProgramFactory,
-        MainProfileFactory,
 )
 
 
-class TestUser(TestCase):
-    def setUp(self):
+class TestUser:
+    @pytest.mark.django_db
+    def test_new_user_permissions(self):
         create_contributor_groups()
 
-    def test_new_user_permissions(self):
         new_user = User.objects.create(username='provided_username')
 
         # Assert that the post_save signal listener has added the user.is_staff
         # permission, such that all user can have access to the admin back-end
-        self.assertIs(new_user.is_staff, True)
+        assert new_user.is_staff is True
 
         # All new users are added to the students group
         students_group = Group.objects.get(name='students')
-        self.assertIn(students_group, new_user.groups.all())
+        assert students_group in new_user.groups.all()
 
         # Assert that the contributor and options objects have been attached
         new_user.contributor
         new_user.options
 
+    @pytest.mark.django_db
+    def test_that_new_users_do_not_have_options_last_modified_attribute(self):
+        user = UserFactory()
+        assert user.options.last_user_modification is None
 
 class TestStudyProgram:
     @pytest.mark.django_db
@@ -191,6 +198,16 @@ class TestOptions:
     @pytest.mark.django_db
     def test_options_factory(self, options):
         assert type(options.user) is DataportenUser
+
+    @pytest.mark.django_db
+    def test_last_user_modification(self):
+        """
+        Only direct user changes should update last_user_modification, not
+        arbitrary code.
+        """
+        options = OptionsFactory(last_user_modification=None)
+        options.save()
+        assert options.last_user_modification == None
 
 
 def test_norwegian_slugify():

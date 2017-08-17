@@ -1,3 +1,4 @@
+import datetime
 from gettext import gettext as _
 
 from django.contrib import admin
@@ -303,6 +304,15 @@ class OptionsAdmin(ObjectPermissionsModelAdmin):
     def has_delete_permission(self, request, obj=None):
         # Don't allow students to delete their own options model object
         return request.user.is_superuser
+
+    def save_model(self, request, obj, form, change):
+        """
+        Updates the last_user_modification timestamp as the user has submitted
+        the form. We therefore keep track of the last time the student has
+        themself confirmed that their courses are correct.
+        """
+        obj.last_user_modification = datetime.date.today()
+        super().save_model(request, obj, form, change)
 
     class Media:
         css = {

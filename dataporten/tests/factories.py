@@ -39,15 +39,6 @@ class SocialTokenFactory(factory.django.DjangoModelFactory):
 
 
 class UserFactory(factory.django.DjangoModelFactory):
-    options = factory.RelatedFactory(
-            'semesterpage.tests.factories.OptionsFactory',
-            'user',
-    )
-    contributor = factory.RelatedFactory(
-            'semesterpage.tests.factories.ContributorFactory',
-            'user',
-    )
-
     class Meta:
         model = User
 

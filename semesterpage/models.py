@@ -881,6 +881,16 @@ class Options(models.Model):
         verbose_name=_('fag'),
         help_text=_('Dette er fagene som vises på profilsiden din.'),
     )
+    # We allow null values for last_user_modification, as null indicates that
+    # the user has not yet visited the options view. Elsewise, the date
+    # indicates the last time the user has confirmed that these options are
+    # correct.
+    last_user_modification = models.DateField(
+        blank=True,
+        null=True,
+        default=None,
+        verbose_name=_('sist redigert'),
+    )
 
     # The following dataporten field saves the last observed data from dataporten.
     # This is not intended for authentification, but rather for knowing when the

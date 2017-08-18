@@ -289,7 +289,7 @@ class OptionsAdmin(ObjectPermissionsModelAdmin):
     form = OptionsForm
     can_delete = False
     filter_horizontal = ('self_chosen_courses',)
-    exclude = ('user', 'active_dataporten_courses',)
+    exclude = ('user', 'active_dataporten_courses', 'last_user_modification',)
 
     def get_queryset(self, request):
         """

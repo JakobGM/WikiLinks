@@ -122,3 +122,15 @@ def test_studentpage():
         user__username='olan',
     )
     assert options.get_absolute_url() == '/olan/'
+
+def test_course_history():
+    history_url = reverse(
+        'semesterpage-course-history',
+        args=['1'],
+    )
+    assert history_url == '/oppdater/semesterpage/course/1/history/'
+
+    resolver = resolve('/oppdater/semesterpage/course/1/history/')
+    assert resolver.view_name == 'semesterpage-course-history'
+    assert resolver.func.__name__ == 'admin_course_history'
+    assert resolver.args == ('1',)

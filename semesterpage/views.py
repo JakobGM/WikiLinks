@@ -1,14 +1,15 @@
 from gettext import gettext as _
 
 from django.conf import settings
+from django.contrib import admin
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage, mail_admins
-from django.contrib import admin
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpRequest
 from django.shortcuts import redirect, render, reverse as django_reverse
+from django.urls import resolve
 
 from dal import autocomplete
 from rules.contrib.views import permission_required, objectgetter
@@ -17,6 +18,7 @@ from subdomains.utils import reverse
 from kokekunster.settings import ADMINS, SERVER_EMAIL
 from dataporten.models import DataportenUser
 from .adapters import reconcile_dataporten_data
+from .admin import CourseAdmin
 from .models import Course, Options, Semester, StudyProgram
 
 DEFAULT_STUDY_PROGRAM_SLUG = getattr(settings, 'DEFAULT_STUDY_PROGRAM_SLUG', 'fysmat')
@@ -321,6 +323,20 @@ def admin_login(request: HttpRequest) -> HttpResponse:
         # The user has not yet performed the login
         return admin.site.login(request)
 
+def admin_course_history(request: HttpRequest, course_pk: str) -> HttpResponse:
+    """
+    Only allows superusers to view the history of a Course model object in the
+    admin.
+    """
+    if request.user.is_superuser:
+        # Hacky way to access the history_view of CourseAdmin, as I have not
+        # found any other way to retrieve it. This is partly caused by this
+        # view being the resolver of 'admin:semesterpage_course_history'.
+        return admin.site._registry[Course].history_view(request, course_pk)
+    else:
+        # Don't need to do anything overly clever here, as this is not a normal
+        # use case at all.
+        return redirect('/')
 
 @permission_required(
     'semesterpage.change_course',

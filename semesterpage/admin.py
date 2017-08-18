@@ -9,6 +9,7 @@ from django.shortcuts import redirect
 from rules.contrib.admin import ObjectPermissionsModelAdmin
 
 from adminsortable2.admin import SortableInlineAdminMixin
+from reversion.admin import VersionAdmin
 
 from .forms import OptionsForm
 from .models import (
@@ -100,7 +101,7 @@ class CourseUploadInline(SortableInlineAdminMixin, admin.TabularInline):
         return fields
 
 
-class CourseAdmin(ObjectPermissionsModelAdmin):
+class CourseAdmin(VersionAdmin, ObjectPermissionsModelAdmin):
     list_display = ('course_code', 'full_name', 'display_name',)
     list_filter = ('semesters',)
     search_fields = ('full_name', 'display_name', 'course_code',)
@@ -218,6 +219,7 @@ class CourseAdmin(ObjectPermissionsModelAdmin):
             'all': (
                 'css/disable_save_and_continue_editing_button.css',
                 'css/disable_breadcrumbs_in_admin.css',
+                'css/disable_history_button_in_admin.css',
             )
         }
 
@@ -319,6 +321,7 @@ class OptionsAdmin(ObjectPermissionsModelAdmin):
             'all': (
                 'css/disable_save_and_continue_editing_button.css',
                 'css/disable_breadcrumbs_in_admin.css',
+                'css/disable_history_button_in_admin.css',
             )
         }
 

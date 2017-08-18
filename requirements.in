@@ -7,7 +7,6 @@ rules
 django-admin-interface
 django-allauth
 django-html_sanitizer
-django-cleanup
 django-dbbackup
 dropbox
 django-storages
@@ -48,3 +47,6 @@ raven
 
 # For autocompletion in django admin and forms
 django-autocomplete-light
+
+# For papertrail in model admin
+django-reversion

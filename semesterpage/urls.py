@@ -10,6 +10,10 @@ urlpatterns = [
     # Overwrite the django admin login url in order to respect next parameters
     url(r'^oppdater/login/', views.admin_login),
 
+    # Overwrite history view, only allowing superusers to inspect and change
+    # model object history
+    url(r'^oppdater/semesterpage/course/(\d+)/history/$', views.admin_course_history, name='semesterpage-course-history'),
+
     # Admin page for contributors
     url(r'^oppdater/', include(admin.site.urls)),
 

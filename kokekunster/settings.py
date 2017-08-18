@@ -53,7 +53,9 @@ INSTALLED_APPS = (
     'sanitizer',
     'subdomains',
     'semesterpage',
-    'django_cleanup',
+
+    # Papertrail for django admin model objects
+    'reversion',
 )
 
 MIDDLEWARE = (

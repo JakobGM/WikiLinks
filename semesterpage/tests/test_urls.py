@@ -12,14 +12,14 @@ from .factories import (
 
 def test_simple_semester():
     simple_url = reverse(
-        'semesterpage-simplesemester',
+        'semesterpage-semester',
         args=['fysmat', '1'],
     )
     assert simple_url == '/fysmat/1/'
 
     resolver = resolve('/fysmat/1/')
-    assert resolver.view_name == 'semesterpage-simplesemester'
-    assert resolver.func.__name__ == 'simple_semester'
+    assert resolver.view_name == 'semesterpage-semester'
+    assert resolver.func.__name__ == 'semester_view'
 
     kwargs = {
         'study_program': 'fysmat',
@@ -42,7 +42,7 @@ def test_study_program():
 
     resolver = resolve('/fysmat/')
     assert resolver.view_name == 'semesterpage-studyprogram'
-    assert resolver.func.__name__ == 'study_program_view'
+    assert resolver.func.__name__ == 'semester_view'
 
     kwargs = {
         'study_program': 'fysmat',
@@ -63,7 +63,7 @@ def test_main_profile():
 
     resolver = resolve('/fysmat/inmat/')
     assert resolver.view_name == 'semesterpage-mainprofile'
-    assert resolver.func.__name__ == 'main_profile_view'
+    assert resolver.func.__name__ == 'semester_view'
 
     kwargs = {
         'study_program': 'fysmat',
@@ -86,7 +86,7 @@ def test_semester():
 
     resolver = resolve('/fysmat/inmat/1/')
     assert resolver.view_name == 'semesterpage-semester'
-    assert resolver.func.__name__ == 'semester'
+    assert resolver.func.__name__ == 'semester_view'
 
     kwargs = {
         'study_program': 'fysmat',
@@ -111,7 +111,7 @@ def test_studentpage():
 
     resolver = resolve('/olan/')
     assert resolver.view_name == 'semesterpage-studyprogram'
-    assert resolver.func.__name__ == 'study_program_view'
+    assert resolver.func.__name__ == 'semester_view'
 
     kwargs = {
         'study_program': 'olan'

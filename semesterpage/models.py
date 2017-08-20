@@ -150,7 +150,10 @@ class MainProfile(models.Model):
         return self in user.contributor.accessible_main_profiles()
 
     def get_absolute_url(self):
-        return reverse('semesterpage-mainprofile', args=[self.study_program.slug, self.slug])
+        return reverse(
+            'semesterpage-mainprofile',
+            args=[self.study_program.slug, self.slug],
+        )
 
     def __str__(self):
         return self.display_name + ', ' + str(self.study_program)
@@ -202,7 +205,7 @@ class Semester(models.Model):
     def get(
         study_program: str,
         main_profile: Optional[str] = None,
-        number: Optional[int] = None,
+        number: Optional[str] = None,
     ) -> 'Semester':
         """
         Retrieves a semester, given the display name slug of its related study
@@ -223,7 +226,7 @@ class Semester(models.Model):
             q = q & Q(main_profile__slug__iexact=main_profile)
 
         if number:
-            q = q & Q(number=number)
+            q = q & Q(number=int(number))
             return Semester.objects.get(q)
         else:
             # No number has specified, and we fall back to the lowest available
@@ -254,10 +257,14 @@ class Semester(models.Model):
                 )
 
     def get_absolute_url(self):
+        kwargs = {
+            'study_program': self.study_program.slug,
+            'semester_number': self.number,
+        }
         if self.main_profile:
-            return reverse('semesterpage-semester', args=[self.study_program.slug, self.main_profile.slug, self.number])
-        else:
-            return reverse('semesterpage-simplesemester', args=[self.study_program.slug, self.number])
+            kwargs['main_profile'] = self.main_profile.slug
+
+        return reverse('semesterpage-semester', kwargs=kwargs)
 
     def __str__(self):
         if self.main_profile is not None:
@@ -394,7 +401,9 @@ class Course(LinkList):
             return self.semesters.all()[0].get_absolute_url()
         else:
             try:
-                return Options.objects.filter(self_chosen_courses__in=[self])[0].get_absolute_url()
+                return Options.objects.filter(
+                    self_chosen_courses__in=[self],
+                )[0].get_absolute_url()
             except IndexError:
                 return reverse('semesterpage-homepage')
 

@@ -31,35 +31,18 @@ def homepage(request):
     If no data is given, the homepage defaults to the semester
     given by DEFAULT_SEMESTER_PK
     """
-    if request.subdomain:
-        # The user has visited xxx.example.com and is redirected to example.com/xxx,
-        # the page for the study program or userpage xxx
+    if request.user.is_authenticated:
+        return redirect(to=request.user.options.get_absolute_url())
+    elif request.session.get('homepage', ''):
+        # If the student has visited a student page before, redirect
         return redirect(reverse(
-            viewname=study_program_view,
-            subdomain=None, kwargs={'study_program': request.subdomain}
+            'semesterpage-studyprogram',
+            args=(request.session.get('homepage'),)
         ))
     else:
-        # If the student has visited a student page before, redirect
-        if request.session.get('homepage', ''):
-            return redirect(reverse(
-                'semesterpage-studyprogram',
-                args=(request.session.get('homepage'),)
-            ))
-
         semester_pk = request.session.get('semester_pk', DEFAULT_SEMESTER_PK)
-        _semester = Semester.objects.get(pk=semester_pk)
-        # Determine if it is a semester with a main profile or not, and redirect accordingly
-        if _semester.main_profile:
-            return redirect(reverse(
-                'semesterpage-semester',
-                args=[_semester.study_program.slug, _semester.main_profile.slug, _semester.number]
-            ))
-        else:
-            return redirect(reverse(
-                'semesterpage-simplesemester',
-                args=[_semester.study_program.slug, _semester.number]
-            ))
-
+        semester = Semester.objects.get(pk=semester_pk)
+        return redirect(to=semester.get_absolute_url())
 
 def studentpage(request, homepage):
     # NB! In the following view function, user and request.user is not necessarily

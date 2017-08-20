@@ -35,7 +35,7 @@ def homepage(request):
         return redirect(to=request.user.options.get_absolute_url())
     elif request.session.get('homepage', ''):
         # If the student has visited a student page before, redirect
-        return redirect(reverse(
+        return redirect(django_reverse(
             'semesterpage-studyprogram',
             args=(request.session.get('homepage'),)
         ))

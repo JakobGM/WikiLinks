@@ -70,25 +70,6 @@ def set_admin_theme(apps, schema_editor):
     # Done with the changes, thus writing the changes to the database
     kokekunster_theme.save()
 
-def create_semesterpage_objects(apps, schema_editor):
-    StudyProgram = apps.get_model('semesterpage', 'StudyProgram')
-    Semester = apps.get_model('semesterpage', 'Semester')
-
-    default_study_program = StudyProgram.objects.create(
-        pk=1,
-        full_name='Fysikk og matematikk',
-        display_name='Fysmat',
-        has_archive=True,
-        published=True
-    )
-    default_semester = Semester.objects.create(
-        pk=1,
-        number=1,
-        study_program=default_study_program,
-        main_profile=None,
-        published=True
-    )
-
 def set_site(apps, schema_editor):
     Site = apps.get_model('sites', 'Site')
     default_site, _ = Site.objects.get_or_create(pk=1)
@@ -108,6 +89,5 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(set_admin_theme),
-        migrations.RunPython(create_semesterpage_objects),
         migrations.RunPython(set_site),
     ]

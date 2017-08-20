@@ -1,7 +1,8 @@
-import os
-from os.path import basename
 from collections import defaultdict
 from gettext import gettext as _
+from os.path import basename
+from typing import Optional
+import os
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -196,6 +197,42 @@ class Semester(models.Model):
                     'besøke semesteret manuelt (URL: kokekunster.no/studieprogram/hovedprofil/semesternummer) for å '
                     'teste resultatet før du publiserer.'),
     )
+
+    @staticmethod
+    def get(
+        study_program: str,
+        main_profile: Optional[str] = None,
+        number: Optional[int] = None,
+    ) -> 'Semester':
+        """
+        Retrieves a semester, given the display name slug of its related study
+        program, and optionally its main profile.
+
+        If main profile is not specified, it retrieves a 'common' semester
+        without any main profile attachment.
+
+        If number is not specified, it returns the lowest available semester
+        satisfying the criteria.
+
+        Raises Semester.DoesNotExist if nothing matches the given arguments.
+        """
+        q = Q(study_program__slug__iexact=study_program)
+
+        if main_profile:
+            # Semester related to a main profile
+            q = q & Q(main_profile__slug__iexact=main_profile)
+
+        if number:
+            q = q & Q(number=number)
+            return Semester.objects.get(q)
+        else:
+            # No number has specified, and we fall back to the lowest available
+            # semester.
+            try:
+                return Semester.objects.filter(q)[0]
+            except IndexError:
+                # No matching semester, since empty list has been returned
+                raise Semester.DoesNotExist
 
 
     def check_access(self, user):

@@ -10,7 +10,7 @@ from freezegun import freeze_time
 from dataporten.models import DataportenUser
 from dataporten.tests.factories import UserFactory
 from ..apps import create_contributor_groups
-from ..models import Course, norwegian_slugify
+from ..models import Course, Semester, norwegian_slugify
 from .factories import (
         CourseFactory,
         CourseUploadFactory,
@@ -72,6 +72,107 @@ class TestSemester:
     def test_creation_of_semester_with_factory(self, semester):
         assert semester.number == 1
         assert semester.main_profile.display_name == 'InMat'
+
+    @pytest.mark.django_db
+    def test_simple_semester(self):
+        simple_semester = SemesterFactory(
+            study_program__display_name='fysmat',
+            main_profile=None,
+            number=1,
+        )
+        result = Semester.get(
+            study_program='fysmat',
+            number=1,
+        )
+        assert simple_semester == result
+
+    @pytest.mark.django_db
+    def test_main_profile_semester(self):
+        main_profile_semester = SemesterFactory(
+            study_program__display_name='fysmat',
+            main_profile__display_name='indmat',
+            number=1,
+        )
+        result = Semester.get(
+            study_program='fysmat',
+            main_profile='indmat',
+            number=1,
+        )
+        assert main_profile_semester == result
+
+    @pytest.mark.django_db
+    def test_getting_lowest_semester_of_study_program(self):
+        lowest_semester = SemesterFactory(
+            study_program__display_name='fysmat',
+            main_profile__display_name='indmat',
+            number=2,
+        )
+        higher_semester = SemesterFactory(
+            study_program=lowest_semester.study_program,
+            main_profile=lowest_semester.main_profile,
+            number=4,
+        )
+        result = Semester.get(
+            study_program='fysmat',
+        )
+        assert lowest_semester == result
+
+    @pytest.mark.django_db
+    def test_alphabetical_ordering_when_several_lowest_semesters(self):
+        alphabetical_first = SemesterFactory(
+            study_program__display_name='fysmat',
+            main_profile__display_name='indmat',
+            number=2,
+        )
+        alphabetical_last = SemesterFactory(
+            study_program=alphabetical_first.study_program,
+            main_profile__display_name='tekfys',
+            number=2,
+        )
+        result = Semester.get(
+            study_program='fysmat',
+        )
+        assert alphabetical_first == result
+
+    @pytest.mark.django_db
+    def test_case_insensitive_search(self):
+        semester = SemesterFactory(
+            study_program__display_name='Fysmat',
+        )
+        result = Semester.get(
+            study_program='FysMat',
+        )
+        assert semester == result
+
+    @pytest.mark.django_db
+    def test_lowest_main_profile_semester(self):
+        even_lower_but_wrong = SemesterFactory(
+            study_program__display_name='fysmat',
+            main_profile=None,
+            number=1,
+        )
+        lowest_semester = SemesterFactory(
+            study_program=even_lower_but_wrong.study_program,
+            main_profile__display_name='indmat',
+            number=4,
+        )
+        highest = SemesterFactory(
+            study_program=even_lower_but_wrong.study_program,
+            main_profile=lowest_semester.main_profile,
+            number=5,
+        )
+        result = Semester.get(
+            study_program='fysmat',
+            main_profile='indmat',
+        )
+        assert lowest_semester == result
+
+    @pytest.mark.django_db
+    def test_non_existing_semester(self):
+        with pytest.raises(Semester.DoesNotExist):
+            result = Semester.get(
+                study_program='FysMat',
+            )
 
 
 class TestCourse:

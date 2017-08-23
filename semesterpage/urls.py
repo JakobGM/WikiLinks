@@ -26,6 +26,9 @@ urlpatterns = [
     # View for updating a course homepage url from user input
     url(r'^ny_faghjemmeside/(?P<course_pk>\d+)/$', views.new_course_url, name='semesterpage-new_homepage_url'),
 
+    # View for removing course from student page
+    url(r'^fjern_fag/(?P<course_pk>\d+)/$', views.remove_course, name='semesterpage-remove_course'),
+
     # URL patterns for semester view
     url(r'^(?P<study_program>[-\w]+)/(?P<semester_number>[1-9]|10|11|12)/$', views.semester_view, name='semesterpage-semester'),
     url(r'^(?P<study_program>[-\w]+)/(?P<main_profile>[-\w]+)/(?P<semester_number>[1-9]|10|11|12)/$', views.semester_view, name='semesterpage-semester'),

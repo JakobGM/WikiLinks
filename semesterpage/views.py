@@ -76,6 +76,7 @@ def studentpage(request, homepage):
            'calendar_name': get_calendar_name(request),
            'user': request.user,
            'header_text': f' / {user.username}',
+           'student_page': True,
        }
     )
 
@@ -127,7 +128,8 @@ def semester_view(request, study_program, main_profile=None, semester_number=Non
             'study_programs': StudyProgram.objects.filter(published=True),
             'calendar_name': get_calendar_name(request),
             'electives_url': electives_url,
-            'user' : request.user,
+            'user': request.user,
+            'student_page': False,
         },
     )
 
@@ -223,6 +225,15 @@ def new_course_url(request, course_pk: str) -> HttpResponse:
     course.homepage = homepage_url
     course.save(update_fields=['homepage'])
     return redirect(course.homepage)
+
+@login_required
+def remove_course(request, course_pk: str) -> HttpResponse:
+    """
+    A user wishes to hide a course from their course page, and shall be
+    returned to the student page after it has been hidden.
+    """
+    request.user.options.self_chosen_courses.remove(course_pk)
+    return redirect(to=request.user.options.get_absolute_url())
 
 
 class CourseAutocomplete(autocomplete.Select2QuerySetView):

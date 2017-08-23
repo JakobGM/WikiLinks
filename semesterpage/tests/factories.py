@@ -52,7 +52,7 @@ class SemesterFactory(factory.django.DjangoModelFactory):
 class CourseFactory(factory.django.DjangoModelFactory):
     full_name = 'Prosedyre- og Objektorientert Programmering'
     display_name = 'C++'
-    course_code = 'TDT4102'
+    course_code = factory.Sequence(lambda n: f'TDT{4101 + n}')
 
     class Meta:
         model = Course

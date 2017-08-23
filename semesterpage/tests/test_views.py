@@ -1,12 +1,16 @@
 import datetime
 from unittest.mock import MagicMock
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 
 import pytest
 
 from .factories import CourseFactory, SemesterFactory
-from ..views import homepage, profile
+from ..views import (
+    homepage,
+    profile,
+    remove_course,
+)
 from dataporten.tests.factories import DataportenUserFactory
 
 class TestProfileView:
@@ -103,3 +107,42 @@ class TestHomepageView:
         request.session = {'semester_pk': 1}
         response = homepage(request)
         assert response.url == '/fysmat/1/'
+
+class TestRemoveCourseFromStudentPageView:
+    @pytest.mark.django_db
+    def test_course_is_removed(self):
+        request = MagicMock()
+        request.user.options.get_absolute_url.return_value = '/username/'
+        user = DataportenUserFactory()
+        request.user = user
+
+        courses = CourseFactory.create_batch(2)
+        request.user.options.self_chosen_courses = courses
+
+        response = remove_course(request, courses[0].id)
+        assert list(request.user.options.self_chosen_courses.all()) \
+                 == courses[1:]
+        assert response.url == '/username/'
+
+    @pytest.mark.django_db
+    def test_removing_course_requires_login(self, rf):
+        request = rf.get('/fjern_fag/1/')
+        request.user = AnonymousUser()
+
+        response = remove_course(request, '1')
+        assert response.status_code == 302
+        assert response.url == '/accounts/dataporten/login?next=/fjern_fag/1/'
+
+    @pytest.mark.django_db
+    def test_remove_course_which_has_already_been_hidden(self):
+        request = MagicMock()
+        request.user.options.get_absolute_url.return_value = '/username/'
+        user = DataportenUserFactory()
+        request.user = user
+
+        courses = CourseFactory.create_batch(2)
+        request.user.options.self_chosen_courses = courses
+
+        response = remove_course(request, '1000')
+        assert list(request.user.options.self_chosen_courses.all()) == courses
+        assert response.url == '/username/'

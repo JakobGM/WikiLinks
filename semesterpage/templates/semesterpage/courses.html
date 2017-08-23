@@ -37,6 +37,10 @@
   {% endif %}
 {% endif %}
 
+{% if student_page %}
+  <li style="list-style-image: url('{% static "semesterpage/link_categories/cross.svg" %}');"><a class="edit-link" onclick="removeCourseFromStudentPage({{ course.pk }})">Skjul fag</a></li>
+{% endif %}
+
 </ul>
 </article>
 {% endfor %}

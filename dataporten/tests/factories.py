@@ -39,11 +39,14 @@ class SocialTokenFactory(factory.django.DjangoModelFactory):
 
 
 class UserFactory(factory.django.DjangoModelFactory):
+    username = 'username'
+
     class Meta:
         model = User
 
 
 class DataportenUserFactory(factory.django.DjangoModelFactory):
+    username = 'username'
     options = factory.RelatedFactory(
             'semesterpage.tests.factories.OptionsFactory',
             'user',

@@ -22,3 +22,15 @@ function courseHomepageRedirect(course_pk) {
 
   window.location = "/ny_faghjemmeside/" + course_pk + "/?homepage_url=" + homepageURL;
 }
+
+function removeCourseFromStudentPage(course_pk) {
+  var confirmation = confirm("Ønsker du å fjerne dette faget fra din hjemmeside?" +
+                  " Faget kan legges til igjen ved å trykke \"Velg fag\" i navigasjonsbaren.");
+
+  if (confirmation) {
+    window.location = "/fjern_fag/" + course_pk;
+  }
+  else {
+    return;
+  }
+}

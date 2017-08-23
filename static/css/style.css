@@ -249,11 +249,7 @@ a {
 }
 
 /* The edit links are slightly grey in order to tell them apart from proper course links */
-.edit-item {
-  color: red;
-}
-
-.content .edit-link {
+.content li .edit-link {
   text-decoration: none;
   color: #757575;
 }
@@ -262,9 +258,8 @@ a {
   color: #757575;
 }
 
-p.underkonstruksjon {
-  padding-top: 2em;
-  text-align: center;
+.content li .edit-link:hover {
+  color: #757575;
 }
 
 /* Styling for semester choice page */

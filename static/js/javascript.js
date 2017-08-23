@@ -14,18 +14,18 @@ function calendarRedirect() {
 // to update the course homepage accordingly
 function courseHomepageRedirect(course_pk) {
   var homepageURL = window.prompt("Dette faget har ingen lagret hjemmeside. " +
-                  "Vennligst tast inn URLen for å lagre en ny en.");
+                  "\n\nVennligst tast inn URLen til fagets hjemmeside.");
 
   if (homepageURL == undefined) {
     return; // Exits function if user didn´t enter a course url
   }
 
-  window.location = "/ny_faghjemmeside/" + course_pk + "/?homepage_url=" + homepageURL;
+  window.location = "/ny_faghjemmeside/" + course_pk + "/?homepage_url=" + encodeURIComponent(homepageURL);
 }
 
 function removeCourseFromStudentPage(course_pk) {
   var confirmation = confirm("Ønsker du å fjerne dette faget fra din hjemmeside?" +
-                  " Faget kan legges til igjen ved å trykke \"Velg fag\" i navigasjonsbaren.");
+                  "\n\nFaget kan legges til igjen ved å trykke \"Velg fag\" i navigasjonsbaren.");
 
   if (confirmation) {
     window.location = "/fjern_fag/" + course_pk;

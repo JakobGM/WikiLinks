@@ -219,11 +219,11 @@ def new_course_url(request, course_pk: str) -> HttpResponse:
     homepage_url = request.GET.get('homepage_url', '')
 
     # Need to prevent relative links
-    if not homepage_url[:5] == 'http':
+    if not homepage_url[:4].lower() == 'http':
         homepage_url = 'http://' + homepage_url
 
     course = Course.objects.get(pk=int(course_pk))
-    course.homepage = homepage_url
+    course.homepage = homepage_url.strip()
     course.save(update_fields=['homepage'])
     return redirect(course.homepage)
 

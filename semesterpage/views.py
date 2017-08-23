@@ -246,11 +246,7 @@ class CourseAutocomplete(autocomplete.Select2QuerySetView):
         if not self.request.user.is_authenticated():
             return Course.objects.none()
 
-        # Don't autocomplete courses which are already chosen
-        already_chosen = Q(
-            pk__in=self.request.user.options.self_chosen_courses.all(),
-        )
-        qs = Course.objects.exclude(already_chosen)
+        qs = Course.objects.all()
 
         # If the user has started entering input, start restricting
         # the choices available for autocompletion.

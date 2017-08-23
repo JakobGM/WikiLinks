@@ -229,7 +229,7 @@ nav a {
   padding-left: 25px;
 }
 
-.content article img {
+.course-logo {
   height: 80px;
   width: 80px;
   text-align: center;
@@ -425,14 +425,7 @@ article form p {
   }
 
   /* Center course logos on mobile */
-  .content article img {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  /* And the custom generated svg logos */
-  .content article svg {
+  .course-logo {
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -456,8 +449,9 @@ article form p {
     font-size: 150%;
   }
 
-  .content img {
-    margin-top: 1.5em; /* A bit more spacing between the courses on mobile */
+  /* A bit more spacing between the courses on mobile */
+  .course-logo {
+    margin-top: 1.5em;
   }
 
   .content article ul {

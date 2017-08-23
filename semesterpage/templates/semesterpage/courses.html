@@ -13,7 +13,7 @@
 <article>
   <a class="kategori" {% if not course.homepage and can_edit_course %}onclick="courseHomepageRedirect({{ course.pk }})"{% else %}href="{{ course.url }}"{% endif %}>
   {% if course.logo %}
-    <img src="{{ course.logo.url }}">
+    <img class="course-logo" src="{{ course.logo.url }}">
   {% else %}
     {% include "semesterpage/course_logo.svg" with course=course only %}
   {% endif %}
@@ -49,7 +49,7 @@
 {% if semester.has_electives %}
 <article>
   <a class="kategori" href="{{ electives_url }}">
-    <img src="{% static "semesterpage/img/electives.svg" %}">
+    <img class="course-logo" src="{% static "semesterpage/img/electives.svg" %}">
     <h2> Valgfag </h2>
   </a>
   <ul>
@@ -61,7 +61,7 @@
 {% for rll in semester.study_program.resource_link_lists %}
 <article>
 <a class="kategori" href="{{ rll.homepage }}">
-  <img src="{{ rll.logo.url }}">
+  <img class="course-logo" src="{{ rll.logo.url }}">
 
   <h2>{{ rll.display_name }}</h2></a>
 <ul>

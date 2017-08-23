@@ -15,7 +15,9 @@ from dataporten.tests.factories import DataportenUserFactory
 
 class TestProfileView:
     @pytest.mark.django_db
-    def test_user_which_should_choose_their_courses(self, client):
+    def test_user_which_should_choose_their_courses(self, client, settings):
+        settings.PICK_COURSES_ON_FIRST_LOGIN = True
+
         user = User.objects.create_user(username='olan', password='123')
         client.login(username='olan', password='123')
         response = client.get('/accounts/profile/', follow=True)
@@ -25,7 +27,9 @@ class TestProfileView:
         )]
 
     @pytest.mark.django_db
-    def test_user_which_has_already_chosen_their_courses(self, client):
+    def test_user_which_has_already_chosen_their_courses(self, client, settings):
+        settings.PICK_COURSES_ON_FIRST_LOGIN = True
+
         user = User.objects.create_user(username='olan', password='123')
         user.options.last_user_modification = datetime.date.today()
         user.options.save()
@@ -33,6 +37,16 @@ class TestProfileView:
         client.login(username='olan', password='123')
         response = client.get('/accounts/profile/', follow=True)
         assert response.redirect_chain == [('/olan/', 302)]
+
+    @pytest.mark.django_db
+    def test_not_choosing_courses_based_on_settings(self, client, settings):
+        settings.PICK_COURSES_ON_FIRST_LOGIN = False
+        user = User.objects.create_user(username='olan', password='123')
+
+        client.login(username='olan', password='123')
+        response = client.get('/accounts/profile/', follow=True)
+        assert response.redirect_chain == [('/olan/', 302)]
+
 
 class TestAdminModelHistory:
     @pytest.mark.django_db

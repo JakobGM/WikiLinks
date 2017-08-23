@@ -141,7 +141,8 @@ def profile(request):
     redirects to the options admin url if the student has not selected their
     active courses, and redirects to their student page elsewise.
     """
-    if not request.user.options.last_user_modification:
+    if settings.PICK_COURSES_ON_FIRST_LOGIN and \
+            not request.user.options.last_user_modification:
         return redirect(request.user.options.get_admin_url())
     else:
         return redirect(django_reverse(

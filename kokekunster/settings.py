@@ -80,6 +80,9 @@ ROOT_URLCONF = 'kokekunster.urls'
 # When django requires a log in, redirect to dataporten
 LOGIN_URL = '/accounts/dataporten/login'
 
+# Do not force users to Options admin on login
+PICK_COURSES_ON_FIRST_LOGIN = False
+
 # When logging out, redirect to homepage
 LOGOUT_REDIRECT_URL = '/'
 

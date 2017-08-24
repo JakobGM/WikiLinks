@@ -59,7 +59,7 @@ rules==1.2.1
 six==1.10.0               # via bleach, django-dbbackup, django-extensions, dropbox, faker, freezegun, html5lib, pip-tools, python-dateutil, responses
 sqlparse==0.2.3           # via django-debug-toolbar
 subdomains==2.1.1
-typed-ast==1.0.4          # via mypy
+typed-ast==1.1.0          # via mypy
 urllib3==1.22             # via dropbox, requests
 webencodings==0.5.1       # via html5lib
 werkzeug==0.12.2

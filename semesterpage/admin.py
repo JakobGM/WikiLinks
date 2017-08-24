@@ -6,7 +6,10 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
-from rules.contrib.admin import ObjectPermissionsModelAdmin
+from rules.contrib.admin import (
+    ObjectPermissionsModelAdmin,
+    ObjectPermissionsTabularInline,
+)
 
 from adminsortable2.admin import SortableInlineAdminMixin
 from reversion.admin import VersionAdmin
@@ -58,7 +61,7 @@ class StudyProgramAdmin(ObjectPermissionsModelAdmin):
             return request.user.contributor.accessible_study_programs()
 
 
-class CourseLinkInline(SortableInlineAdminMixin, admin.TabularInline):
+class CourseLinkInline(SortableInlineAdminMixin, ObjectPermissionsTabularInline):
     """
     Makes it possible to reorder the links when editing a specific course in
     the admin panel.
@@ -88,7 +91,7 @@ class ResourceLinkInline(SortableInlineAdminMixin, admin.TabularInline):
     fields = ('title', 'url', 'category', 'custom_category', 'order',)
 
 
-class CourseUploadInline(SortableInlineAdminMixin, admin.TabularInline):
+class CourseUploadInline(SortableInlineAdminMixin, ObjectPermissionsTabularInline):
     model = CourseUpload
 
     # Only show one extra file field in the admin
@@ -101,7 +104,7 @@ class CourseUploadInline(SortableInlineAdminMixin, admin.TabularInline):
         return fields
 
 
-class CourseAdmin(VersionAdmin, ObjectPermissionsModelAdmin):
+class CourseAdmin(ObjectPermissionsModelAdmin, VersionAdmin):
     list_display = ('course_code', 'full_name', 'display_name',)
     list_filter = ('semesters',)
     search_fields = ('full_name', 'display_name', 'course_code',)

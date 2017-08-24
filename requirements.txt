@@ -28,7 +28,7 @@ django-flat-theme==1.1.4  # via django-admin-interface
 django-html-sanitizer==0.1.5
 django-reversion==2.0.10
 django-storages==1.6.5
-django==1.11.2
+django==1.11.4
 dropbox==8.0.0
 factory-boy==2.9.2
 faker==0.7.18             # via factory-boy

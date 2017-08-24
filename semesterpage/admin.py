@@ -104,7 +104,7 @@ class CourseUploadInline(SortableInlineAdminMixin, ObjectPermissionsTabularInlin
         return fields
 
 
-class CourseAdmin(ObjectPermissionsModelAdmin, VersionAdmin):
+class CourseAdmin(VersionAdmin, ObjectPermissionsModelAdmin):
     list_display = ('course_code', 'full_name', 'display_name',)
     list_filter = ('semesters',)
     search_fields = ('full_name', 'display_name', 'course_code',)

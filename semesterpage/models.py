@@ -880,7 +880,7 @@ class Contributor(models.Model):
             recent_course = Q(course_code__in=self.user.dataporten.courses.less_semesters_ago(than=2))
             access_criterion = access_criterion | recent_course
 
-        return Course.objects.filter(access_criterion)
+        return Course.objects.filter(access_criterion).distinct()
 
     def accessible_resource_link_lists(self):
         return ResourceLinkList.objects.filter(study_programs__in=self.accessible_study_programs())

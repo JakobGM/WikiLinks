@@ -14,6 +14,7 @@ def has_contributor_access(user, object):
 contributor_models = [
         'course',
         'courseupload',
+        'courselink',
         'customlinkcategory',
         'mainprofile',
         'options',

@@ -114,11 +114,12 @@ class TestSemester:
         )
         result = Semester.get(
             study_program='fysmat',
+            main_profile='indmat',
         )
         assert lowest_semester == result
 
     @pytest.mark.django_db
-    def test_alphabetical_ordering_when_several_lowest_semesters(self):
+    def test_alphabetical_reverse_ordering_when_several_lowest_semesters(self):
         alphabetical_first = SemesterFactory(
             study_program__display_name='fysmat',
             main_profile__display_name='indmat',
@@ -132,12 +133,13 @@ class TestSemester:
         result = Semester.get(
             study_program='fysmat',
         )
-        assert alphabetical_first == result
+        assert alphabetical_last == result
 
     @pytest.mark.django_db
     def test_case_insensitive_search(self):
         semester = SemesterFactory(
             study_program__display_name='Fysmat',
+            main_profile=None,
         )
         result = Semester.get(
             study_program='FysMat',
@@ -171,7 +173,7 @@ class TestSemester:
     def test_non_existing_semester(self):
         with pytest.raises(Semester.DoesNotExist):
             result = Semester.get(
-                study_program='FysMat',
+                study_program='DisDoesNotExist',
             )
 
 

@@ -232,7 +232,10 @@ class Semester(models.Model):
             # No number has specified, and we fall back to the lowest available
             # semester.
             try:
-                return Semester.objects.filter(q)[0]
+                return Semester.\
+                    objects.\
+                    filter(q).\
+                    order_by('-main_profile', 'number')[0]
             except IndexError:
                 # No matching semester, since empty list has been returned
                 raise Semester.DoesNotExist

@@ -250,7 +250,7 @@ a {
 
 /* The edit links are slightly grey in order to tell them apart from proper course links */
 #first-edit-item {
-  padding-top: 0.5em;
+  margin-top: 0.5em;
 }
 
 .content li .edit-link {

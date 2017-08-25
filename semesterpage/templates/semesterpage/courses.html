@@ -29,16 +29,26 @@
 {% endfor %}
 
 {# The 'edit course' link is only shown to users who has access #}
-{% if can_edit_course %}
-  {% if course.links.all or course.uploads.all %}
-    <li style="list-style-image: url('{% static "semesterpage/link_categories/change_course.svg" %}');"><a id="first-edit-item" class="edit-link" href="{{ course.get_admin_url }}">Rediger lenker{% if not course.display_name %} / fagnavn{% endif %}</a></li>
-  {% else %}
-    <li style="list-style-image: url('{% static "semesterpage/link_categories/plus.svg" %}');"><a class="edit-link" href="{{ course.get_admin_url }}">Legg til lenker{% if not course.display_name %} / fagnavn{% endif %}</a></li>
-  {% endif %}
+{% if course.links.all or course.uploads.all %}
+  <li style="list-style-image: url('{% static "semesterpage/link_categories/change_course.svg" %}');">
+    <a id="first-edit-item" class="edit-link" onclick="redirectToCourseAdmin('{{ course.get_admin_url }}', {{ user.is_authenticated|yesno:"true,false" }}, {{ can_edit_course|yesno:"true,false" }})" href="#">
+      Rediger lenker{% if not course.display_name %} / fagnavn{% endif %}
+    </a>
+  </li>
+{% else %}
+  <li style="list-style-image: url('{% static "semesterpage/link_categories/plus.svg" %}');">
+    <a class="edit-link" onclick="redirectToCourseAdmin('{{ course.get_admin_url }}', {{ user.is_authenticated|yesno:"true,false" }}, {{ can_edit_course|yesno:"true,false" }})" href="#">
+      Legg til lenker{% if not course.display_name %} / fagnavn{% endif %}
+    </a>
+  </li>
 {% endif %}
 
 {% if student_page %}
-  <li style="list-style-image: url('{% static "semesterpage/link_categories/cross.svg" %}');"><a class="edit-link" onclick="removeCourseFromStudentPage({{ course.pk }})">Skjul fag</a></li>
+  <li style="list-style-image: url('{% static "semesterpage/link_categories/cross.svg" %}');">
+    <a class="edit-link" onclick="removeCourseFromStudentPage({{ course.pk }})" href="#">
+      Skjul fag
+    </a>
+  </li>
 {% endif %}
 
 </ul>

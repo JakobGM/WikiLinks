@@ -432,7 +432,8 @@ article form p {
   }
 
   .content article h2 {
-    text-align: center;
+      display: flex;
+      justify-content: center;
   }
 
   .content article ul a {
@@ -455,7 +456,7 @@ article form p {
   }
 
   .content article ul {
-    margin-top: 0.3em;
+    margin-top: 0.5em;
   }
 }
 

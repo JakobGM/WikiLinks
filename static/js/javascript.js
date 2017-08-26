@@ -45,7 +45,7 @@ function redirectToCourseAdmin(url, authenticated, permission) {
   } else if (!authenticated) {
    if (window.confirm("Du må være logget inn for å redigere faglenker.\n\n" +
                       "Du vil nå bli logget inn.")) {
-     window.location = "/accounts/dataporten/login/";
+     window.location = url;
    }
   } else {
     window.alert("Du kan kun redigere fag du er oppmeldt i.");

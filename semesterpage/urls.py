@@ -10,6 +10,10 @@ urlpatterns = [
     # Overwrite the django admin login url in order to respect next parameters
     url(r'^oppdater/login/', views.admin_login),
 
+    # Users with lacking permissions are redirected to the root url of the
+    # admin backend. Redirect users to the homepage instead.
+    url(r'^oppdater/$', views.homepage),
+
     # Overwrite history view, only allowing superusers to inspect and change
     # model object history
     url(r'^oppdater/semesterpage/course/(\d+)/history/$', views.admin_course_history, name='semesterpage-course-history'),

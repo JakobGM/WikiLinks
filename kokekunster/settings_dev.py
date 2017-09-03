@@ -6,7 +6,7 @@ from kokekunster.settings import BASE_DIR
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # "Secret" cryptographic key, only used during local development

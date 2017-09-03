@@ -1,11 +1,21 @@
 {% load staticfiles %}
 <!DOCTYPE html>
-<html>
+<html prefix="og: http://ogp.me/ns#">
 <head>
 <script src="{% static "js/linktracker.js" %}"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>WikiLinks.no - Lenkeportal for NTNUere</title>
+
+{% block open_graph %}
+<!-- Open graph protocol for display properties when the site is shared on facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:description" content="Lenkeportal for NTNUere" />
+<meta property="og:image" content="{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{% static "favicons/ms-icon-310x310.png" %}" />
+<meta property="og:site_name" content="WikiLinks.no" />
+<meta property="og:title" content="{{ semester }}" />
+<meta property="og:url" content="{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{{ semester.get_absolute_url }}" />
+{% endblock %}
 
 <!-- Font awesome CDN for svg icons -->
 <script src="https://use.fontawesome.com/fcc6bafe26.js"></script>

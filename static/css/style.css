@@ -314,6 +314,9 @@ footer {
   color: grey;
   font-size: 75%;
   text-align: center;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-bottom: 0.4em;
   position: fixed;
   bottom: 0;
   left: 0;

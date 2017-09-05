@@ -23,6 +23,26 @@ function courseHomepageRedirect(course_pk) {
   window.location = "/ny_faghjemmeside/" + course_pk + "/?homepage_url=" + encodeURIComponent(homepageURL);
 }
 
+function courseLogoClickEvent(courseHomepage, canEditCourse, courseURL, coursePK, normalLink) {
+  const mq = window.matchMedia("(min-width: 500px)");
+
+  if (mq.matches | normalLink) {
+    if (courseHomepage === '' & canEditCourse) {
+      courseHomepageRedirect(coursePK);
+    } else {
+      window.location = courseURL;
+    }
+  } else {
+    course = document.getElementById("article-" + coursePK);
+	display = course.getElementsByTagName("ul")[0].style.display;
+    if (display === "block") {
+	  display = course.getElementsByTagName("ul")[0].style.display = "none";
+    } else {
+	  display = course.getElementsByTagName("ul")[0].style.display = "block";
+    }
+  }
+}
+
 function removeCourseFromStudentPage(course_pk) {
   var confirmation = confirm("Ønsker du å fjerne dette faget fra din hjemmeside?" +
                   "\n\nFaget kan legges til igjen ved å trykke \"Velg fag\" i navigasjonsbaren.");
@@ -51,3 +71,49 @@ function redirectToCourseAdmin(url, authenticated, permission) {
     window.alert("Du kan kun redigere fag du er oppmeldt i.");
   }
 }
+
+// Code originally pulled from here: https://www.sitepoint.com/javascript-media-queries/
+// Media query event handler
+function collapseCoursesOnMobile() {
+  if (matchMedia) {
+    const mq = window.matchMedia("(min-width: 500px)");
+ 	mq.addListener(WidthChange);
+	WidthChange(mq);
+  }
+}
+
+// Need to be placed right after the registered event handler above
+// Media query change
+function WidthChange(mq) {
+  if (mq.matches) {
+    // window width is at least 500px
+	toggleCourseLinkList(hide=false);
+  } else {
+    // window width is less than 500px
+	toggleCourseLinkList(hide=true);
+  }
+}
+
+function toggleCourseLinkList(hide) {
+  var elements = document.getElementsByClassName("course-link-list");
+  var homepages = document.getElementsByClassName("homepage-item");
+
+  if (hide) {
+	display = "none";
+	homepageDisplay = "list-item";
+  } else {
+	display = "block";
+	homepageDisplay = "none";
+  }
+
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].style.display = display;
+  }
+
+  for (var i = 0; i < homepages.length; i++) {
+    homepages[i].style.display = homepageDisplay;
+  }
+}
+
+// Run function after all the course lists have been loaded into the DOM
+window.onload = collapseCoursesOnMobile

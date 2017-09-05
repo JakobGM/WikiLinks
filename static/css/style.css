@@ -242,6 +242,9 @@ nav a {
 a {
   text-decoration: none;
   color: black;
+
+  /* Make onclick event handlers have same style as normal anchor tags */
+  cursor: pointer;
 }
 
 .content a:visited {

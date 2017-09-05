@@ -10,15 +10,22 @@
 
 {% for course in courses %}
 {% has_perm 'semesterpage.change_course' user course as can_edit_course %}
-<article>
-  <a class="kategori" {% if not course.homepage and can_edit_course %}onclick="courseHomepageRedirect({{ course.pk }})"{% else %}href="{{ course.url }}"{% endif %}>
+<article id="article-{{ course.pk }}">
+  <a class="kategori" onclick="courseLogoClickEvent('{{ course.homepage }}', {{ can_edit_course|yesno:"true,false" }}, '{{ course.url }}', {{ course.pk }})">
   {% if course.logo %}
     <img class="course-logo" src="{{ course.logo.url }}">
   {% else %}
     {% include "semesterpage/course_logo.svg" with course=course only %}
   {% endif %}
     <h2>{{ course.short_name }}</h2></a>
-<ul>
+
+<ul class="course-link-list">
+
+<li style="display: none; list-style-image: url('{% static "semesterpage/link_categories/homepage.svg" %}');" class="homepage-item">
+  <a class="kategori" onclick="courseLogoClickEvent('{{ course.homepage }}', {{ can_edit_course|yesno:"true,false" }}, '{{ course.url }}', {{ course.pk }}, true)">
+    Fagets hjemmeside
+  </a>
+</li>
 
 {% for link in course.links.all %}
 <li style="list-style-image: url('{% if link.custom_category %}{{ link.custom_category.thumbnail.url }}{% elif link.category %}{% static "semesterpage/link_categories/" %}{{ link.category }}{% else %}{% static "semesterpage/link_categories/link.svg" %}{% endif %}');"><a href="{{ link.url }}">{{ link.title|safe }}</a></li>

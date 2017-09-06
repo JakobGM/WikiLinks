@@ -174,7 +174,7 @@ SESSION_COOKIE_AGE = 31536000  # 1 year, instead of default 2 weeks
 
 # Email sending from the following adress
 
-SERVER_EMAIL = 'django@kokekunster.no'
+SERVER_EMAIL = 'django@wikilinks.no'
 
 
 # Which semester should be defaulted to in url handling when the study program is not specified?

@@ -64,13 +64,13 @@ class StudyProgram(models.Model):
     has_archive = models.BooleanField(
         _('har arkiv'),
         default=False,
-        help_text=_('Huk av hvis studieprogrammet har filer i arkivet på kokekunster.no/arkiv.')
+        help_text=_('Huk av hvis studieprogrammet har filer i arkivet på wikilinks.no/arkiv.')
     )
     published = models.BooleanField(
         _('publisert'),
         default=False,
         help_text=_('Studieprogrammet dukker ikke opp i studieprogramlisten i navigasjonsbaren før det er publisert, '
-                    'men det er fortsatt mulig å besøke studieprogrammet manuelt (URL: visningsnavn.kokekunster.no) '
+                    'men det er fortsatt mulig å besøke studieprogrammet manuelt (URL: wikilinks.no/visningsnavn) '
                     'for å teste resultatet før du publiserer.')
     )
 
@@ -197,7 +197,7 @@ class Semester(models.Model):
         _('publisert'),
         default=False,
         help_text=_('Semesteret dukker ikke opp i navigasjonsbaren før det er publisert, men det er fortsatt mulig å '
-                    'besøke semesteret manuelt (URL: kokekunster.no/studieprogram/hovedprofil/semesternummer) for å '
+                    'besøke semesteret manuelt (URL: wikilinks.no/studieprogram/hovedprofil/semesternummer) for å '
                     'teste resultatet før du publiserer.'),
     )
 

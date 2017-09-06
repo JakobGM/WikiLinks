@@ -11,7 +11,7 @@ Run the following commands in order to set up the project locally
 
 ### Download the project
 ```
-git clone https://github.com/JakobGM/django-kokekunster.git kokekunster
+git clone https://github.com/JakobGM/WikiLinks.git wikilinks
 pip install -r requirements.txt
 ```
 

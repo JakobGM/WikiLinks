@@ -89,6 +89,20 @@ def main_profile_json():
     }
 
 @pytest.fixture
+def organisation_unit_json():
+    return {
+        "displayName": "Seksjon for IT-brukerst\u00f8tte",
+        "id": "fc:org:ntnu.no:unit:167500",
+        "public": True,
+        "parent": "fc:org:ntnu.no",
+        "type": "fc:orgunit",
+        "membership": {
+            "primaryOrgUnit": True,
+            "basic": "member"
+        }
+    }
+
+@pytest.fixture
 def finished_course():
     return Course(
         {

@@ -9,6 +9,7 @@ from ..parsers import (
         group_factory,
         MainProfile,
         Membership,
+        OrganisationUnit,
         Semester,
         StudyProgram,
         datetime_from,
@@ -155,6 +156,12 @@ class TestMainProfile:
     def test_main_profile_basic_properties(self, main_profile_json):
         main_profile = MainProfile(main_profile_json)
         assert main_profile.code == 'MTFYMA-IM'
+
+
+class TestOrganisationUnit:
+    def test_organisation_unit_basic_properties(self, organisation_unit_json):
+        organisation_unit = OrganisationUnit(organisation_unit_json)
+        assert organisation_unit.uid == 'fc:org:ntnu.no:unit:167500'
 
 
 @freeze_time('2017-08-27')

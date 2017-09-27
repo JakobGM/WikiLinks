@@ -37,6 +37,10 @@ class TestDataportenGroupManager:
     def test_dataporten_main_profile(self, dataporten):
         assert dataporten.main_profiles[0].code == 'MTFYMA-IM'
 
+    def test_dataporten_organisation_units(self, dataporten):
+        assert dataporten.organisation_units[0].uid == 'fc:org:ntnu.no:unit:167500'
+        assert dataporten.organisation_units[1].uid == 'fc:org:ntnu.no:unit:660000'
+
 
 @freeze_time('2017-01-01')
 class TestCourseManager:

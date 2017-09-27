@@ -26,29 +26,36 @@ class DataportenGroupManager:
     courses: List[Course]
 
     def __init__(self, token: str) -> None:
+        # Fetch usergroups and insert into dictionary based on dataporten unique
+        # id
         groups_json = usergroups(token)
-        all_groups = [group_factory(group_json) for group_json in groups_json]
-        categorized_groups: DefaultDict[str, List[BaseGroup]] = defaultdict(list)
-        for group in all_groups:
-            categorized_groups[group.NAME].append(group)
+        _all_groups = [group_factory(group_json) for group_json in groups_json]
+        self.groups = {group.uid: group for group in _all_groups}
 
+        # Sort all groups into a dictionary keyed on the group type, uniquely
+        # represented by the group type's NAME attribute.
+        categorized_groups: DefaultDict[str, Dict[str, BaseGroup]] = defaultdict(dict)
+        for uid, group in self.groups.items():
+            categorized_groups[group.NAME][uid] = group
+
+        # Make each group type NAME a direct property of the class itself
         for name, groups in categorized_groups.items():
             setattr(self, name, groups)
 
         # TODO: Here we should use the NullObject-pattern instead
         if not hasattr(self, 'courses'):
-            self.courses = []
+            self.courses = {}
 
         self.courses = CourseManager(self.courses)  # type: ignore
 
 
 class CourseManager:
-    def __init__(self, courses: List[Course]) -> None:
-        self.all = {course.code: course for course in courses}
+    def __init__(self, courses: Dict[str, Course]) -> None:
+        self.all = {course.code: course for course in courses.values()}
         self.semesters_ago: List[Tuple[int, str]] = []
         now = Semester.now()
 
-        for course in courses:
+        for course in courses.values():
             ago = now - course.semester
             self.semesters_ago.append((ago, course.code,))
 

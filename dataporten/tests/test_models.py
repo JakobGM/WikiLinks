@@ -32,24 +32,34 @@ class TestDataportenGroupManager:
         assert 'TMA4180' in dataporten.courses.active
 
     def test_dataporten_study_program(self, dataporten):
-        assert dataporten.study_programs[0].code == 'MTFYMA'
+        assert dataporten.\
+            study_programs['fc:fs:fs:prg:ntnu.no:MTFYMA'].\
+            code == 'MTFYMA'
 
     def test_dataporten_main_profile(self, dataporten):
-        assert dataporten.main_profiles[0].code == 'MTFYMA-IM'
+        assert dataporten.\
+            main_profiles['fc:fs:fs:str:ntnu.no:MTFYMA-IM'].\
+            code == 'MTFYMA-IM'
 
     def test_dataporten_organisation_units(self, dataporten):
-        assert dataporten.organisation_units[0].uid == 'fc:org:ntnu.no:unit:167500'
-        assert dataporten.organisation_units[1].uid == 'fc:org:ntnu.no:unit:660000'
+        assert dataporten.\
+            organisation_units['fc:org:ntnu.no:unit:167500'].\
+            uid == 'fc:org:ntnu.no:unit:167500'
+
+        assert dataporten.\
+            organisation_units['fc:org:ntnu.no:unit:660000'].\
+            uid == 'fc:org:ntnu.no:unit:660000'
 
 
 @freeze_time('2017-01-01')
 class TestCourseManager:
     def test_less_semesters_ago(self, finished_course, course_last_semester, ongoing_course):
-        courses = [
+        _courses = [
             finished_course,
             course_last_semester,
             ongoing_course,
         ]
+        courses = {course.uid: course for course in _courses}
         course_manager = CourseManager(courses)
 
         assert course_manager.less_semesters_ago(than=1) \
@@ -67,7 +77,7 @@ class TestCourseManager:
         The Course manager needs to behave correctly when it is presented with a course
         which ends in the next semester.
         """
-        course_manager = CourseManager([ongoing_course])
+        course_manager = CourseManager({ongoing_course.uid: ongoing_course})
         assert ongoing_course.code in course_manager.active
 
 

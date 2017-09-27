@@ -1,5 +1,5 @@
 import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Generator, Iterable, List, Optional, Tuple
 
 from .api import GroupJSON, MembershipJSON
 
@@ -15,19 +15,23 @@ def group_type(group: GroupJSON) -> str:
     return group['type'].split(':')[-1]
 
 
-def group_factory(group: GroupJSON) -> 'BaseGroup':
+def group_factory(*groups: Iterable[GroupJSON]) -> \
+                                       Generator['BaseGroup', None, None]:
     """
     Given a JSON Group structure, this function returns the most specific
     object type, given the input
     """
 
-    for parser in PARSERS:
-        if parser.valid(group):
-            return parser(group)
+    for group in groups:
+        for parser in PARSERS:
+            if parser.valid(group):
+                yield parser(group)
+                break
+        else:
+            # In case somebody removed Group from PARSERS, this is a fall back group
+            # which will accept all forms of dataporten groups
+            yield Group(group)
 
-    # In case somebody removed Group from PARSERS, this is a fall back group
-    # which will accept all forms of dataporten groups
-    return Group(group)
 
 
 class BaseGroup:

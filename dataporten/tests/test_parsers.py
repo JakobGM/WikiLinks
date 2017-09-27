@@ -27,16 +27,24 @@ class TestDatetimeFrom(TestCase):
 
 class TestGroupFactory:
     def test_study_program_factory(self, study_program_json):
-        study_program = group_factory(study_program_json)
+        study_program = next(group_factory(study_program_json))
         assert type(study_program) is StudyProgram
 
     def test_course_factory(self, course_json):
-        course = group_factory(course_json)
+        course = next(group_factory(course_json))
         assert type(course) is Course
 
     def test_main_profile_factory(self, main_profile_json):
-        main_profile = group_factory(main_profile_json)
+        main_profile = next(group_factory(main_profile_json))
         assert type(main_profile) is MainProfile
+
+    def test_group_factory_given_iterable_argument(
+            self,
+            study_program_json,
+            course_json,
+    ):
+        groups = group_factory(study_program_json, course_json)
+        assert len(list(groups)) == 2
 
 
 class TestGroup:

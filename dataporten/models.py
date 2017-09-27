@@ -33,8 +33,11 @@ class DataportenGroupManager:
         # Fetch usergroups and insert into dictionary based on dataporten unique
         # id
         groups_json = usergroups(token)
-        _all_groups = [group_factory(group_json) for group_json in groups_json]
-        self.groups = {group.uid: group for group in _all_groups}
+        self.groups = {
+            group.uid: group
+            for group
+            in group_factory(*groups_json)
+        }
 
         # Make each group type NAME a direct property of the object itself,
         # each property containing a dictionary keyed on dataporten unique ids.

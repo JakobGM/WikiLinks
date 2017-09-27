@@ -135,6 +135,9 @@ ACCOUNT_LOGOUT_ON_GET = True
 # Controls the life time of the session
 ACCOUNT_SESSION_REMEMBER = True
 
+# How to retrieve Dataporten token for a given user
+DATAPORTEN_TOKEN_FUNCTION = 'kokekunster.oauth.allauth_token'
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 

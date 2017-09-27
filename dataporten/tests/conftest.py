@@ -51,6 +51,7 @@ def study_program_json():
         "type": "fc:fs:prg",
     }
 
+
 @pytest.fixture
 def course_json():
     return {
@@ -71,6 +72,7 @@ def course_json():
         "url": "http://www.ntnu.no/exphil"
     }
 
+
 @pytest.fixture
 def main_profile_json():
     return {
@@ -88,6 +90,7 @@ def main_profile_json():
         "id": "fc:fs:fs:str:ntnu.no:MTFYMA-IM"
     }
 
+
 @pytest.fixture
 def organisation_unit_json():
     return {
@@ -101,6 +104,7 @@ def organisation_unit_json():
             "basic": "member"
         }
     }
+
 
 @pytest.fixture
 def finished_course():
@@ -124,6 +128,7 @@ def finished_course():
         }
     )
 
+
 @pytest.fixture
 def non_finished_course():
     return Course(
@@ -143,6 +148,7 @@ def non_finished_course():
             "type": "fc:fs:emne"
         }
     )
+
 
 @pytest.fixture
 def ongoing_course():
@@ -166,24 +172,25 @@ def ongoing_course():
         }
     )
 
+
 @pytest.fixture
 def course_last_semester():
-	return Course(
-		{
-			"displayName": "Line\u00e6re metoder",
-			"id": "fc:fs:fs:emne:ntnu.no:TMA4145:1",
-			"parent": "fc:org:ntnu.no",
-			"type": "fc:fs:emne",
-			"membership": {
-				"displayName": "Student",
-				"notAfter": "2016-12-14T23:00:00Z",
-				"active": True,
-				"fsroles": [
-					"STUDENT"
-				],
-				"subjectRelations": "undervisning",
-				"basic": "member"
-			},
-			"url": "http://wiki.math.ntnu.no/tma4145"
-		}
-		)
+    return Course(
+        {
+            "displayName": "Line\u00e6re metoder",
+            "id": "fc:fs:fs:emne:ntnu.no:TMA4145:1",
+            "parent": "fc:org:ntnu.no",
+            "type": "fc:fs:emne",
+            "membership": {
+                "displayName": "Student",
+                "notAfter": "2016-12-14T23:00:00Z",
+                "active": True,
+                "fsroles": [
+                    "STUDENT"
+                ],
+                "subjectRelations": "undervisning",
+                "basic": "member"
+            },
+            "url": "http://wiki.math.ntnu.no/tma4145"
+        }
+    )

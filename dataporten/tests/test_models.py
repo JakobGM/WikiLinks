@@ -10,7 +10,6 @@ from ..models import (
         CourseManager,
         DataportenUser,
 )
-from ..parsers import StudyProgram
 
 
 @freeze_time('2016-01-01')

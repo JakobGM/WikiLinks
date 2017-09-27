@@ -5,10 +5,10 @@ from .api import GroupJSON, MembershipJSON
 
 
 def datetime_from(json_string: str) -> datetime.datetime:
-        return datetime.datetime.strptime(
-            json_string,
-            '%Y-%m-%dT%H:%M:%SZ',
-        )
+    return datetime.datetime.strptime(
+        json_string,
+        '%Y-%m-%dT%H:%M:%SZ',
+    )
 
 
 def group_type(group: GroupJSON) -> str:
@@ -16,13 +16,12 @@ def group_type(group: GroupJSON) -> str:
 
 
 def group_factory(group: GroupJSON) -> 'BaseGroup':
-
     """
     Given a JSON Group structure, this function returns the most specific
     object type, given the input
     """
 
-    priorization = [Course, StudyProgram, MainProfile]
+    priorization = [Course, StudyProgram, MainProfile, OrganisationUnit]
 
     for kls in priorization:
         if kls.valid(group):
@@ -32,7 +31,6 @@ def group_factory(group: GroupJSON) -> 'BaseGroup':
 
 
 class BaseGroup:
-
     """
     A basic class for behaviour present in all Dataporten groups,
     intended for subclassing
@@ -132,7 +130,7 @@ class Course(BaseGroup):
     def split_on_membership(
             cls,
             courses: List['Course'],
-            ) -> Tuple[CourseDict, CourseDict]:
+    ) -> Tuple[CourseDict, CourseDict]:
 
         """
         Return two dictionaries in a tuple (active, inactive,)
@@ -164,6 +162,11 @@ class MainProfile(BaseGroup):
     def __init__(self, group: GroupJSON) -> None:
         super().__init__(group)
         self.code = group['id'].split(':')[-1]
+
+
+class OrganisationUnit(BaseGroup):
+    DATAPORTEN_TYPE = 'orgunit'
+    NAME = 'organisation_units'
 
 
 class Semester:

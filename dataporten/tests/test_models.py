@@ -2,13 +2,14 @@ from django.contrib.auth.models import AnonymousUser
 
 import pytest
 import responses
+from django.core.exceptions import ImproperlyConfigured
 from freezegun import freeze_time
 
 from .utils import mock_usergroups_request
 from ..models import (
-        DataportenGroupManager,
-        CourseManager,
-        DataportenUser,
+    DataportenGroupManager,
+    CourseManager,
+    DataportenUser,
 )
 
 
@@ -52,13 +53,13 @@ class TestCourseManager:
         course_manager = CourseManager(courses)
 
         assert course_manager.less_semesters_ago(than=1) \
-                == [ongoing_course.code]
+               == [ongoing_course.code]
 
         assert course_manager.less_semesters_ago(than=2) \
-                == [course_last_semester.code, ongoing_course.code]
+               == [course_last_semester.code, ongoing_course.code]
 
         assert course_manager.less_semesters_ago(than=20) \
-                == [finished_course.code, course_last_semester.code, ongoing_course.code]
+               == [finished_course.code, course_last_semester.code, ongoing_course.code]
 
     @freeze_time('1900-01-01')
     def test_semester_in_future(self, ongoing_course):
@@ -70,9 +71,40 @@ class TestCourseManager:
         assert ongoing_course.code in course_manager.active
 
 
-@pytest.mark.django_db
-def test_dataporten_user_token(dataporten_user):
-    assert dataporten_user.token == 'dummy_token'
+def token_import_function(user):
+    return 'dummy_token_from_import_function'
+
+
+class TestTokenImport:
+    @pytest.mark.django_db
+    def test_token_not_configured(self, settings, dataporten_user):
+        try:
+            del settings.DATAPORTEN_TOKEN_FUNCTION
+        except AttributeError:
+            pass
+
+        with pytest.raises(ImproperlyConfigured) as excinfo:
+            dataporten_user.token
+        assert str(excinfo.value) == \
+               'You need to define DATAPORTEN_TOKEN_FUNCTION in your ' \
+               'settings.py'
+
+    @pytest.mark.django_db
+    def test_token_unimportable_path(self, settings, dataporten_user):
+        settings.DATAPORTEN_TOKEN_FUNCTION = 'highly.unlikely.to.exist'
+
+        with pytest.raises(ImproperlyConfigured) as excinfo:
+            dataporten_user.token
+        assert str(excinfo.value) == \
+               'Could not import DATAPORTEN_TOKEN_FUNCTION with value ' \
+               'highly.unlikely.to.exist'
+
+    @pytest.mark.django_db
+    def test_token_properly_configured(self, settings, dataporten_user):
+        settings.DATAPORTEN_TOKEN_FUNCTION = \
+            'dataporten.tests.test_models.token_import_function'
+
+        assert dataporten_user.token == 'dummy_token_from_import_function'
 
 
 @pytest.mark.django_db

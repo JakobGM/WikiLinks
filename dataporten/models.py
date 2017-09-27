@@ -1,9 +1,12 @@
 from collections import defaultdict
 from typing import DefaultDict, List, Type, Tuple, Dict
 
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest
 from django.utils.functional import cached_property
+from django.utils.module_loading import import_string
 
 from allauth.socialaccount.models import SocialToken
 from defaultlist import defaultlist
@@ -72,12 +75,23 @@ class DataportenUser(User):
     class Meta:
         proxy = True
 
-    @property
+    @cached_property
     def token(self) -> str:
-        return SocialToken.objects.get(
-            account__user=self,
-            account__provider='dataporten',
-        ).token
+        try:
+            token_func_path = settings.DATAPORTEN_TOKEN_FUNCTION
+            token_func = import_string(token_func_path)
+            return token_func(self)
+        except ModuleNotFoundError:
+            raise ImproperlyConfigured(
+                f'Could not import DATAPORTEN_TOKEN_FUNCTION with value '
+                f'{token_func_path}',
+            )
+        except AttributeError:
+            raise ImproperlyConfigured(
+                'You need to define DATAPORTEN_TOKEN_FUNCTION in your '
+                'settings.py',
+            )
+
 
     @cached_property
     def dataporten(self):

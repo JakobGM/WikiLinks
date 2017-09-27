@@ -21,12 +21,12 @@ def group_factory(group: GroupJSON) -> 'BaseGroup':
     object type, given the input
     """
 
-    priorization = [Course, StudyProgram, MainProfile, OrganisationUnit]
+    for parser in PARSERS:
+        if parser.valid(group):
+            return parser(group)
 
-    for kls in priorization:
-        if kls.valid(group):
-            return kls(group)
-
+    # In case somebody removed Group from PARSERS, this is a fall back group
+    # which will accept all forms of dataporten groups
     return Group(group)
 
 
@@ -60,9 +60,9 @@ class BaseGroup:
 
 
 class Group(BaseGroup):
-    NAME = 'generic_groups'
-
     """ A fallback Group type """
+
+    NAME = 'generic_groups'
 
     @classmethod
     def valid(cls, group: GroupJSON) -> bool:
@@ -190,3 +190,12 @@ class Semester:
 
     def __sub__(self, other: 'Semester') -> int:
         return 2 * (self.year - other.year) + (self.season - other.season)
+
+
+PARSERS = [
+    Course,
+    StudyProgram,
+    MainProfile,
+    OrganisationUnit,
+    Group,
+]

@@ -12,7 +12,13 @@ from allauth.socialaccount.models import SocialToken
 from defaultlist import defaultlist
 
 from .api import usergroups
-from .parsers import Course, BaseGroup, group_factory, Semester
+from .parsers import (
+    BaseGroup,
+    Course,
+    PARSERS,
+    Semester,
+    group_factory,
+)
 
 class DataportenGroupManager:
     """
@@ -23,8 +29,6 @@ class DataportenGroupManager:
         - inactive_courses
         - generic_groups
     """
-    courses: List[Course]
-
     def __init__(self, token: str) -> None:
         # Fetch usergroups and insert into dictionary based on dataporten unique
         # id
@@ -32,19 +36,15 @@ class DataportenGroupManager:
         _all_groups = [group_factory(group_json) for group_json in groups_json]
         self.groups = {group.uid: group for group in _all_groups}
 
+        # Make each group type NAME a direct property of the object itself,
+        # each property containing a dictionary keyed on dataporten unique ids.
+        for parser in PARSERS:
+            setattr(self, parser.NAME, {})
+
         # Sort all groups into a dictionary keyed on the group type, uniquely
         # represented by the group type's NAME attribute.
-        categorized_groups: DefaultDict[str, Dict[str, BaseGroup]] = defaultdict(dict)
         for uid, group in self.groups.items():
-            categorized_groups[group.NAME][uid] = group
-
-        # Make each group type NAME a direct property of the class itself
-        for name, groups in categorized_groups.items():
-            setattr(self, name, groups)
-
-        # TODO: Here we should use the NullObject-pattern instead
-        if not hasattr(self, 'courses'):
-            self.courses = {}
+            getattr(self, group.NAME)[uid] = group
 
         self.courses = CourseManager(self.courses)  # type: ignore
 

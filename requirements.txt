@@ -4,6 +4,7 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
+beautifulsoup4==4.6.3
 bleach==2.0.0             # via django-html-sanitizer
 certifi==2017.7.27.1      # via requests
 chardet==3.0.4            # via requests

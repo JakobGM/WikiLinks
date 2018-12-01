@@ -50,3 +50,6 @@ django-autocomplete-light
 
 # For papertrail in model admin
 django-reversion
+
+# For exam resources crawling
+BeautifulSoup4

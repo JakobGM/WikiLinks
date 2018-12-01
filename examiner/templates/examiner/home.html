@@ -1,0 +1,30 @@
+{% extends "base.html" %} {# TODO: Need to add link category and course static images based on model #}
+{% load rules static %}
+
+{% block navbar %}
+{% include "semesterpage/navbar.html" %}
+{% endblock %}
+
+{% block content %}
+
+{% for crawler in crawlers %}
+  <li>
+    <a href="{{ crawler.homepage_url }}">{{ crawler }}</a>
+    <a href="{{ crawler.exams_page }}"> {{ crawler.exams_page }} </a>
+  </li>
+
+  <ul>
+    {% for pdf in crawler.pdf_urls %}
+      <li>
+        <a href="{{ pdf.url }}">{{ pdf }}</a>
+        <p><i>{{ pdf.url }}</i></p>
+        <br>
+      </li>
+    {% endfor %}
+  </ul>
+  <hr>
+
+{% endfor %}
+
+</ul>
+{% endblock %}

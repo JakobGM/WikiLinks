@@ -56,6 +56,9 @@ INSTALLED_APPS = (
 
     # Papertrail for django admin model objects
     'reversion',
+
+    # Responsible for trawling exam URLs
+    'examiner',
 )
 
 MIDDLEWARE = (

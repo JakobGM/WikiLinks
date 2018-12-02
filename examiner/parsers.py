@@ -41,7 +41,7 @@ class ExamURLParser:
         'november',
     )
     SPRING_SEASONS = ('v', 'jun', 'juni', 'june', 'mai', 'may')
-    CONTINUATION_SEASONS = ('k',)
+    CONTINUATION_SEASONS = ('k', 'kont', 'continuation')
 
     def __init__(self, url: str) -> None:
         """Constructor for ExamURLParser."""
@@ -62,6 +62,9 @@ class ExamURLParser:
             year, season = self.find_date(string=self.parsed_url)
             self._year = self._year or year
             self._season = self._season or season
+        else:
+            # Year and season given in filename, so probably an exam
+            self._probably_exam = True
 
         self._season = self._season or Season.UNKNOWN
 
@@ -216,6 +219,20 @@ class ExamURLParser:
         autumn = autumn_pattern.findall(self.parsed_url)
         self._season = Season.AUTUMN if autumn else Season.SPRING
         return self._season
+
+    @property
+    def probably_exam(self) -> bool:
+        """Return True if the url probably points to an exam document."""
+        if hasattr(self, '_probably_exam'):
+            return self._probably_exam
+
+        if self.continuation:
+            self._probably_exam = True
+            return self._continuation
+
+        exam_pattern = re.compile(r'(?:eksam|exam)', re.IGNORECASE)
+        self._probably_exam = bool(re.search(exam_pattern, self.parsed_url))
+        return self._probably_exam
 
     def __repr__(self) -> str:
         """Return code string representation of Exam URL object."""

@@ -14,6 +14,7 @@ class ExamURL:
         season: Season,
         solutions: bool,
         language: Language,
+        probably_exam: bool,
     ):
         self.url = url
         self.code = code
@@ -21,6 +22,7 @@ class ExamURL:
         self.season = season
         self.solutions = solutions
         self.language = language
+        self.probably_exam = probably_exam
 
     def __repr__(self) -> str:
         return f'ExamURL(url={self.url}'
@@ -34,6 +36,7 @@ ExamURLs = (
         season=Season.SPRING,
         solutions=False,
         language=Language.BOKMAL,
+        probably_exam=True,
     ),
     ExamURL(
         url='http://www.math.ntnu.no/emner/TMA4130/2013h/oldExams/lf-en_2006v.pdf',
@@ -42,6 +45,7 @@ ExamURLs = (
         season=Season.SPRING,
         solutions=True,
         language=Language.ENGLISH,
+        probably_exam=True,
     ),
     ExamURL(
         url='https://wiki.math.ntnu.no/_media/tma4130/2017h/kont_bok.pdf',
@@ -50,6 +54,7 @@ ExamURLs = (
         season=Season.CONTINUATION,
         solutions=False,
         language=Language.BOKMAL,
+        probably_exam=True,
     ),
     ExamURL(
         url=r'https://wiki.math.ntnu.no/lib/exe/fetch.php?tok=42405f&media=http%3A%2F%2Fwww.math.ntnu.no%2Femner%2FTMA4110%2Feksamen%2FTMA4115_v18_kont_nn.pdf',
@@ -58,6 +63,7 @@ ExamURLs = (
         season=Season.CONTINUATION,
         solutions=False,
         language=Language.NYNORSK,
+        probably_exam=True,
     ),
     ExamURL(
         url=r'https://wiki.math.ntnu.no/lib/exe/fetch.php?tok=113012&media=http%3A%2F%2Fwww.math.ntnu.no%2Femner%2FTMA4110%2Feksamen%2Ftma4115v16_english_solutions.pdf',
@@ -66,6 +72,7 @@ ExamURLs = (
         season=Season.SPRING,
         solutions=True,
         language=Language.ENGLISH,
+        probably_exam=True,
     ),
     ExamURL(
         url=r'https://wiki.math.ntnu.no/lib/exe/fetch.php?tok=113012&media=http%3A%2F%2Fwww.math.ntnu.no%2Femner%2FTMA4110%2Feksamen%2Ftma4115v16_english_solutions.pdf',
@@ -74,6 +81,7 @@ ExamURLs = (
         season=Season.SPRING,
         solutions=True,
         language=Language.ENGLISH,
+        probably_exam=True,
     ),
     ExamURL(
         url=r'https://wiki.math.ntnu.no/lib/exe/fetch.php?tok=99296a&media=http%3A%2F%2Fwww.math.ntnu.no%2Femner%2FTMA4110%2Feksamen%2Ftma4110des11.pdf',
@@ -82,6 +90,7 @@ ExamURLs = (
         season=Season.AUTUMN,
         solutions=False,
         language=Language.UNKNOWN,
+        probably_exam=True,
     ),
     ExamURL(
         url=r'http://www.math.ntnu.no/emner/TMA4130/2013h/oldExams/eksamen-bok_2006.pdf',
@@ -90,6 +99,7 @@ ExamURLs = (
         season=Season.AUTUMN,
         solutions=False,
         language=Language.BOKMAL,
+        probably_exam=True,
     ),
     ExamURL(
         url=r'https://wiki.math.ntnu.no/lib/exe/fetch.php?tok=88d701&media=http%3A%2F%2Fwww.math.ntnu.no%2Femner%2FTMA4110%2Feksamen%2Fscanned_from_a_xerox_multifunction_device001_25_.pdf',
@@ -98,6 +108,7 @@ ExamURLs = (
         season=Season.UNKNOWN,
         solutions=False,
         language=Language.UNKNOWN,
+        probably_exam=True,
     ),
     ExamURL(
         url=r'https://wiki.math.ntnu.no/lib/exe/fetch.php?tok=7df847&media=http%3A%2F%2Fwww.math.ntnu.no%2Femner%2FTMA4110%2Feksamen%2Ftma4115juni08.pdf',
@@ -106,6 +117,7 @@ ExamURLs = (
         season=Season.SPRING,
         solutions=False,
         language=Language.NORWEGIAN,
+        probably_exam=True,
     ),
     ExamURL(
         url=r'https://wiki.math.ntnu.no/lib/exe/fetch.php?tok=61b866&media=http%3A%2F%2Fwww.math.ntnu.no%2Femner%2FTMA4110%2Feksamen%2F2007may.pdf',
@@ -114,6 +126,7 @@ ExamURLs = (
         season=Season.SPRING,
         solutions=False,
         language=Language.ENGLISH,
+        probably_exam=True,
     ),
     ExamURL(
         url=r'https://wiki.math.ntnu.no/_media/tma4100/eksamen/sif5003_2002-07-30.pdf',
@@ -122,6 +135,7 @@ ExamURLs = (
         season=Season.CONTINUATION,
         solutions=False,
         language=Language.UNKNOWN,
+        probably_exam=True,
     ),
     ExamURL(
         url=r'https://wiki.math.ntnu.no/_media/tma4100/eksamen/sif5003_1999-12-08_lf.pdf',
@@ -130,6 +144,7 @@ ExamURLs = (
         season=Season.AUTUMN,
         solutions=True,
         language=Language.NORWEGIAN,
+        probably_exam=True,
     ),
     ExamURL(
         url=r'https://wiki.math.ntnu.no/_media/tma4105/eksamen/sif5005_00k.pdf',
@@ -138,6 +153,7 @@ ExamURLs = (
         season=Season.CONTINUATION,
         solutions=False,
         language=Language.NORWEGIAN,
+        probably_exam=True,
     ),
     ExamURL(
         url=r'https://wiki.math.ntnu.no/_media/tma4180/2015v/lf_summer15.pdf',
@@ -146,6 +162,7 @@ ExamURLs = (
         season=Season.SPRING,
         solutions=True,
         language=Language.ENGLISH,
+        probably_exam=False,
     ),
     ExamURL(
         url=r'https://wiki.math.ntnu.no/_media/tma4305/exam/tma4305_2017-11_sol.pdf',
@@ -154,6 +171,7 @@ ExamURLs = (
         season=Season.AUTUMN,
         solutions=True,
         language=Language.ENGLISH,
+        probably_exam=True,
     ),
     ExamURL(
         url=r'https://wiki.math.ntnu.no/lib/exe/fetch.php?tok=7bbce9&media=http%3A%2F%2Fwww.math.ntnu.no%2Femner%2FTMA4140%2F2009h%2Feksamener%2Fh2012-lf.pdf',
@@ -162,6 +180,7 @@ ExamURLs = (
         season=Season.AUTUMN,
         solutions=True,
         language=Language.NORWEGIAN,
+        probably_exam=True,
     ),
     ExamURL(
         url=r'https://wiki.math.ntnu.no/_media/tma4130/2016h/loesningsforslag_tma4130_h15_v2.pdf',
@@ -170,6 +189,16 @@ ExamURLs = (
         season=Season.AUTUMN,
         solutions=True,
         language=Language.NORWEGIAN,
+        probably_exam=True,
+    ),
+    ExamURL(
+        url=r'https://wiki.math.ntnu.no/_media/tma4130/2016h/oving2.pdf',
+        code='TMA4130',
+        year=2016,
+        season=Season.AUTUMN,
+        solutions=False,
+        language=Language.UNKNOWN,
+        probably_exam=False,
     ),
 )
 
@@ -198,6 +227,11 @@ class TestExamURLParser:
     def test_solutions_parser(self, exam):
         url_parser = ExamURLParser(url=exam.url)
         assert url_parser.solutions == exam.solutions
+
+    @pytest.mark.parametrize('exam', ExamURLs)
+    def test_probably_exam(self, exam):
+        url_parser = ExamURLParser(url=exam.url)
+        assert url_parser.probably_exam == exam.probably_exam
 
     @pytest.mark.xfail(strict=True)
     @pytest.mark.parametrize('exam', ExamURLs)

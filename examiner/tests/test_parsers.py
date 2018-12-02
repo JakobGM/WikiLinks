@@ -1,24 +1,8 @@
 from collections import namedtuple
-from enum import Enum
 
 import pytest
 
-from examiner.parsers import ExamURLParser
-
-
-class Season(Enum):
-    SPRING = 'Vår'
-    AUTUMN = 'Høst'
-    CONTINUATION = 'Kontinuasjonseksamen'
-    UNKNOWN = 'Ukjent'
-
-
-class Language(Enum):
-    BOKMAL = 'Bokmål'
-    NYNORSK = 'Nynorsk'
-    NORWEGIAN = 'Norsk'
-    ENGLISH = 'English'
-    UNKNOWN = 'Ukjent'
+from examiner.parsers import ExamURLParser, Language, Season
 
 
 class ExamURL:
@@ -179,6 +163,14 @@ ExamURLs = (
         solutions=True,
         language=Language.NORWEGIAN,
     ),
+    ExamURL(
+        url=r'https://wiki.math.ntnu.no/_media/tma4130/2016h/loesningsforslag_tma4130_h15_v2.pdf',
+        code='TMA4130',
+        year=2015,
+        season=Season.AUTUMN,
+        solutions=True,
+        language=Language.NORWEGIAN,
+    ),
 )
 
 class TestExamURLParser:
@@ -200,7 +192,7 @@ class TestExamURLParser:
     @pytest.mark.parametrize('exam', ExamURLs)
     def test_season_parser(self, exam):
         url_parser = ExamURLParser(url=exam.url)
-        assert url_parser.season == exam.season.value
+        assert url_parser.season == exam.season
 
     @pytest.mark.parametrize('exam', ExamURLs)
     def test_solutions_parser(self, exam):

@@ -89,7 +89,7 @@ ExamURLs = (
         year=2011,
         season=Season.AUTUMN,
         solutions=False,
-        language=Language.UNKNOWN,
+        language=Language.BOKMAL,
         probably_exam=True,
     ),
     ExamURL(
@@ -116,7 +116,7 @@ ExamURLs = (
         year=2008,
         season=Season.SPRING,
         solutions=False,
-        language=Language.NORWEGIAN,
+        language=Language.BOKMAL,
         probably_exam=True,
     ),
     ExamURL(
@@ -143,7 +143,7 @@ ExamURLs = (
         year=1999,
         season=Season.AUTUMN,
         solutions=True,
-        language=Language.NORWEGIAN,
+        language=Language.BOKMAL,
         probably_exam=True,
     ),
     ExamURL(
@@ -152,7 +152,7 @@ ExamURLs = (
         year=2000,
         season=Season.CONTINUATION,
         solutions=False,
-        language=Language.NORWEGIAN,
+        language=Language.UNKNOWN,
         probably_exam=True,
     ),
     ExamURL(
@@ -179,7 +179,7 @@ ExamURLs = (
         year=2012,
         season=Season.AUTUMN,
         solutions=True,
-        language=Language.NORWEGIAN,
+        language=Language.BOKMAL,
         probably_exam=True,
     ),
     ExamURL(
@@ -188,7 +188,7 @@ ExamURLs = (
         year=2015,
         season=Season.AUTUMN,
         solutions=True,
-        language=Language.NORWEGIAN,
+        language=Language.BOKMAL,
         probably_exam=True,
     ),
     ExamURL(
@@ -199,6 +199,24 @@ ExamURLs = (
         solutions=False,
         language=Language.UNKNOWN,
         probably_exam=False,
+    ),
+    ExamURL(
+        url=r'https://wiki.math.ntnu.no/lib/exe/fetch.php?tok=c5adfd&media=http%3A%2F%2Fwww.math.ntnu.no%2Femner%2FTMA4110%2Feksamen%2FTMA4115_v18_kont_no.pdf',
+        code='TMA4115',
+        year=2018,
+        season=Season.CONTINUATION,
+        solutions=False,
+        language=Language.BOKMAL,
+        probably_exam=True,
+    ),
+    ExamURL(
+        url=r'https://wiki.math.ntnu.no/lib/exe/fetch.php?tok=6d86b8&media=http%3A%2F%2Fwww.math.ntnu.no%2Femner%2FTMA4110%2Feksamen%2F2016hn.pdf',
+        code='TMA4110',
+        year=2016,
+        season=Season.AUTUMN,
+        solutions=False,
+        language=Language.UNKNOWN,  # TODO
+        probably_exam=True,
     ),
 )
 
@@ -233,7 +251,6 @@ class TestExamURLParser:
         url_parser = ExamURLParser(url=exam.url)
         assert url_parser.probably_exam == exam.probably_exam
 
-    @pytest.mark.xfail(strict=True)
     @pytest.mark.parametrize('exam', ExamURLs)
     def test_language_parser(self, exam):
         url_parser = ExamURLParser(url=exam.url)

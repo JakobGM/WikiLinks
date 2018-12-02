@@ -19,7 +19,6 @@ class Language(Enum):
 
     BOKMAL = 'Bokmål'
     NYNORSK = 'Nynorsk'
-    NORWEGIAN = 'Norsk'
     ENGLISH = 'English'
     UNKNOWN = None
 
@@ -79,10 +78,10 @@ class ExamURLParser:
         :return: 2-tuple (year, season).
         """
 
-        nondigit = '[\D]'
+        nondigit = r'[\D]'
         full_year = r'(?P<year>(?:19[6-9][0-9]|20[0-2][0-9]))'
         month = '(?P<month>[0-1][0-9])'
-        day_num = '(?:[\D][0-3][0-9])?'
+        day_num = r'(?:[\D][0-3][0-9])?'
 
         # Check if full date pattern is available
         full_date = (nondigit + full_year + nondigit + month + day_num)
@@ -221,6 +220,63 @@ class ExamURLParser:
         return self._season
 
     @property
+    def language(self) -> Language:
+        """Return the language of the exam."""
+
+        if hasattr(self, '_language'):
+            return self._language
+
+        non_letter = r'[^a-zA-Z]'
+        english_words = '(?:' + '|'.join([
+            'en',
+            'sol',
+            'dec',
+            'may',
+            'june',
+            'exam',
+            'summer',
+            'autumn',
+            'spring',
+        ]) + ')'
+        nynorsk_words = '(?:' + '|'.join([
+            'nn',
+            'nynorsk',
+            'loysning',
+        ]) + ')'
+        bokmal_words = '(?:' + '|'.join([
+            'nb',
+            'bok',
+            'losning',
+            'loosning',
+            'loesning',
+            'nor',
+            'mai',
+            'juni',
+            'des',
+            'lf',
+            'kont',
+            non_letter + 'no' + non_letter,
+        ]) + ')'
+
+        english = re.compile(non_letter + english_words, re.IGNORECASE)
+        bokmal = re.compile(non_letter + bokmal_words, re.IGNORECASE)
+        nynorsk = re.compile(non_letter + nynorsk_words, re.IGNORECASE)
+
+        # Prevent nonletter requirement screwing up match in beginning
+        filename = '/' + self.filename
+
+        if re.search(english, filename):
+            self._language = Language.ENGLISH
+        elif re.search(nynorsk, filename):
+            self._language = Language.NYNORSK
+        elif re.search(bokmal, filename):
+            self._language = Language.BOKMAL
+        else:
+            self._language = Language.UNKNOWN
+
+        return self._language
+
+    @property
     def probably_exam(self) -> bool:
         """Return True if the url probably points to an exam document."""
         if hasattr(self, '_probably_exam'):
@@ -240,7 +296,9 @@ class ExamURLParser:
 
     def __str__(self) -> str:
         """Return string representation of Exam URL object."""
-        string = f'{self.code or "Ukjent"} - {self.year or "Ukjent"} {self.season.value}'
-        if self.solutions:
-            string += ' (LF)'
-        return string
+        return (
+            f'{self.code or "Ukjent"} '
+            f'{"LF" if self.solutions else "Eksamen"} '
+            f'{self.year or "Ukjent"} {self.season.value} '
+            f'({self.language.value or "Ukjent språk"})'
+        )

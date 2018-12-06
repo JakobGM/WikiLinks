@@ -52,6 +52,7 @@ class ExamURLParser:
             self.parsed_url = self.parsed_url.replace(self.code, '')
 
         self.filename = uri_to_iri(url).rsplit('/')[-1]
+        self.parsed_filename = uri_to_iri(self.parsed_url).rsplit('/')[-1]
 
         # First try to retrieve information from solely the filename
         self._year, self._season = self.find_date(string=self.filename)
@@ -185,7 +186,7 @@ class ExamURLParser:
     @property
     def solutions(self) -> bool:
         solution_pattern = re.compile(
-            r'(lf|losning|loesning|solution|sol[^a-zA-Z])',
+            r'(lf|losning|loesning|fasit|solution|sol[^a-zA-Z])',
             re.IGNORECASE,
         )
         solution = solution_pattern.findall(self.filename)
@@ -249,6 +250,7 @@ class ExamURLParser:
             'losning',
             'loosning',
             'loesning',
+            'fasit',
             'nor',
             'mai',
             'juni',

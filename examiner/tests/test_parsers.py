@@ -1,5 +1,3 @@
-from collections import namedtuple
-
 import pytest
 
 from examiner.parsers import ExamURLParser, Language, Season
@@ -217,6 +215,15 @@ ExamURLs = (
         solutions=False,
         language=Language.UNKNOWN,  # TODO
         probably_exam=True,
+    ),
+    ExamURL(
+        url=r'https://wiki.math.ntnu.no/_media/tma4140/2018h/midtsem_fasit18.pdf',
+        code='TMA4140',
+        year=2018,
+        season=Season.AUTUMN,  # TODO
+        solutions=True,
+        language=Language.BOKMAL,
+        probably_exam=False,
     ),
 )
 

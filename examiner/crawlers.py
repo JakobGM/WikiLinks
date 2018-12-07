@@ -83,7 +83,7 @@ class MathematicalSciencesCourseCrawler:
         soup = bs(response.content, 'html.parser')
         links = soup.find_all('a')
         return [
-            ExamURLParser(urljoin(self.WIKI_URL, link.get('href')))
+            urljoin(self.WIKI_URL, link.get('href'))
             for link
             in links
             if link.get('href') and link.get('href').endswith('.pdf')

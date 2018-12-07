@@ -7,24 +7,117 @@
 
 {% block content %}
 
-{% for crawler in crawlers %}
-  <li>
-    <a href="{{ crawler.homepage_url }}">{{ crawler }}</a>
-    <a href="{{ crawler.exams_page }}"> {{ crawler.exams_page }} </a>
-  </li>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+  crossorigin="anonymous"></script>
 
-  <ul>
-    {% for pdf in crawler.pdf_urls %}
-      <li>
-        <a href="{{ pdf.url }}">{{ pdf }}</a>
-        <p><i>{{ pdf.url }}</i></p>
-        <br>
-      </li>
-    {% endfor %}
-  </ul>
-  <hr>
 
+<input type="text" id="search" placeholder="År"></input>
+
+<h1>{{ course_code }}</h1>
+
+<table style="table-layout:auto; padding:15px;" rules="rows" cellpadding="100">
+<tr>
+  <th>År</th>
+  <th>Semester</th>
+  <th>LF</th>
+  <th>Språk</th>
+  <th>Filnavn</th>
+</tr>
+{% for exam_url in exam_urls %}
+  <tr>
+    <td>
+      <b>{{ exam_url.year }}</b>
+    </td>
+
+    <td>
+    {% if exam_url.season == 'Season.AUTUMN' %}
+      Høst
+    {% elif exam_url.season == 'Season.SPRING' %}
+      Vår
+    {% elif exam_url.season == 'Season.CONTINUATION' %}
+      Kont
+    {% else %}
+      Ukjent
+    {% endif %}
+    </td>
+
+    <td>
+    {% if exam_url.solutions %}
+      <i class="fa fa-check" style="color:green"></i>
+    {% else %}
+      <i class="fa fa-times" style="color:red"></i>
+    {% endif %}
+    </td>
+
+
+    <td>
+    {% if exam_url.language == 'Language.ENGLISH' %}
+      Engelsk 🇬🇧
+    {% elif exam_url.language == 'Language.NYNORSK' %}
+      Nynorsk 🇳🇴
+    {% elif exam_url.language == 'Language.BOKMAL' %}
+      Bokmål 🇳🇴
+    {% else %}
+      Ukjent&nbsp;<i class="fa fa-question-circle" style="color:grey"></i>
+    {% endif %}
+    </td>
+
+    <td style="text-align:left;">
+    <a href="{{ exam_url.url }}">
+      {{ exam_url.filename }}
+    </a>
+    </td>
+  </tr>
 {% endfor %}
+</table>
 
-</ul>
+{% endblock %}
+
+{% block end %}
+<script>
+// removes highlighting by replacing each em tag within the specified elements with it's content
+function removeHighlighting(highlightedElements){
+    highlightedElements.each(function(){
+        var element = $(this);
+        element.replaceWith(element.html());
+    })
+}
+
+// add highlighting by wrapping the matched text into an em tag, replacing the current elements, html value with it
+function addHighlighting(element, textToHighlight){
+    var text = element.text();
+    var highlightedText = '<b>' + textToHighlight + '</b>';
+    var newText = text.replace(textToHighlight, highlightedText);
+
+    element.html(newText);
+}
+
+$("#search").on("keyup", function() {
+    var value = $(this).val();
+
+    // remove all highlighted text passing all em tags
+    removeHighlighting($("table tr em"));
+
+    $("table tr").each(function(index) {
+        if (index !== 0) {
+            $row = $(this);
+
+            var $tdElement = $row.find("td:first");
+            var id = $tdElement.text();
+            var matchedIndex = id.indexOf(value);
+
+            if (id.indexOf(value) == -1) {
+                $row.hide();
+            }
+            else {
+                //highlight matching text, passing element and matched text
+                addHighlighting($tdElement, value);
+                $row.show();
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
-    url(r'^exams/', include('examiner.urls')),
+    url(r'^exams/', include('examiner.urls', namespace='examinator')),
     url(r'^', include('semesterpage.urls')),
 ]
 

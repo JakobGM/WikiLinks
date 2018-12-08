@@ -132,7 +132,7 @@ $( 'table' ).each(function() {
   currentTable.searchable({
     searchField: '#' + currentSearchInputID,
     clearOnLoad: true,
-    selector: 'tbody tr:not(:first-child)'
+    selector: 'tbody tr:nth-child(n+3)'
   });
 });
 </script>
@@ -172,6 +172,13 @@ tr {
 }
 th {
   text-align: left;
+}
+tr:nth-child(2) {
+  background-color: #7a7a7a;
+  color: white;
+}
+tr:nth-child(2n + 3) {
+  background-color: #efefef;
 }
 </style>
 {% endblock %}

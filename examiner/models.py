@@ -39,6 +39,33 @@ class FileBackup(models.Model):
         super().save(*args, **kwargs)
 
 
+class ExamURLQuerySet(models.QuerySet):
+    def organize(self):
+        organization = {}
+        for url in self:
+            urls = organization.setdefault(url.course_code, [])
+            urls.append(url)
+
+        for course_code, urls in organization.items():
+            organization[course_code] = {}
+            for url in urls:
+                year = organization[course_code].setdefault(url.year, {})
+                semester = year.setdefault(
+                    Season.str_from_field(url.season),
+                    {'solutions': {}, 'exams': {}}
+                )
+                key = 'solutions' if url.solutions else 'exams'
+                urls = semester[key].setdefault(
+                    Language.str_from_field(url.language),
+                    [],
+                )
+                urls.append(url)
+
+            organization[course_code] = dict(organization[course_code])
+
+        return organization
+
+
 class ExamURL(models.Model):
     url = models.TextField(
         unique=True,
@@ -106,6 +133,7 @@ class ExamURL(models.Model):
     )
     created_at = models.DateTimeField(editable=False)
     updated_at = models.DateTimeField()
+    objects = ExamURLQuerySet.as_manager()
 
     def backup_file(self) -> None:
         """Download and backup file from url, and save to self.file_backup."""

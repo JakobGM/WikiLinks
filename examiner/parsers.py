@@ -5,7 +5,15 @@ from typing import Optional, Tuple
 from django.utils.encoding import uri_to_iri
 
 
-class Season(Enum):
+class ChoicesEnum(Enum):
+
+    @classmethod
+    def str_from_field(cls, field: str):
+        key = field.split('.')[1]
+        return cls[key].value or 'Ukjent'
+
+
+class Season(ChoicesEnum):
     """Exam season type."""
 
     SPRING = 'Vår'
@@ -14,7 +22,7 @@ class Season(Enum):
     UNKNOWN = None
 
 
-class Language(Enum):
+class Language(ChoicesEnum):
     """The written language of the exam."""
 
     BOKMAL = 'Bokmål'
@@ -238,6 +246,7 @@ class ExamURLParser:
             'summer',
             'autumn',
             'spring',
+            'ex',
         ]) + ')'
         nynorsk_words = '(?:' + '|'.join([
             'nn',
@@ -257,6 +266,7 @@ class ExamURLParser:
             'des',
             'lf',
             'kont',
+            'eksam',
             non_letter + 'no' + non_letter,
         ]) + ')'
 

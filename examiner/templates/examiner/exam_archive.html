@@ -1,0 +1,177 @@
+{% extends "base.html" %} {# TODO: Need to add link category and course static images based on model #}
+{% load rules static %}
+
+{% block navbar %}
+{% include "semesterpage/navbar.html" %}
+{% endblock %}
+
+{% block content %}
+
+
+<!-- Required for search functionality -->
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+
+<!-- Required for tooltip on hover -->
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script
+  src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+  crossorigin="anonymous"></script>
+
+<script src="http://rawgithub.com/stidges/jquery-searchable/master/dist/jquery.searchable-1.1.0.min.js"></script>
+
+{% for course_code, years in exam_courses.items %}
+
+<table id="table-{{ course_code }}" rules="rows" cellpadding="100">
+  <caption>{{ course_code }}</caption>
+  <tr>
+    <th colspan="4">
+      <input type="text" id="search-{{ course_code }}" placeholder="Filter"></input>
+    </th>
+  </tr>
+  <tr>
+    <th>År</th>
+    <th>Semester</th>
+    <th>Eksamen</th>
+    <th>LF</th>
+  </tr>
+
+  {% for year, seasons in years.items %}
+  {% for season, exam_set in seasons.items %}
+  <tr>
+    <td>{{ year|default:"Ukjent" }}</td>
+
+    <td>
+      {% if season == 'Høst' %}
+      Høst
+      {% elif season == 'Vår' %}
+      Vår
+      {% elif season == 'Kontinuasjonseksamen' %}
+      Kont
+      {% else %}
+      Ukjent
+      {% endif %}
+    </td>
+
+    <td>
+      {% for language, urls in exam_set.exams.items %}
+      <a href="{{ urls.0.url }}" target="_blank">
+        {% if language == 'English' %}
+        🇬🇧
+        {% elif language == 'Nynorsk' %}
+        🇳🇴
+        {% elif language == 'Bokmål' %}
+        🇳🇴
+        {% else %}
+        &nbsp;<i class="fa fa-question-circle" style="color:grey"></i>
+        {% endif %}
+        <i>{{ urls.0.filename }}</i>
+      </a>
+
+      {% for alt_url in urls|slice:"1:" %}
+      {% if forloop.first %}
+      <br>
+      <i class="fa fa-external-link"></i>
+      {% endif %}
+
+      <a href="{{ alt_url.url }}" title="{{ alt_url.filename }}" target="_blank">
+          [{{ forloop.counter }}]
+      </a>
+      {% endfor %}
+
+      <br>
+      {% endfor %}
+    </td>
+
+    <td>
+    {% for language, urls in exam_set.solutions.items %}
+      <a href="{{ urls.0.url }}" target="_blank">
+        {% if language == 'English' %}
+        🇬🇧
+        {% elif language == 'Nynorsk' %}
+        🇳🇴
+        {% elif language == 'Bokmål' %}
+        🇳🇴
+        {% else %}
+        &nbsp;<i class="fa fa-question-circle" style="color:grey"></i>
+        {% endif %}
+        <i>{{ urls.0.filename }}</i>
+      </a>
+      <br>
+    {% endfor %}
+    </td>
+  </tr>
+  {% endfor %}
+  {% endfor %}
+</table>
+{% endfor %}
+
+{% endblock %}
+
+{% block end %}
+<script>
+$(document).tooltip({
+  show: {
+    delay: 0,
+    duration: 0,
+  },
+  hide: {
+    delay: 0,
+    duration: 0,
+  },
+})
+
+
+$( 'table' ).each(function() {
+  var currentTable = $(this);
+  var currentTableID = currentTable.attr('id');
+  var currentSearchInputID = currentTableID.replace('table', 'search');
+  currentTable.searchable({
+    searchField: '#' + currentSearchInputID,
+    clearOnLoad: true,
+    selector: 'tbody tr:not(:first-child)'
+  });
+});
+</script>
+
+<style>
+caption {
+  font-size: 3em;
+}
+input{
+  border: none;
+  padding: 10px;
+  margin: 10px;
+  margin-bottom: 20px;
+  height: 2.5em;
+  width: 95%;
+  border:1px solid #eaeaea;
+  outline:none;
+}
+input[type="text"] {
+  font-size: 1em;
+  padding: -1em;
+}
+input:hover {
+  border-color: #a0a0a0 #b9b9b9 #b9b9b9 #b9b9b9;
+}
+input:focus {
+  border-color: #4d90fe;
+}
+table {
+  width: 75%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 15px;
+}
+tr {
+  vertical-align: baseline;
+}
+th {
+  text-align: left;
+}
+</style>
+{% endblock %}

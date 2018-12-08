@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup as bs
 
 import requests
 
-from examiner.parsers import ExamURLParser
 from semesterpage.models import Course
 
 
@@ -45,49 +44,82 @@ class MathematicalSciencesCourseCrawler:
             return False
         return True
 
-    def exams_page(self) -> str:
-        response = requests.get(self.homepage_url)
-        soup = bs(response.content, 'html.parser')
-        latest = soup.find('a', text=re.compile(r'^.*20\d\d.*$'), href=True)
-        if not latest:
-            return ''
+    def exams_pages(self) -> str:
+        try:
+            response = requests.get(self.homepage_url, timeout=2)
+        except Exception:
+            return []
+        if not response.ok:
+            return []
 
-        latest = urljoin(self.WIKI_URL, latest['href'])
-        response = requests.get(latest)
         soup = bs(response.content, 'html.parser')
-        patterns = (
-            r'old exams',
-            r'gamle eksamensoppgaver',
-            r'eksamensoppgaver',
-            r'tidligere eksamener',
-            r'earlier exams',
-            r'old exam sets',
-            r'eksamenssett',
+        years = soup.find_all(
+            'a',
+            text=re.compile(r'^.*(?:20[0-2]\d|199\d).*$'),
+            href=True,
         )
-        for pattern in patterns:
+        if not years:
+            return []
+
+        years = [
+            urljoin(self.WIKI_URL, year['href'])
+            for year
+            in years
+        ]
+        result = set()
+
+        for year in years:
+            try:
+                response = requests.get(year, timeout=2)
+            except Exception:
+                continue
+            if not response.ok:
+                continue
+
+            soup = bs(response.content, 'html.parser')
+            patterns = r'(?:' + r'|'.join([
+                r'old exams',
+                r'gamle eksamensoppgaver',
+                r'eksamensoppgaver',
+                r'tidligere eksamener',
+                r'earlier exams',
+                r'old exam sets',
+                r'eksamenssett',
+            ]) + r')'
             link = soup.find(
                 'a',
-                text=re.compile(pattern, re.IGNORECASE),
+                text=re.compile(patterns, re.IGNORECASE),
                 href=True,
             )
             if link:
-                return urljoin(self.WIKI_URL, link['href'])
+                result.add(urljoin(self.WIKI_URL, link['href']))
+            else:
+                result.add(self.homepage_url)
 
-        return self.homepage_url
+        return list(result)
 
     def pdf_urls(self) -> List[str]:
-        exams_url = self.exams_page()
-        if not exams_url:
+        exams_urls = self.exams_pages()
+        if not exams_urls:
             return []
-        response = requests.get(exams_url)
-        soup = bs(response.content, 'html.parser')
-        links = soup.find_all('a')
-        return [
-            urljoin(self.WIKI_URL, link.get('href'))
-            for link
-            in links
-            if link.get('href') and link.get('href').endswith('.pdf')
-        ]
+
+        result = set()
+
+        for exams_url in exams_urls:
+            try:
+                response = requests.get(exams_url, timeout=2)
+            except Exception:
+                continue
+            if not response.ok:
+                continue
+
+            soup = bs(response.content, 'html.parser')
+            links = soup.find_all('a')
+            for link in links:
+                if link.get('href') and link.get('href').endswith('.pdf'):
+                    result.add(urljoin(self.WIKI_URL, link.get('href')))
+
+        return list(result)
 
     def __str__(self) -> str:
         return self.code

@@ -179,3 +179,45 @@ def test_file_backup_of_dead_link(tmpdir, settings):
     exam_url.backup_file()
     exam_url.refresh_from_db()
     assert exam_url.dead_link is True
+
+
+@pytest.mark.django_db
+def test_queryset_organize_method():
+    """ExamURLs should be organizable in hierarchy."""
+    exam_url1 = ExamURL.objects.create(
+        url='http://exams.com/exam',
+        course_code='TMA4000',
+        year=2016,
+        season=Season.SPRING,
+        language=Language.ENGLISH,
+    )
+    exam_url_solutions = ExamURL.objects.create(
+        url='http://exams.com/solution',
+        course_code='TMA4000',
+        year=2016,
+        season=Season.SPRING,
+        solutions=True,
+        language=Language.ENGLISH,
+    )
+    eksamen_url_losning = ExamURL.objects.create(
+        url='http://exams.com/losning',
+        course_code='TMA4000',
+        year=2016,
+        season=Season.SPRING,
+        solutions=True,
+        language=Language.BOKMAL,
+    )
+    organization = ExamURL.objects.all().organize()
+    assert organization == {
+        'TMA4000': {
+            2016: {
+                'Vår': {
+                    'exams': {'English': [exam_url1]},
+                    'solutions': {
+                        'Bokmål': [eksamen_url_losning],
+                        'English': [exam_url_solutions],
+                    },
+                }
+            },
+        },
+    }

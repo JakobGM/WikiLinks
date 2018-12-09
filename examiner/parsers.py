@@ -1,33 +1,43 @@
-from enum import Enum
 import re
 from typing import Optional, Tuple
 
 from django.utils.encoding import uri_to_iri
 
 
-class ChoicesEnum(Enum):
+class Season:
+    """
+    The season when the exam took place.
 
-    @classmethod
-    def str_from_field(cls, field: str):
-        key = field.split('.')[1]
-        return cls[key].value or 'Ukjent'
+    These are the values that are stored to the database.
+    """
 
-
-class Season(ChoicesEnum):
-    """Exam season type."""
-
-    SPRING = 'Vår'
-    AUTUMN = 'Høst'
-    CONTINUATION = 'Kontinuasjonseksamen'
+    SPRING = 1
+    CONTINUATION = 2
+    AUTUMN = 3
     UNKNOWN = None
 
+    @classmethod
+    def str_from_field(cls, name):
+        if name == cls.SPRING:
+            return 'Vår'
+        elif name == cls.CONTINUATION:
+            return 'Kontinuasjonseksamen'
+        elif name == cls.AUTUMN:
+            return 'Høst'
+        else:
+            return 'Ukjent'
 
-class Language(ChoicesEnum):
-    """The written language of the exam."""
+
+class Language:
+    """
+    The written language of the exam.
+
+    These are the values that are stored to the database.
+    """
 
     BOKMAL = 'Bokmål'
     NYNORSK = 'Nynorsk'
-    ENGLISH = 'English'
+    ENGLISH = 'Engelsk'
     UNKNOWN = None
 
 

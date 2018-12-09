@@ -213,10 +213,10 @@ def test_queryset_organize_method():
         'TMA4000': {
             2016: {
                 'Vår': {
-                    'exams': {'English': [exam_url1]},
+                    'exams': {'Engelsk': [exam_url1]},
                     'solutions': {
                         'Bokmål': [eksamen_url_losning],
-                        'English': [exam_url_solutions],
+                        'Engelsk': [exam_url_solutions],
                     },
                 }
             },

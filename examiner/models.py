@@ -10,7 +10,7 @@ from django.utils import timezone
 
 import requests
 
-from examiner.parsers import ExamURLParser, Language, Season
+from examiner.parsers import ExamURLParser, Season
 from semesterpage.models import Course
 
 
@@ -89,7 +89,7 @@ class ExamURLQuerySet(models.QuerySet):
                 )
                 key = 'solutions' if url.solutions else 'exams'
                 urls = semester[key].setdefault(
-                    Language.str_from_field(url.language),
+                    url.language or 'Ukjent',
                     [],
                 )
                 urls.append(url)
@@ -127,17 +127,26 @@ class ExamURL(models.Model):
     language = models.CharField(
         max_length=20,
         null=True,
-        choices=[(tag, tag.value) for tag in Language],
+        choices=[
+            ('Bokmål', 'Bokmål'),
+            ('Nynorsk', 'Nynorsk'),
+            ('Engelsk', 'Engelsk'),
+            (None, 'Ukjent'),
+        ],
         help_text=_('Språket som eksamen er skrevet i.'),
     )
     year = models.PositiveSmallIntegerField(
         null=True,
         help_text=_('Året som eksamen ble holdt.'),
     )
-    season = models.CharField(
-        max_length=20,
+    season = models.PositiveSmallIntegerField(
         null=True,
-        choices=[(tag, tag.value) for tag in Season],
+        choices=[
+            (1, 'Vår'),
+            (2, 'Kontinuasjonseksamen'),
+            (3, 'Høst'),
+            (None, 'Ukjent'),
+        ],
         help_text=_('Semestertype når eksamen ble holdt.'),
     )
     solutions = models.BooleanField(

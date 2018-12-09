@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from django.core.files.base import ContentFile
 from django.db.utils import IntegrityError
 
 import pytest
@@ -221,3 +222,23 @@ def test_queryset_organize_method():
             },
         },
     }
+
+
+@pytest.mark.django_db
+def test_string_content():
+    """FileBackup PDFs should be parsable."""
+    pdf_path = Path(__file__).parent / 'data' / 'matmod_exam_des_2017.pdf'
+    pdf_content = ContentFile(pdf_path.read_bytes())
+    md5 = 'a8c5b61d8e750db6e719937a251e93b9'
+    pdf_backup = FileBackup(
+        filetype='pdf',
+        md5_hash=md5,
+    )
+    pdf_backup.file.save(md5, content=pdf_content)
+    pdf_backup.read_text()
+    pdf_backup.save()
+
+    pdf_backup.refresh_from_db()
+    assert 'Rottman' in pdf_backup.text
+    assert 'population model' in pdf_backup.text
+    assert 'this is not in the exam' not in pdf_backup.text

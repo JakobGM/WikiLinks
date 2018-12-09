@@ -1,4 +1,5 @@
 import hashlib
+import subprocess
 from gettext import gettext as _
 
 from django.contrib.auth.models import User
@@ -23,6 +24,17 @@ class FileBackup(models.Model):
         upload_to=upload_path,
         help_text=_('Kopi av fil hostet på en url.'),
     )
+    filetype = models.CharField(
+        max_length=10,
+        null=True,
+        default='pdf',
+        help_text=_('Filendelsestype, f.eks. "pdf".'),
+    )
+    text = models.TextField(
+        null=True,
+        default=None,
+        help_text=_('Filinnhold i rent tekstformat.'),
+    )
     md5_hash = models.CharField(
         max_length=32,
         unique=True,
@@ -31,6 +43,27 @@ class FileBackup(models.Model):
     )
     created_at = models.DateTimeField(editable=False)
     updated_at = models.DateTimeField()
+
+    def read_text(self) -> None:
+        """
+        Read text from pdf and save result to self.text.
+
+        NB: This does not save the model, you have to explicitly call
+        self.save() in order to save the result to the database.
+        """
+        if not self.filetype.lower() == 'pdf':
+            return
+
+        path = self.file.path
+        result = subprocess.run(
+            args=['pdftotext', path, '-'],
+            stdout=subprocess.PIPE,
+            universal_newlines=True,
+        )
+        if not result.returncode == 0:
+            print(f'Unsucessful PDF parsing of "{path}"')
+            return
+        self.text = result.stdout
 
     def save(self, *args, **kwargs) -> None:
         if not self.id:

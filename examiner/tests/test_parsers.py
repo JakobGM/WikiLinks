@@ -343,3 +343,13 @@ class TestExamURLParser:
     def test_language_parser(self, exam):
         url_parser = ExamURLParser(url=exam.url)
         assert url_parser.language == exam.language
+
+
+def test_tokenize():
+    assert ExamURLParser.tokenize('abc') == 'abc'
+    assert ExamURLParser.tokenize('TMA4215') == '_tma_4215'
+    assert ExamURLParser.tokenize('eksMai18n') == 'eks_mai18n'
+    assert (
+        ExamURLParser.tokenize('LFeksamener2006-2010.pdf') ==
+        '_lf_eksamener2006-2010.pdf'
+    )

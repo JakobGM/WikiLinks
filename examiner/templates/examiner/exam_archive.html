@@ -59,7 +59,7 @@
     <td>
       {% for language, urls in exam_set.exams.items %}
       <a href="{{ urls.0.url }}" target="_blank">
-        {% if language == 'English' %}
+        {% if language == 'Engelsk' %}
         🇬🇧
         {% elif language == 'Nynorsk' %}
         🇳🇴
@@ -70,6 +70,7 @@
         {% endif %}
         <i>{{ urls.0.filename }}</i>
       </a>
+      <div style="display:none;">{{ urls.0.file_backup.text }}</div>
 
       {% for alt_url in urls|slice:"1:" %}
       {% if forloop.first %}
@@ -89,7 +90,7 @@
     <td>
     {% for language, urls in exam_set.solutions.items %}
       <a href="{{ urls.0.url }}" target="_blank">
-        {% if language == 'English' %}
+        {% if language == 'Engelsk' %}
         🇬🇧
         {% elif language == 'Nynorsk' %}
         🇳🇴

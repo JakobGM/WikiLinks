@@ -1,27 +1,11 @@
+from typing import Optional
+
 from django.db.models import F
 from django.shortcuts import render
 
 from examiner.crawlers import MathematicalSciencesCrawler
 from examiner.models import ExamURL, FileBackup
 from semesterpage.models import Course
-
-
-def all_exams(request):
-    exam_urls = (
-        ExamURL
-        .objects
-        .order_by(
-            F('course_code'),
-            F('year').desc(nulls_last=True),
-            F('solutions').desc(),
-        )
-    )
-    context = {
-        'exam_courses': exam_urls.organize(),
-        'header_text': f' / exams',
-        'user': request.user,
-    }
-    return render(request, 'examiner/exam_archive.html', context)
 
 
 def crawl(request):
@@ -33,39 +17,51 @@ def crawl(request):
             exam_url.parse_url()
             exam_url.save()
 
-    return all_exams(request)
+    return exams(request)
 
 
 def backup(request, course_code: str):
     exam_urls = ExamURL.objects.filter(course_code__iexact=course_code)
     for exam_url in exam_urls:
         exam_url.backup_file()
-    return all_exams(request)
+    return exams(request)
 
 
 def parse(request):
+    exam_urls = ExamURL.objects.all()
+    for exam_url in exam_urls:
+        exam_url.parse_url()
+        exam_url.save()
+
     file_backups = FileBackup.objects.filter(text__isnull=True)
     for file_backup in file_backups:
         file_backup.read_text()
         file_backup.save()
-    return all_exams(request)
+    return exams(request)
 
 
-def course(request, course_code: str):
+def exams(request, course_code: Optional[str] = None):
     exam_urls = (
         ExamURL
         .objects
-        .filter(course_code__iexact=course_code)
         .order_by(
             F('course_code'),
             F('year').desc(nulls_last=True),
             F('solutions').desc(),
         )
     )
+    if course_code:
+        exam_urls = exam_urls.filter(
+            course_code__iexact=course_code.upper(),
+        )
+
     context = {
         'exam_courses': exam_urls.organize(),
-        'course_code': course_code.upper(),
-        'header_text': f' / exams / ' + course_code,
         'user': request.user,
     }
+    if course_code:
+        context['header_text'] = f' / exams / ' + course_code
+    else:
+        context['header_text'] = ' / exams'
+
     return render(request, 'examiner/exam_archive.html', context)

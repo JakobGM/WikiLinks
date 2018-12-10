@@ -47,7 +47,7 @@ class ExamURLParser:
 
     :param url: Full URL pointing to http(s) hosted exam PDF file.
     """
-    COURSE_PATTERNS = r'(?:TMA|TFY)\d\d\d\d'
+    COURSE_PATTERNS = r'(?:tma|tfy)_?\d\d\d\d'
     AUTUM_SEASONS = (
         'h',
         'des',
@@ -62,18 +62,20 @@ class ExamURLParser:
 
     def __init__(self, url: str) -> None:
         """Constructor for ExamURLParser."""
-
         self.url = url
-        self.parsed_url = uri_to_iri(url)
+        self.code = self._code(self.url)
+        self.parsed_url = self.tokenize(uri_to_iri(url))
 
         if self.code:
             self.parsed_url = self.parsed_url.replace(self.code, '')
 
         self.filename = uri_to_iri(url).rsplit('/')[-1]
-        self.parsed_filename = uri_to_iri(self.parsed_url).rsplit('/')[-1]
+        self.parsed_filename = self.tokenize(
+            uri_to_iri(self.parsed_url).rsplit('/')[-1],
+        )
 
         # First try to retrieve information from solely the filename
-        self._year, self._season = self.find_date(string=self.filename)
+        self._year, self._season = self.find_date(string=self.parsed_filename)
 
         # If unsucessful, try with the entire URL instead
         if self._year is None or self._season is None:
@@ -89,7 +91,14 @@ class ExamURLParser:
         if self.continuation:
             self._season = Season.CONTINUATION
 
-    def find_date(self, string: str) -> Tuple[Optional[int], Optional[Season]]:
+    @staticmethod
+    def tokenize(string: str) -> str:
+        s1 = re.sub('([^A-Z]*)([A-Z]{2,})([^A-Z]*)', r'\1_\2_\3', string)
+        s2 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s1)
+        return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s2).lower()
+
+    @classmethod
+    def find_date(cls, string: str) -> Tuple[Optional[int], Optional[Season]]:
         """
         Return year and season of exam from string identifier.
 
@@ -121,21 +130,22 @@ class ExamURLParser:
         season_str = (
             r'(?P<season>' +
             '|'.join(
-                self.AUTUM_SEASONS +
-                self.SPRING_SEASONS +
-                self.CONTINUATION_SEASONS
+                cls.AUTUM_SEASONS +
+                cls.SPRING_SEASONS +
+                cls.CONTINUATION_SEASONS
             ) +
             ')'
         )
 
         # All the different permutations available to us
+        nonchar = '[^a-z]'
         specific_date_patterns = [
-            re.compile(nondigit + full_year + season_str, re.IGNORECASE),
-            re.compile(season_str + full_year + nondigit, re.IGNORECASE),
-            re.compile(nondigit + abbreviated_year + season_str, re.IGNORECASE),
-            re.compile(season_str + abbreviated_year + nondigit, re.IGNORECASE),
-            re.compile(nondigit + full_year + nondigit, re.IGNORECASE),
-            re.compile(nondigit + abbreviated_year + nondigit, re.IGNORECASE),
+            re.compile(nondigit + full_year + season_str),
+            re.compile(nonchar + season_str + full_year + nondigit),
+            re.compile(nondigit + abbreviated_year + season_str),
+            re.compile(nonchar + season_str + abbreviated_year + nondigit),
+            re.compile(nondigit + full_year + nondigit),
+            re.compile(nondigit + abbreviated_year + nondigit),
         ]
 
         # Check if any of these patterns match
@@ -154,9 +164,9 @@ class ExamURLParser:
         year = int(year)
 
         if season:
-            if season.lower() in self.AUTUM_SEASONS:
+            if season.lower() in cls.AUTUM_SEASONS:
                 season = Season.AUTUMN
-            elif season.lower() in self.SPRING_SEASONS:
+            elif season.lower() in cls.SPRING_SEASONS:
                 season = Season.SPRING
             else:
                 season = Season.CONTINUATION
@@ -164,17 +174,12 @@ class ExamURLParser:
         return year, season
 
 
-    @property
-    def code(self) -> Optional[str]:
+    @classmethod
+    def _code(cls, string: str) -> Optional[str]:
         """Return course code related to the URL."""
-
-        if hasattr(self, '_code'):
-           return self._code
-
-        code_pattern = re.compile(self.COURSE_PATTERNS, re.IGNORECASE)
-        code = code_pattern.findall(self.url)
-        self._code = code[-1].upper() if code else None
-        return self._code
+        code_pattern = re.compile(cls.COURSE_PATTERNS, re.IGNORECASE)
+        code = code_pattern.findall(string)
+        return code[-1].upper() if code else None
 
     @property
     def year(self) -> Optional[int]:
@@ -262,9 +267,11 @@ class ExamURLParser:
             'nn',
             'nynorsk',
             'loysning',
+            'ny' + non_letter,
         ]) + ')'
         bokmal_words = '(?:' + '|'.join([
             'nb',
+            'bm',
             'bok',
             'losning',
             'loosning',
@@ -277,7 +284,8 @@ class ExamURLParser:
             'lf',
             'kont',
             'eksam',
-            non_letter + 'no' + non_letter,
+            'eks' + non_letter,
+            'no' + non_letter,
         ]) + ')'
 
         english = re.compile(non_letter + english_words, re.IGNORECASE)
@@ -285,7 +293,8 @@ class ExamURLParser:
         nynorsk = re.compile(non_letter + nynorsk_words, re.IGNORECASE)
 
         # Prevent nonletter requirement screwing up match in beginning
-        filename = '/' + self.filename
+        filename = '/' + self.parsed_filename
+        print(filename)
 
         if re.search(english, filename):
             self._language = Language.ENGLISH

@@ -24,12 +24,6 @@ class ScrapedPdf(models.Model):
         upload_to=upload_path,
         help_text=_('Kopi av fil hostet på en url.'),
     )
-    filetype = models.CharField(
-        max_length=10,
-        null=True,
-        default='pdf',
-        help_text=_('Filendelsestype, f.eks. "pdf".'),
-    )
     text = models.TextField(
         null=True,
         default=None,
@@ -51,9 +45,6 @@ class ScrapedPdf(models.Model):
         NB: This does not save the model, you have to explicitly call
         self.save() in order to save the result to the database.
         """
-        if not self.filetype.lower() == 'pdf':
-            return
-
         path = self.file.path
         result = subprocess.run(
             args=['pdftotext', path, '-'],

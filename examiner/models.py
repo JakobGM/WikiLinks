@@ -19,7 +19,7 @@ def upload_path(instance, filename):
     return f'examiner/FileBackup/' + filename
 
 
-class FileBackup(models.Model):
+class ScrapedPdf(models.Model):
     file = models.FileField(
         upload_to=upload_path,
         help_text=_('Kopi av fil hostet på en url.'),
@@ -175,11 +175,10 @@ class ExamURL(models.Model):
     )
     verified_by = models.ManyToManyField(
         to=User,
-        null=True,
         help_text=_('Brukere som har verifisert metadataen.'),
     )
-    file_backup = models.ForeignKey(
-        to=FileBackup,
+    scraped_pdf = models.ForeignKey(
+        to=ScrapedPdf,
         null=True,
         on_delete=models.SET_NULL,
         help_text=_('Kopi av filen fra URLen.'),
@@ -200,13 +199,13 @@ class ExamURL(models.Model):
         content_file = ContentFile(response.content)
 
         try:
-            file_backup = FileBackup.objects.get(md5_hash=md5)
-        except FileBackup.DoesNotExist:
-            file_backup = FileBackup(md5_hash=md5)
+            file_backup = ScrapedPdf.objects.get(md5_hash=md5)
+        except ScrapedPdf.DoesNotExist:
+            file_backup = ScrapedPdf(md5_hash=md5)
             file_backup.file.save(name=md5, content=content_file)
             file_backup.save()
 
-        self.file_backup = file_backup
+        self.scraped_pdf = file_backup
         self.dead_link = False
         self.save()
 

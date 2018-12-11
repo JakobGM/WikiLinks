@@ -7,7 +7,7 @@ import pytest
 
 import responses
 
-from examiner.models import ExamURL, FileBackup
+from examiner.models import ExamURL, ScrapedPdf
 from examiner.parsers import Language, Season
 from dataporten.tests.factories import UserFactory
 from semesterpage.tests.factories import CourseFactory
@@ -124,7 +124,7 @@ def test_file_backup(tmpdir, settings):
     # The downloaded file should be hashed and the result stored
     assert exam_url.dead_link is False
     expected_md5_hash = 'adc7a2fa473be1b091f7324aa4067c8a'
-    file_backup = exam_url.file_backup
+    file_backup = exam_url.scraped_pdf
     assert file_backup.md5_hash == expected_md5_hash
 
     # And the stored file should be named according to its hash
@@ -150,8 +150,8 @@ def test_file_backup(tmpdir, settings):
     new_exam_url.backup_file()
     assert len(list(backup_directory.iterdir())) == 1
     assert ExamURL.objects.all().count() == 2
-    assert FileBackup.objects.all().count() == 1
-    assert exam_url.file_backup == new_exam_url.file_backup
+    assert ScrapedPdf.objects.all().count() == 1
+    assert exam_url.scraped_pdf == new_exam_url.scraped_pdf
 
 
 @responses.activate
@@ -239,7 +239,7 @@ def test_string_content():
     pdf_path = Path(__file__).parent / 'data' / 'matmod_exam_des_2017.pdf'
     pdf_content = ContentFile(pdf_path.read_bytes())
     md5 = 'a8c5b61d8e750db6e719937a251e93b9'
-    pdf_backup = FileBackup(
+    pdf_backup = ScrapedPdf(
         filetype='pdf',
         md5_hash=md5,
     )

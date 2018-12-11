@@ -4,7 +4,7 @@ from django.db.models import F
 from django.shortcuts import render
 
 from examiner.crawlers import MathematicalSciencesCrawler
-from examiner.models import ExamURL, FileBackup
+from examiner.models import ExamURL, ScrapedPdf
 from semesterpage.models import Course
 
 
@@ -33,7 +33,7 @@ def parse(request):
         exam_url.parse_url()
         exam_url.save()
 
-    file_backups = FileBackup.objects.filter(text__isnull=True)
+    file_backups = ScrapedPdf.objects.filter(text__isnull=True)
     for file_backup in file_backups:
         file_backup.read_text()
         file_backup.save()

@@ -239,10 +239,7 @@ def test_string_content():
     pdf_path = Path(__file__).parent / 'data' / 'matmod_exam_des_2017.pdf'
     pdf_content = ContentFile(pdf_path.read_bytes())
     md5 = 'a8c5b61d8e750db6e719937a251e93b9'
-    pdf_backup = ScrapedPdf(
-        filetype='pdf',
-        md5_hash=md5,
-    )
+    pdf_backup = ScrapedPdf(md5_hash=md5)
     pdf_backup.file.save(md5, content=pdf_content)
     pdf_backup.read_text()
     pdf_backup.save()

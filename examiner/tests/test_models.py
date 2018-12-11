@@ -208,17 +208,26 @@ def test_queryset_organize_method():
         solutions=True,
         language=Language.BOKMAL,
     )
+    CourseFactory(
+        full_name='Mathematics 1',
+        display_name='Maths 1',
+        course_code='TMA4000',
+    )
     organization = ExamURL.objects.all().organize()
     assert organization == {
         'TMA4000': {
-            2016: {
-                'Vår': {
-                    'exams': {'Engelsk': [exam_url1]},
-                    'solutions': {
-                        'Bokmål': [eksamen_url_losning],
-                        'Engelsk': [exam_url_solutions],
+            'full_name': 'Mathematics 1',
+            'nick_name': 'Maths 1',
+            'years': {
+                2016: {
+                    'Vår': {
+                        'exams': {'Engelsk': [exam_url1]},
+                        'solutions': {
+                            'Bokmål': [eksamen_url_losning],
+                            'Engelsk': [exam_url_solutions],
+                        },
                     },
-                }
+                },
             },
         },
     }

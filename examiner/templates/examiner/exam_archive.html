@@ -23,10 +23,19 @@
 
 <script src="http://rawgithub.com/stidges/jquery-searchable/master/dist/jquery.searchable-1.1.0.min.js"></script>
 
-{% for course_code, years in exam_courses.items %}
+{% for course_code, course_content in exam_courses.items %}
 
 <table id="table-{{ course_code }}" rules="rows" cellpadding="100">
-  <caption>{{ course_code }}</caption>
+  <caption>
+    {{ course_code }}
+    {% if course_content.nick_name %}
+    <br>
+    {{ course_content.nick_name }}
+    {% elif course_content.full_name %}
+    <br>
+    {{ course_content.full_name }}
+    {% endif %}
+  </caption>
   <tr>
     <th colspan="4">
       <input type="text" id="search-{{ course_code }}" placeholder="Filter"></input>
@@ -39,7 +48,7 @@
     <th>LF</th>
   </tr>
 
-  {% for year, seasons in years.items %}
+  {% for year, seasons in course_content.years.items %}
   {% for season, exam_set in seasons.items %}
   <tr>
     <td>{{ year|default:"Ukjent" }}</td>

@@ -80,9 +80,12 @@ class ExamURLQuerySet(models.QuerySet):
             urls.append(url)
 
         for course_code, urls in organization.items():
-            organization[course_code] = {}
+            organization[course_code] = {'years': {}}
             for url in urls:
-                year = organization[course_code].setdefault(url.year, {})
+                year = organization[course_code]['years'].setdefault(
+                    url.year,
+                    {},
+                )
                 semester = year.setdefault(
                     Season.str_from_field(url.season),
                     {'solutions': {}, 'exams': {}}
@@ -95,6 +98,14 @@ class ExamURLQuerySet(models.QuerySet):
                 urls.append(url)
 
             organization[course_code] = dict(organization[course_code])
+
+        courses = Course.objects.filter(
+            course_code__in=organization.keys(),
+        )
+        for course in courses:
+            course_dict = organization[course.course_code]
+            course_dict['full_name'] = course.full_name
+            course_dict['nick_name'] = course.display_name
 
         return organization
 

@@ -8,6 +8,8 @@ from django.core.validators import URLValidator
 from django.db import models
 from django.utils import timezone
 
+import pdftotext
+
 import requests
 
 from examiner.parsers import ExamURLParser, Season
@@ -45,16 +47,9 @@ class ScrapedPdf(models.Model):
         NB: This does not save the model, you have to explicitly call
         self.save() in order to save the result to the database.
         """
-        path = self.file.path
-        result = subprocess.run(
-            args=['pdftotext', path, '-'],
-            stdout=subprocess.PIPE,
-            universal_newlines=True,
-        )
-        if not result.returncode == 0:
-            print(f'Unsucessful PDF parsing of "{path}"')
-            return
-        self.text = result.stdout
+        with open(self.file.path, 'rb') as file:
+            pdf = pdftotext.PDF(file)
+        self.text = '\f'.join(pdf)
 
     def save(self, *args, **kwargs) -> None:
         if not self.id:

@@ -2,8 +2,28 @@ language: python
 cache: pip
 python:
   - 3.6
+
+# These environment variables are required by tesserocr.
+# Even though OCR is not tested on OCR, all other functionality should still
+# work in this environment.
+env:
+  global:
+    - LC_ALL=C
+    - PYTHONIOENCODING=UTF-8
+
+addons:
+  apt:
+    # pdftotext dependencies
+    packages:
+    - build-essential
+    - libpoppler-cpp-dev
+    - pkg-config
+    - python-dev
+
 install:
-  - pip install -r requirements.txt
+  # Tesseract and ImageMagick related functionality is not tested
+  # With other words, the examiner.ocr module
+  - pip install -r <(sed '/tesserocr\|wand/d' requirements.txt)
   - pip install coveralls
 script:
   - coverage run --source='.' -m py.test

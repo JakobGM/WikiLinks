@@ -4,7 +4,7 @@ from django.db.models import F
 from django.shortcuts import render
 
 from examiner.crawlers import MathematicalSciencesCrawler
-from examiner.models import ExamURL, ScrapedPdf
+from examiner.models import ScrapedPdfUrl, ScrapedPdf
 from semesterpage.models import Course
 
 
@@ -13,7 +13,7 @@ def crawl(request):
     tma_crawlers = MathematicalSciencesCrawler(courses=tma_courses)
     for crawler in tma_crawlers:
         for url in crawler.pdf_urls():
-            exam_url, _ = ExamURL.objects.get_or_create(url=url)
+            exam_url, _ = ScrapedPdfUrl.objects.get_or_create(url=url)
             exam_url.parse_url()
             exam_url.save()
 
@@ -21,14 +21,14 @@ def crawl(request):
 
 
 def backup(request, course_code: str):
-    exam_urls = ExamURL.objects.filter(course_code__iexact=course_code)
+    exam_urls = ScrapedPdfUrl.objects.filter(course_code__iexact=course_code)
     for exam_url in exam_urls:
         exam_url.backup_file()
     return exams(request)
 
 
 def parse(request):
-    exam_urls = ExamURL.objects.all()
+    exam_urls = ScrapedPdfUrl.objects.all()
     for exam_url in exam_urls:
         exam_url.parse_url()
         exam_url.save()
@@ -42,7 +42,7 @@ def parse(request):
 
 def exams(request, course_code: Optional[str] = None):
     exam_urls = (
-        ExamURL
+        ScrapedPdfUrl
         .objects
         .order_by(
             F('course_code'),

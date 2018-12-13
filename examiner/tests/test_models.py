@@ -245,6 +245,11 @@ def test_string_content():
     pdf_backup.save()
 
     pdf_backup.refresh_from_db()
+
+    # Ensure unicode string
+    assert isinstance(pdf_backup.text, str)
+
+    # Check content
     assert 'Rottman' in pdf_backup.text
     assert 'population model' in pdf_backup.text
     assert 'this is not in the exam' not in pdf_backup.text

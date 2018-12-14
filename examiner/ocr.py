@@ -1,19 +1,28 @@
 import logging
+from os import environ
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Union
 
+
 logger = logging.getLogger()
 
-try:
-    from tesserocr import PyTessBaseAPI
-    from wand.image import Color, Image
-except ImportError:
+
+if environ['LC_ALL'] != 'C' or environ['PYTHONIOENCODING'] != 'UTF-8':
     logger.critical(
-        'Tesserocr and/or Wand is not properly installed! '
-        'PdfReader.ocr_text() will raise on invocation!',
+        'PDF OCR disabled! You need to set environment variables: '
+        'export LC_ALL=C && export PYTHONIOENCODING=UTF-8'
     )
+else:
+    try:
+        from tesserocr import PyTessBaseAPI
+        from wand.image import Color, Image
+    except ImportError:
+        logger.critical(
+            'Tesserocr and/or Wand is not properly installed! '
+            'PdfReader.ocr_text() will raise on invocation!',
+        )
 
 
 TESSDATA_DIR = Path(__file__).parent / 'tessdata'

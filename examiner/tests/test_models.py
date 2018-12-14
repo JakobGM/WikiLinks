@@ -159,7 +159,7 @@ def test_file_backup(tmpdir, settings):
 def test_file_backup_of_dead_link(tmpdir, settings):
     """A dead URL should be handled properly."""
     # This file was "hosted" at this URL
-    url = 'http://www.example.com/TMA4130/2013h/oldExams/eksamen.txt'
+    url = 'http://www.example.com/TMA4130/2013h/oldExams/dead_link.txt'
 
     # But the URL now returns 404
     responses.add(

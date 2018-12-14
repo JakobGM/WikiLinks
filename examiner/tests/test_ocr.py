@@ -28,13 +28,16 @@ def test_creation_of_temporary_tiff_file(pdf_path):
     pdf_reader = PdfReader(path=pdf_path)
     tiff_directory = pdf_reader._tiff_directory()
     tiff_files = [tiff_file.name for tiff_file in tiff_directory.iterdir()]
-    assert sorted(tiff_files) == ['0.tif', '1.tif']
+    assert sorted(tiff_files) == ['0001.tif', '0002.tif']
 
 
 def test_read_text(pdf_path):
     """You should be able to get OCRed text."""
     pdf_reader = PdfReader(path=pdf_path)
     text = pdf_reader.ocr_text()
+
+    # We hard code this comparison to keep track of all changes to this metric
+    assert pdf_reader.mean_confidence == 89
 
     # Check if we have two pages seperated by pagebreaks
     assert len(text.split('\f')) == 2

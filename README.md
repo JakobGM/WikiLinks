@@ -15,7 +15,7 @@ git clone https://github.com/JakobGM/WikiLinks.git wikilinks
 pip install -r requirements.txt
 ```
 
-### Installing requirements
+### Installing dependencies
 
 #### Tesseract and tesserocr
 
@@ -64,31 +64,15 @@ export PYTHONIOENCODING="UTF-8"
 
 This issue is tracked [here](https://github.com/sirfz/tesserocr/issues/137).
 
-#### Wand
+#### Ghostscript
 
 WikiLinks must also convert `.pdf` files to `.tiff` files before passing them
-on to `tesserocr`. The [Wand](http://docs.wand-py.org/en) python package is
-used for this purpose, and also requires some additional dependencies.
-Read installation instructions
-[here](http://docs.wand-py.org/en/0.4.5/guide/install.html).
-
-As of this writing this entails:
+on to `tesserocr`. Ghostscript is used for this purpose, and must be installed
+in order to enable OCR functionality. You can check if it is installed by running
 
 ```
-$ sudo apt-get install libmagickwand-dev  # debian/ubuntu
-$ brew install imagemagick                # MacOS
+$ which gs
 ```
-
-If you get the following exception:
-
-```
-wand.exceptions.PolicyError:
-attempt to perform an operation not allowed by the security policy
-`PDF' @ error/constitute.c/IsCoderAuthorized/408
-```
-
-Then you need to tweak an ImageMagick policy.
-See instructions [here](https://askubuntu.com/a/1081907).
 
 
 #### pdftotext

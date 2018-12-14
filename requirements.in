@@ -57,8 +57,5 @@ BeautifulSoup4
 # For OCR on downloaded PDFs
 tesserocr
 
-# For pdf->tiff conversion for tesseocr consumption
-Wand
-
 # For text extraction from PDFs with overlay text
 pdftotext

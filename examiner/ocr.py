@@ -1,4 +1,5 @@
 import logging
+import subprocess
 from os import environ
 
 from pathlib import Path
@@ -17,10 +18,9 @@ if environ['LC_ALL'] != 'C' or environ['PYTHONIOENCODING'] != 'UTF-8':
 else:
     try:
         from tesserocr import PyTessBaseAPI
-        from wand.image import Color, Image
     except ImportError:
         logger.critical(
-            'Tesserocr and/or Wand is not properly installed! '
+            'Tesserocr is not properly installed! '
             'PdfReader.ocr_text() will raise on invocation!',
         )
 
@@ -52,18 +52,23 @@ class PdfReader:
           Page breaks are inserted between each page, i.e. \f
         """
         tiff_directory = self._tiff_directory()
+        self.confidences = []
         text = []
         tiff_files = sorted(tiff_directory.iterdir())
         with PyTessBaseAPI(lang='nor+eng+equ', path=str(TESSDATA_DIR)) as api:
             for page in tiff_files:
                 api.SetImageFile(str(page))
                 text.append(api.GetUTF8Text())
+                self.confidences.extend(api.AllWordConfidences())
 
+        self.mean_confidence = int(
+            sum(self.confidences) / len(self.confidences),
+        )
         return '\f'.join(text)
 
     def _tiff_directory(self) -> Path:
         """
-        Return Path object to directory TIFF files.
+        Return Path object to directory containing TIFF files.
 
         One TIFF image is created for each page in the PDF, and are sorted in
         alphabetical order wrt. page number of the original PDF. This is so
@@ -77,12 +82,39 @@ class PdfReader:
             return Path(self._tmp_tiff_directory.name)
 
         self._tmp_tiff_directory = TemporaryDirectory()
-        with Image(filename=str(self.path), resolution=300) as image:
-            for num, page in enumerate(image.sequence):
-                page = Image(page)
-                page.format = 'tif'
-                page.compression_quality = 100
-                page.background_color = Color(string='white')
-                page.save(filename=f'{self._tmp_tiff_directory.name}/{num}.tif')
 
+        # For choice of parameters, see:
+        # https://mazira.com/blog/optimal-image-conversion-settings-tesseract-ocr
+        subprocess.run([
+            # Using GhostScript for PDF -> TIFF conversion
+            'gs',
+            # Prevent non-neccessary output
+            '-q',
+            '-dQUIET',
+            # Disable prompt and pause after each page
+            '-dNOPAUSE',
+            # Convert to TIFF with 16-bit colors
+            # https://ghostscript.com/doc/9.21/Devices.htm#TIFF
+            '-sDEVICE=tiff48nc',
+            # Split into one TIFF file for each page in the PDF
+            f'-sOutputFile={self._tmp_tiff_directory.name}/%04d.tif',
+            # Use 300 DPI
+            '-r300',
+            # Interpolate upscaled documents
+            '-dINTERPOLATE',
+            # Use 8 threads for faster performance
+            '-dNumRenderingThreads=8',
+            # Prevent unwanted file writing
+            '-dSAFER',
+            # PDF to convert
+            str(self.path),
+            # The following block contains postcript code
+            '-c',
+            # Allocate 30MB extra memory for speed increase
+            '30000000',
+            'setvmthreshold',
+            # Quit the ghostscript prompt when done
+            'quit',
+            '-f',
+        ])
         return Path(self._tmp_tiff_directory.name)

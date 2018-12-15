@@ -123,12 +123,12 @@ def test_file_backup(tmpdir, settings):
 
     # The downloaded file should be hashed and the result stored
     assert exam_url.dead_link is False
-    expected_md5_hash = 'adc7a2fa473be1b091f7324aa4067c8a'
+    expected_sha1_hash = '4dc828ea76ab618be6d72d135af13c40de3b9ce6'
     file_backup = exam_url.scraped_pdf
-    assert file_backup.md5_hash == expected_md5_hash
+    assert file_backup.sha1_hash == expected_sha1_hash
 
     # And the stored file should be named according to its hash
-    assert file_backup.file.name == 'examiner/FileBackup/' + expected_md5_hash
+    assert file_backup.file.name == 'examiner/FileBackup/' + expected_sha1_hash
 
     # The directory for file backups should now contain one file
     backup_directory = Path(settings.MEDIA_ROOT / 'examiner/FileBackup/')
@@ -238,9 +238,9 @@ def test_string_content():
     """FileBackup PDFs should be parsable."""
     pdf_path = Path(__file__).parent / 'data' / 'matmod_exam_des_2017.pdf'
     pdf_content = ContentFile(pdf_path.read_bytes())
-    md5 = 'a8c5b61d8e750db6e719937a251e93b9'
-    pdf_backup = ScrapedPdf(md5_hash=md5)
-    pdf_backup.file.save(md5, content=pdf_content)
+    sha1 = 'a8c5b61d8e750db6e719937a251e93b9'
+    pdf_backup = ScrapedPdf(sha1_hash=sha1)
+    pdf_backup.file.save(sha1, content=pdf_content)
     pdf_backup.read_text()
     pdf_backup.save()
 

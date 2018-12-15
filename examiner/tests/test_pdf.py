@@ -2,7 +2,7 @@ from os import environ
 
 from pathlib import Path
 
-from examiner.ocr import PdfReader
+from examiner.pdf import PdfReader
 
 import pytest
 
@@ -50,3 +50,38 @@ def test_read_text(pdf_path):
 
     # The double-f in affine is hard for bad OCR algorithms
     assert 'affine' in text
+
+
+@pytest.mark.parametrize('allow_ocr', [True, False])
+def test_read_text_of_text_indexed_pdf(allow_ocr, monkeypatch):
+    """PdfReader should be able to read indexed pdf's quickly."""
+    # This is a PDF which contains indexed text
+    pdf_path = Path(__file__).parent / 'data' / 'matmod_exam_des_2017.pdf'
+
+    # So the OCR method should never be called
+    monkeypatch.delattr('examiner.pdf.PdfReader.ocr_text')
+
+    # Now we read the indexed text
+    pdf = PdfReader(path=pdf_path)
+    text = pdf.read_text(allow_ocr=allow_ocr)
+
+    # Ensure unicode string
+    assert isinstance(text, str)
+
+    # Check content
+    assert 'Rottman' in text
+    assert 'population model' in text
+    assert 'this is not in the exam' not in text
+
+
+def test_read_text_of_non_indexed_pdf_without_ocr(pdf_path):
+    """Non-indexed PDFs should return None when OCR is not allowed."""
+    pdf = PdfReader(path=pdf_path)
+    assert pdf.read_text(allow_ocr=False) is None
+
+
+def test_read_text_of_non_indexed_pdf_with_ocr(monkeypatch, pdf_path):
+    """PdfReader should fall back to OCR if allowed for non indexed files."""
+    monkeypatch.setattr(PdfReader, 'ocr_text', lambda self: 'content')
+    pdf = PdfReader(path=pdf_path)
+    assert pdf.read_text(allow_ocr=True) == 'content'

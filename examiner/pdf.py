@@ -1,12 +1,15 @@
 import logging
 import subprocess
-from os import environ
 
+from os import environ
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Union
+from typing import Optional, Union
+
+import pdftotext
 
 
+OCR_ENABLED = True
 logger = logging.getLogger()
 
 
@@ -15,14 +18,15 @@ if environ['LC_ALL'] != 'C' or environ['PYTHONIOENCODING'] != 'UTF-8':
         'PDF OCR disabled! You need to set environment variables: '
         'export LC_ALL=C && export PYTHONIOENCODING=UTF-8'
     )
+    OCR_ENABLED = False
 else:
     try:
         from tesserocr import PyTessBaseAPI
     except ImportError:
         logger.critical(
-            'Tesserocr is not properly installed! '
-            'PdfReader.ocr_text() will raise on invocation!',
+            'Tesserocr is not properly installed! OCR disabled.'
         )
+        OCR_ENABLED = False
 
 
 TESSDATA_DIR = Path(__file__).parent / 'tessdata'
@@ -38,6 +42,26 @@ class PdfReader:
         self.path = Path(path)
         if not self.path.is_absolute():
             raise ValueError(f'PdfReader initialized with relative path {path}')
+
+    def read_text(self, *, allow_ocr: bool) -> Optional[str]:
+        """
+        Return text content of PDF.
+
+        :param allow_ocr: If text cant be extracted from PDF directly, since
+          it does not contain text metadata, text will be extracted by OCR if
+          True. This is much slower, approximately ~5s per page.
+        :return: String of PDF text content, pages seperated with pagebreaks.
+        """
+        with open(self.path, 'rb') as file:
+            pdf = pdftotext.PDF(file)
+        text = '\f'.join(pdf)
+
+        if len(text) > 1:
+            return text
+        elif allow_ocr and OCR_ENABLED:
+            return self.ocr_text()
+        else:
+            return None
 
     def ocr_text(self) -> str:
         """

@@ -3,7 +3,7 @@ from gettext import gettext as _
 
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
-from django.core.validators import URLValidator
+from django.core.validators import RegexValidator, URLValidator
 from django.db import models
 from django.utils import timezone
 
@@ -29,11 +29,15 @@ class ScrapedPdf(models.Model):
         default=None,
         help_text=_('Filinnhold i rent tekstformat.'),
     )
-    md5_hash = models.CharField(
-        max_length=32,
+    sha1_hash = models.CharField(
+        max_length=40,
         unique=True,
         null=False,
-        help_text=_('Unik md5 hash relativt til filinnhold.'),
+        help_text=_('Unik sha1 hash relativt til filinnhold.'),
+        validators=[RegexValidator(
+            regex='^[0-9a-f]{40}$',
+            message='Not a valid SHA1 hash string.',
+        )],
     )
     created_at = models.DateTimeField(editable=False)
     updated_at = models.DateTimeField()
@@ -182,14 +186,14 @@ class ScrapedPdfUrl(models.Model):
             self.save()
             return
 
-        md5 = hashlib.md5(response.content).hexdigest()
+        sha1 = hashlib.sha1(response.content).hexdigest()
         content_file = ContentFile(response.content)
 
         try:
-            file_backup = ScrapedPdf.objects.get(md5_hash=md5)
+            file_backup = ScrapedPdf.objects.get(sha1_hash=sha1)
         except ScrapedPdf.DoesNotExist:
-            file_backup = ScrapedPdf(md5_hash=md5)
-            file_backup.file.save(name=md5, content=content_file)
+            file_backup = ScrapedPdf(sha1_hash=sha1)
+            file_backup.file.save(name=sha1, content=content_file)
             file_backup.save()
 
         self.scraped_pdf = file_backup

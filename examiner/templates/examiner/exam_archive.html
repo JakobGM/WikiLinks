@@ -8,6 +8,13 @@
 {% block content %}
 
 
+<!-- For table styling -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/purecss@1.0.0/build/pure-min.css"
+  integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w"
+  crossorigin="anonymous">
+
 <!-- Required for search functionality -->
 <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
@@ -24,23 +31,22 @@
 <script src="http://rawgithub.com/stidges/jquery-searchable/master/dist/jquery.searchable-1.1.0.min.js"></script>
 
 {% for course_code, course_content in exam_courses.items %}
+<div class="course">
 
-<table id="table-{{ course_code }}" rules="rows" cellpadding="100">
-  <caption>
-    {{ course_code }}
-    {% if course_content.nick_name %}
-    <br>
-    {{ course_content.nick_name }}
-    {% elif course_content.full_name %}
-    <br>
-    {{ course_content.full_name }}
-    {% endif %}
-  </caption>
-  <tr>
-    <th colspan="4">
-      <input type="text" id="search-{{ course_code }}" placeholder="Filter"></input>
-    </th>
-  </tr>
+<h1 class="course-header">
+  {{ course_code }}
+  {% if course_content.nick_name %}
+  <br>
+  {{ course_content.nick_name }}
+  {% elif course_content.full_name %}
+  <br>
+  {{ course_content.full_name }}
+  {% endif %}
+</h1>
+
+<input type="text" class="class-search" id="search-{{ course_code }}" placeholder="Filter"></input>
+
+<table id="table-{{ course_code }}" class="pure-table">
   <tr>
     <th>År</th>
     <th>Semester</th>
@@ -131,6 +137,7 @@
 </table>
 {% endfor %}
 
+</div>
 {% endblock %}
 
 {% block end %}
@@ -154,13 +161,17 @@ $( 'table' ).each(function() {
   currentTable.searchable({
     searchField: '#' + currentSearchInputID,
     clearOnLoad: true,
-    selector: 'tbody tr:nth-child(n+3)'
+    selector: 'tbody tr:nth-child(n+2)',
+    striped: true,
+    oddRow: {'background-color': '#efefef'},
+    evenRow: {'background-color': 'white'}
   });
 });
 </script>
 
 <style>
-caption {
+.course-header {
+  text-align: center;
   font-size: 3em;
 }
 input{
@@ -169,9 +180,14 @@ input{
   margin: 10px;
   margin-bottom: 20px;
   height: 2.5em;
-  width: 95%;
+  width: 40%;
+  min-width: 25em;
+  max-width: 90%;
   border:1px solid #eaeaea;
   outline:none;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }
 input[type="text"] {
   font-size: 1em;
@@ -184,10 +200,19 @@ input:focus {
   border-color: #4d90fe;
 }
 table {
-  width: 75%;
+  min-width: 40%;
   margin-left: auto;
   margin-right: auto;
   padding: 15px;
+}
+thead tr th:nth-child(-n + 2),
+tbody tr td:nth-child(-n + 2) {
+  width: 5em;
+  max-width: 5em;
+}
+thead tr th:nth-child(n + 3),
+tbody tr td:nth-child(n + 3) {
+  padding-right: 5em;
 }
 tr {
   vertical-align: baseline;
@@ -195,12 +220,9 @@ tr {
 th {
   text-align: left;
 }
-tr:nth-child(2) {
+tr:nth-child(1) {
   background-color: #7a7a7a;
   color: white;
-}
-tr:nth-child(2n + 3) {
-  background-color: #efefef;
 }
 </style>
 {% endblock %}

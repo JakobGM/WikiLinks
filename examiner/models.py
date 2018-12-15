@@ -1,5 +1,4 @@
 import hashlib
-import subprocess
 from gettext import gettext as _
 
 from django.contrib.auth.models import User
@@ -8,11 +7,10 @@ from django.core.validators import URLValidator
 from django.db import models
 from django.utils import timezone
 
-import pdftotext
-
 import requests
 
 from examiner.parsers import ExamURLParser, Season
+from examiner.pdf import PdfReader
 from semesterpage.models import Course
 
 
@@ -40,16 +38,18 @@ class ScrapedPdf(models.Model):
     created_at = models.DateTimeField(editable=False)
     updated_at = models.DateTimeField()
 
-    def read_text(self) -> None:
+    def read_text(self, allow_ocr: bool = False) -> None:
         """
         Read text from pdf and save result to self.text.
 
         NB: This does not save the model, you have to explicitly call
         self.save() in order to save the result to the database.
+
+        :param allow_ocr: If True, slow OCR will be used for text extraction
+          from non-indexed PDF files.
         """
-        with open(self.file.path, 'rb') as file:
-            pdf = pdftotext.PDF(file)
-        self.text = '\f'.join(pdf)
+        pdf = PdfReader(path=self.file.path)
+        self.text = pdf.read_text(allow_ocr=allow_ocr)
 
     def save(self, *args, **kwargs) -> None:
         if not self.id:

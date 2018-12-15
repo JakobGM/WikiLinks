@@ -1,8 +1,9 @@
 import hashlib
 from gettext import gettext as _
+from tempfile import NamedTemporaryFile
 
 from django.contrib.auth.models import User
-from django.core.files.base import ContentFile
+from django.core.files import File
 from django.core.validators import RegexValidator, URLValidator
 from django.db import models
 from django.utils import timezone
@@ -186,14 +187,21 @@ class ScrapedPdfUrl(models.Model):
             self.save()
             return
 
-        sha1 = hashlib.sha1(response.content).hexdigest()
-        content_file = ContentFile(response.content)
+        sha1_hasher = hashlib.sha1()
+        temp_file = NamedTemporaryFile()
+        for chunk in response.iter_content(chunk_size=1024):
+            if chunk:
+                temp_file.write(chunk)
+                sha1_hasher.update(chunk)
+
+        content_file = File(temp_file)
+        sha1_hash = sha1_hasher.hexdigest()
 
         try:
-            file_backup = ScrapedPdf.objects.get(sha1_hash=sha1)
+            file_backup = ScrapedPdf.objects.get(sha1_hash=sha1_hash)
         except ScrapedPdf.DoesNotExist:
-            file_backup = ScrapedPdf(sha1_hash=sha1)
-            file_backup.file.save(name=sha1, content=content_file)
+            file_backup = ScrapedPdf(sha1_hash=sha1_hash)
+            file_backup.file.save(name=sha1_hash, content=content_file)
             file_backup.save()
 
         self.scraped_pdf = file_backup

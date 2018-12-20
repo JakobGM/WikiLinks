@@ -7,7 +7,7 @@ import pytest
 
 import responses
 
-from examiner.models import Pdf, ScrapedPdfUrl
+from examiner.models import Pdf, PdfUrl
 from examiner.parsers import Language, Season
 from dataporten.tests.factories import UserFactory
 from semesterpage.tests.factories import CourseFactory
@@ -18,7 +18,7 @@ def test_derive_course_code_on_save():
     """The course code should be derived from the course foreign key."""
     url = 'http://www.example.com/TMA4130/2013h/oldExams/eksamen-bok_2006v.pdf'
     course = CourseFactory(course_code='TMA4130')
-    exam_url = ScrapedPdfUrl(url=url, course=course)
+    exam_url = PdfUrl(url=url, course=course)
     assert exam_url.course_code is None
     exam_url.save()
     assert exam_url.course_code == 'TMA4130'
@@ -29,10 +29,10 @@ def test_prevention_of_unique_url():
     """URLs should be unique."""
     url = 'http://www.example.com/TMA4130/2013h/oldExams/eksamen-bok_2006v.pdf'
     course = CourseFactory(course_code='TMA4130')
-    exam_url1 = ScrapedPdfUrl(url=url, course=course)
+    exam_url1 = PdfUrl(url=url, course=course)
     exam_url1.save()
 
-    exam_url2 = ScrapedPdfUrl(url=url, course=course, year=2006)
+    exam_url2 = PdfUrl(url=url, course=course, year=2006)
     with pytest.raises(IntegrityError):
         exam_url2.save()
 
@@ -41,7 +41,7 @@ def test_prevention_of_unique_url():
 def test_parse_url():
     """The parse_url method should update model fields from url parsing."""
     url = 'http://www.example.com/TMA4130/2013h/oldExams/eksamen-bok_2006v.pdf'
-    exam_url = ScrapedPdfUrl(url=url)
+    exam_url = PdfUrl(url=url)
     exam_url.parse_url()
     exam_url.save()
     assert exam_url.url == url
@@ -74,7 +74,7 @@ def test_parse_url():
 def test_parse_url_of_already_verified_url():
     """Parsing a verified url should not mutate the object."""
     url = 'http://www.example.com/TMA4130/2013h/oldExams/eksamen-bok_2006v.pdf'
-    exam_url = ScrapedPdfUrl(url=url)
+    exam_url = PdfUrl(url=url)
 
     # First, the parser infers 2006 as the year
     exam_url.parse_url()
@@ -117,7 +117,7 @@ def test_file_backup(tmpdir, settings):
     )
 
     # We now backup this file
-    exam_url = ScrapedPdfUrl(url=url)
+    exam_url = PdfUrl(url=url)
     exam_url.backup_file()
     exam_url.refresh_from_db()
 
@@ -146,10 +146,10 @@ def test_file_backup(tmpdir, settings):
         content_type='text/plain',
         stream=True,
     )
-    new_exam_url = ScrapedPdfUrl(url=new_url)
+    new_exam_url = PdfUrl(url=new_url)
     new_exam_url.backup_file()
     assert len(list(backup_directory.iterdir())) == 1
-    assert ScrapedPdfUrl.objects.all().count() == 2
+    assert PdfUrl.objects.all().count() == 2
     assert Pdf.objects.all().count() == 1
     assert exam_url.scraped_pdf == new_exam_url.scraped_pdf
 
@@ -172,7 +172,7 @@ def test_file_backup_of_dead_link(tmpdir, settings):
     )
 
     # We scrape this URL
-    exam_url = ScrapedPdfUrl(url=url)
+    exam_url = PdfUrl(url=url)
     exam_url.parse_url()
     assert exam_url.dead_link is None
 
@@ -185,14 +185,14 @@ def test_file_backup_of_dead_link(tmpdir, settings):
 @pytest.mark.django_db
 def test_queryset_organize_method():
     """ExamURLs should be organizable in hierarchy."""
-    exam_url1 = ScrapedPdfUrl.objects.create(
+    exam_url1 = PdfUrl.objects.create(
         url='http://exams.com/exam',
         course_code='TMA4000',
         year=2016,
         season=Season.SPRING,
         language=Language.ENGLISH,
     )
-    exam_url_solutions = ScrapedPdfUrl.objects.create(
+    exam_url_solutions = PdfUrl.objects.create(
         url='http://exams.com/solution',
         course_code='TMA4000',
         year=2016,
@@ -200,7 +200,7 @@ def test_queryset_organize_method():
         solutions=True,
         language=Language.ENGLISH,
     )
-    eksamen_url_losning = ScrapedPdfUrl.objects.create(
+    eksamen_url_losning = PdfUrl.objects.create(
         url='http://exams.com/losning',
         course_code='TMA4000',
         year=2016,
@@ -213,7 +213,7 @@ def test_queryset_organize_method():
         display_name='Maths 1',
         course_code='TMA4000',
     )
-    organization = ScrapedPdfUrl.objects.all().organize()
+    organization = PdfUrl.objects.all().organize()
     assert organization == {
         'TMA4000': {
             'full_name': 'Mathematics 1',

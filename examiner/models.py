@@ -20,7 +20,7 @@ def upload_path(instance, filename):
     return f'examiner/FileBackup/' + filename
 
 
-class ScrapedPdf(models.Model):
+class Pdf(models.Model):
     file = models.FileField(
         upload_to=upload_path,
         help_text=_('Kopi av fil hostet på en url.'),
@@ -169,7 +169,7 @@ class ScrapedPdfUrl(models.Model):
         help_text=_('Brukere som har verifisert metadataen.'),
     )
     scraped_pdf = models.ForeignKey(
-        to=ScrapedPdf,
+        to=Pdf,
         null=True,
         on_delete=models.SET_NULL,
         help_text=_('Kopi av filen fra URLen.'),
@@ -198,9 +198,9 @@ class ScrapedPdfUrl(models.Model):
         sha1_hash = sha1_hasher.hexdigest()
 
         try:
-            file_backup = ScrapedPdf.objects.get(sha1_hash=sha1_hash)
-        except ScrapedPdf.DoesNotExist:
-            file_backup = ScrapedPdf(sha1_hash=sha1_hash)
+            file_backup = Pdf.objects.get(sha1_hash=sha1_hash)
+        except Pdf.DoesNotExist:
+            file_backup = Pdf(sha1_hash=sha1_hash)
             file_backup.file.save(name=sha1_hash, content=content_file)
             file_backup.save()
 

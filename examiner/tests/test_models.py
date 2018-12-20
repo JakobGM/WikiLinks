@@ -7,7 +7,7 @@ import pytest
 
 import responses
 
-from examiner.models import ScrapedPdfUrl, ScrapedPdf
+from examiner.models import Pdf, ScrapedPdfUrl
 from examiner.parsers import Language, Season
 from dataporten.tests.factories import UserFactory
 from semesterpage.tests.factories import CourseFactory
@@ -150,7 +150,7 @@ def test_file_backup(tmpdir, settings):
     new_exam_url.backup_file()
     assert len(list(backup_directory.iterdir())) == 1
     assert ScrapedPdfUrl.objects.all().count() == 2
-    assert ScrapedPdf.objects.all().count() == 1
+    assert Pdf.objects.all().count() == 1
     assert exam_url.scraped_pdf == new_exam_url.scraped_pdf
 
 
@@ -239,7 +239,7 @@ def test_string_content():
     pdf_path = Path(__file__).parent / 'data' / 'matmod_exam_des_2017.pdf'
     pdf_content = ContentFile(pdf_path.read_bytes())
     sha1 = 'a8c5b61d8e750db6e719937a251e93b9'
-    pdf_backup = ScrapedPdf(sha1_hash=sha1)
+    pdf_backup = Pdf(sha1_hash=sha1)
     pdf_backup.file.save(sha1, content=pdf_content)
     pdf_backup.read_text()
     pdf_backup.save()

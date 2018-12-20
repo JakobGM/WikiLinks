@@ -63,7 +63,7 @@ class Pdf(models.Model):
         super().save(*args, **kwargs)
 
 
-class ScrapedPdfUrlQuerySet(models.QuerySet):
+class PdfUrlQuerySet(models.QuerySet):
     def organize(self):
         organization = {}
         for url in self:
@@ -101,7 +101,7 @@ class ScrapedPdfUrlQuerySet(models.QuerySet):
         return organization
 
 
-class ScrapedPdfUrl(models.Model):
+class PdfUrl(models.Model):
     url = models.TextField(
         unique=True,
         validators=[URLValidator()],
@@ -177,7 +177,7 @@ class ScrapedPdfUrl(models.Model):
     )
     created_at = models.DateTimeField(editable=False)
     updated_at = models.DateTimeField()
-    objects = ScrapedPdfUrlQuerySet.as_manager()
+    objects = PdfUrlQuerySet.as_manager()
 
     def backup_file(self) -> None:
         """Download and backup file from url, and save to self.file_backup."""

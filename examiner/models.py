@@ -4,7 +4,12 @@ from tempfile import NamedTemporaryFile
 
 from django.contrib.auth.models import User
 from django.core.files import File
-from django.core.validators import RegexValidator, URLValidator
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+    RegexValidator,
+    URLValidator,
+)
 from django.db import models
 from django.utils import timezone
 
@@ -24,11 +29,6 @@ class Pdf(models.Model):
     file = models.FileField(
         upload_to=upload_path,
         help_text=_('Kopi av fil hostet på en url.'),
-    )
-    text = models.TextField(
-        null=True,
-        default=None,
-        help_text=_('Filinnhold i rent tekstformat.'),
     )
     sha1_hash = models.CharField(
         max_length=40,
@@ -54,13 +54,57 @@ class Pdf(models.Model):
           from non-indexed PDF files.
         """
         pdf = PdfReader(path=self.file.path)
-        self.text = pdf.read_text(allow_ocr=allow_ocr)
+        pdf.read_text(allow_ocr=allow_ocr)
+        for page_number, page in enumerate(pdf.pages):
+            PdfPage.objects.create(
+                pdf=self,
+                number=page_number,
+                text=page,
+                confidence=pdf.page_confidences[page_number],
+            )
+
+    @property
+    def text(self) -> str:
+        """
+        Return string content of pdf.
+
+        Pages are separated by pagebreaks, i.e. '\f'.
+        """
+        return '\f'.join([page.text for page in self.pages.order_by('number')])
 
     def save(self, *args, **kwargs) -> None:
         if not self.id:
             self.created_at = timezone.now()
         self.updated_at = timezone.now()
         super().save(*args, **kwargs)
+
+
+class PdfPage(models.Model):
+    pdf = models.ForeignKey(
+        to=Pdf,
+        null=False,
+        on_delete=models.CASCADE,
+        help_text=_('Tilhørende PDF fil.'),
+        related_name='pages',
+    )
+    number = models.PositiveSmallIntegerField(
+        null=False,
+        help_text=_('Sidetall.'),
+    )
+    text = models.TextField(
+        null=False,
+        help_text=_('Sideinnhold i rent tekstformat.'),
+    )
+    confidence = models.PositiveIntegerField(
+        null=True,
+        default=None,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text=_('Konfidens til evt. OCR av tekstinnhold.'),
+    )
+
+    class Meta:
+        ordering = ('pdf', 'number')
+        unique_together = ('pdf', 'number')
 
 
 class PdfUrlQuerySet(models.QuerySet):

@@ -38,9 +38,13 @@ def test_read_text(pdf_path):
 
     # We hard code this comparison to keep track of all changes to this metric
     assert pdf_reader.mean_confidence == 89
+    assert pdf_reader.page_confidences == [86, 91]
 
     # Check if we have two pages seperated by pagebreaks
     assert len(text.split('\f')) == 2
+
+    # The same content can be extracted from the pages property
+    assert '\f'.join(pdf_reader.pages) == text
 
     # Content on the first page (important that this is at the beginning)
     assert 'Norwegian University of Science and Technology' in text[:50]

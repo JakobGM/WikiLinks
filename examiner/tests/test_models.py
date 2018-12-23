@@ -249,7 +249,24 @@ def test_string_content():
     # Ensure unicode string
     assert isinstance(pdf_backup.text, str)
 
-    # Check content
+    # Check content with text property
+    assert len(pdf_backup.text.split('\f')) == 6
     assert 'Rottman' in pdf_backup.text
     assert 'population model' in pdf_backup.text
     assert 'this is not in the exam' not in pdf_backup.text
+
+    # Check associated PdfPage model objects
+    pages = pdf_backup.pages.all()
+    assert pages.count() == 6
+
+    # The ordering should be based on page number
+    for page_num, page in enumerate(pages):
+        assert page.number == page_num
+        assert page.confidence is None
+
+    # And each page should containt content
+    assert 'Rottman' in pages[0].text
+    assert 'Rottman' not in pages[2].text
+
+    assert 'population model' in pages[2].text
+    assert 'population model' not in pages[0].text

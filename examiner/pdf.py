@@ -3,6 +3,7 @@ import subprocess
 
 from os import environ
 from pathlib import Path
+from statistics import mean
 from tempfile import TemporaryDirectory
 from typing import Optional, Union
 
@@ -54,7 +55,11 @@ class PdfReader:
         """
         with open(self.path, 'rb') as file:
             pdf = pdftotext.PDF(file)
-        text = '\f'.join(pdf)
+
+        self.pages = [page for page in pdf]
+        self.page_confidences = [None] * len(self.pages)
+        self.mean_confidence = None
+        text = '\f'.join(self.pages)
 
         if len(text) > 1:
             return text
@@ -75,20 +80,33 @@ class PdfReader:
         :return: UTF-8 encoded string representing the content of the documemt.
           Page breaks are inserted between each page, i.e. \f
         """
+        # List containing lists of word confidences for each page
+        word_confidences = []
+
+        # string content of each page
+        self.pages = []
+
+        # Directory containing TIFF images of the pages of the PDF
         tiff_directory = self._tiff_directory()
-        self.confidences = []
-        text = []
+
         tiff_files = sorted(tiff_directory.iterdir())
         with PyTessBaseAPI(lang='nor+eng+equ', path=str(TESSDATA_DIR)) as api:
             for page in tiff_files:
                 api.SetImageFile(str(page))
-                text.append(api.GetUTF8Text())
-                self.confidences.extend(api.AllWordConfidences())
+                self.pages.append(api.GetUTF8Text())
+                word_confidences.append(api.AllWordConfidences())
 
-        self.mean_confidence = int(
-            sum(self.confidences) / len(self.confidences),
-        )
-        return '\f'.join(text)
+        self.page_confidences = [
+            int(mean(word_confidences))
+            for word_confidences
+            in word_confidences
+        ]
+        self.mean_confidence = int(mean(
+            word_confidence
+            for page in word_confidences
+            for word_confidence in page
+        ))
+        return '\f'.join(self.pages)
 
     def _tiff_directory(self) -> Path:
         """

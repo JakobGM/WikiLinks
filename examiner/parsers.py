@@ -294,7 +294,6 @@ class ExamURLParser:
 
         # Prevent nonletter requirement screwing up match in beginning
         filename = '/' + self.parsed_filename
-        print(filename)
 
         if re.search(english, filename):
             self._language = Language.ENGLISH

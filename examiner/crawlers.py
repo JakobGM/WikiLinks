@@ -124,8 +124,8 @@ class MathematicalSciencesCourseCrawler:
 
         return list(result)
 
-    def __str__(self) -> str:
-        return self.code
+    def __repr__(self) -> str:
+        return f"MathematicalSciencesCourseCrawler(code='{self.code}')"
 
     def __bool__(self) -> bool:
         return self.has_content

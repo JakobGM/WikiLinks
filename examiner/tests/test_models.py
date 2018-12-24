@@ -7,32 +7,41 @@ import pytest
 
 import responses
 
-from examiner.models import Pdf, PdfUrl
+from examiner.models import Exam, Pdf, PdfUrl
 from examiner.parsers import Language, Season
 from dataporten.tests.factories import UserFactory
 from semesterpage.tests.factories import CourseFactory
 
 
 @pytest.mark.django_db
-def test_derive_course_code_on_save():
-    """The course code should be derived from the course foreign key."""
-    url = 'http://www.example.com/TMA4130/2013h/oldExams/eksamen-bok_2006v.pdf'
+def test_derive_course_from_course_code_on_save():
+    """Exam model objects should connect course code and course on save."""
     course = CourseFactory(course_code='TMA4130')
-    exam_url = PdfUrl(url=url, course=course)
-    assert exam_url.course_code is None
-    exam_url.save()
-    assert exam_url.course_code == 'TMA4130'
+    exam = Exam.objects.create(course_code='TMA4130')
+    assert exam.course == course
+
+    url = 'http://www.example.com/TMA4130/2013h/oldExams/eksamen-bok_2006v.pdf'
+    exam_url = PdfUrl(url=url)
+    exam_url.parse_url()
+    assert exam_url.exam.course == course
 
 
 @pytest.mark.django_db
-def test_prevention_of_unique_url():
+def test_derive_course_code_from_course_on_save():
+    """The course code should be derived from the course foreign key."""
+    course = CourseFactory(course_code='TMA4130')
+    exam = Exam.objects.create(course=course)
+    assert exam.course_code == 'TMA4130'
+
+
+@pytest.mark.django_db
+def test_prevention_of_non_unique_url():
     """URLs should be unique."""
     url = 'http://www.example.com/TMA4130/2013h/oldExams/eksamen-bok_2006v.pdf'
-    course = CourseFactory(course_code='TMA4130')
-    exam_url1 = PdfUrl(url=url, course=course)
+    exam_url1 = PdfUrl(url=url)
     exam_url1.save()
 
-    exam_url2 = PdfUrl(url=url, course=course, year=2006)
+    exam_url2 = PdfUrl(url=url)
     with pytest.raises(IntegrityError):
         exam_url2.save()
 
@@ -47,27 +56,28 @@ def test_parse_url():
     assert exam_url.url == url
 
     # At first, the course does not exist, so only the string is saved
-    assert exam_url.course is None
-    assert exam_url.course_code == 'TMA4130'
+    assert exam_url.exam.course is None
+    assert exam_url.exam.course_code == 'TMA4130'
 
     # All other fields have been inferred
     assert exam_url.filename == 'eksamen-bok_2006v.pdf'
-    assert exam_url.language == Language.BOKMAL
-    assert exam_url.year == 2006
-    assert exam_url.season == Season.SPRING
-    assert exam_url.solutions is False
     assert exam_url.probably_exam is True
+
+    assert exam_url.exam.language == Language.BOKMAL
+    assert exam_url.exam.year == 2006
+    assert exam_url.exam.season == Season.SPRING
+    assert exam_url.exam.solutions is False
     assert exam_url.verified_by.count() == 0
     assert exam_url.created_at
     assert exam_url.updated_at
 
-    # Now we create the course and reparse
+    # Now we create the course and resave the exam model object
     course = CourseFactory(course_code='TMA4130')
     course.save()
-    exam_url.parse_url()
+    exam_url.exam.save()
 
     # The course should now be properly set
-    assert exam_url.course == course
+    assert exam_url.exam.course == course
 
 
 @pytest.mark.django_db
@@ -79,10 +89,11 @@ def test_parse_url_of_already_verified_url():
     # First, the parser infers 2006 as the year
     exam_url.parse_url()
     exam_url.save()
-    assert exam_url.year == 2006
+    assert exam_url.exam.year == 2006
 
     # Then the exam year is modified by a user
-    exam_url.year = 2016
+    exam_url.exam = Exam.objects.create(year=2016)
+    exam_url.save()
 
     # And thereafter verified by that user
     user = UserFactory(username='verifier')
@@ -91,7 +102,7 @@ def test_parse_url_of_already_verified_url():
 
     # On reparsing the url, attributes are not changed
     exam_url.parse_url()
-    assert exam_url.year == 2016
+    assert exam_url.exam.year == 2016
 
 
 @responses.activate
@@ -185,29 +196,41 @@ def test_file_backup_of_dead_link(tmpdir, settings):
 @pytest.mark.django_db
 def test_queryset_organize_method():
     """ExamURLs should be organizable in hierarchy."""
-    exam_url1 = PdfUrl.objects.create(
-        url='http://exams.com/exam',
+    exam1 = Exam.objects.create(
         course_code='TMA4000',
         year=2016,
         season=Season.SPRING,
         language=Language.ENGLISH,
     )
-    exam_url_solutions = PdfUrl.objects.create(
-        url='http://exams.com/solution',
+    exam_url1 = PdfUrl.objects.create(
+        url='http://exams.com/exam',
+        exam=exam1,
+    )
+
+    exam1_solutions = Exam.objects.create(
         course_code='TMA4000',
         year=2016,
         season=Season.SPRING,
         solutions=True,
         language=Language.ENGLISH,
     )
-    eksamen_url_losning = PdfUrl.objects.create(
-        url='http://exams.com/losning',
+    exam_url_solutions = PdfUrl.objects.create(
+        url='http://exams.com/solution',
+        exam=exam1_solutions
+    )
+
+    eksamen_losning = Exam.objects.create(
         course_code='TMA4000',
         year=2016,
         season=Season.SPRING,
         solutions=True,
         language=Language.BOKMAL,
     )
+    eksamen_url_losning = PdfUrl.objects.create(
+        url='http://exams.com/losning',
+        exam=eksamen_losning,
+    )
+
     CourseFactory(
         full_name='Mathematics 1',
         display_name='Maths 1',

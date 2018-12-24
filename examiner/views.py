@@ -31,7 +31,6 @@ def parse(request):
     exam_urls = PdfUrl.objects.all()
     for exam_url in exam_urls:
         exam_url.parse_url()
-        exam_url.save()
 
     file_backups = Pdf.objects.filter(text__isnull=True)
     for file_backup in file_backups:
@@ -45,14 +44,14 @@ def exams(request, course_code: Optional[str] = None):
         PdfUrl
         .objects
         .order_by(
-            F('course_code'),
-            F('year').desc(nulls_last=True),
-            F('solutions').desc(),
+            F('exam__course_code'),
+            F('exam__year').desc(nulls_last=True),
+            F('exam__solutions').desc(),
         )
     )
     if course_code:
         exam_urls = exam_urls.filter(
-            course_code__iexact=course_code.upper(),
+            exam__course_code__iexact=course_code.upper(),
         )
 
     context = {

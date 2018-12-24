@@ -110,24 +110,24 @@ class PdfPage(models.Model):
 class PdfUrlQuerySet(models.QuerySet):
     def organize(self):
         organization = {}
-        for url in self:
-            urls = organization.setdefault(url.course_code, [])
+        for url in self.prefetch_related('exam'):
+            urls = organization.setdefault(url.exam.course_code, [])
             urls.append(url)
 
         for course_code, urls in organization.items():
             organization[course_code] = {'years': {}}
             for url in urls:
                 year = organization[course_code]['years'].setdefault(
-                    url.year,
+                    url.exam.year,
                     {},
                 )
                 semester = year.setdefault(
-                    Season.str_from_field(url.season),
+                    Season.str_from_field(url.exam.season),
                     {'solutions': {}, 'exams': {}}
                 )
-                key = 'solutions' if url.solutions else 'exams'
+                key = 'solutions' if url.exam.solutions else 'exams'
                 urls = semester[key].setdefault(
-                    url.language or 'Ukjent',
+                    url.exam.language or 'Ukjent',
                     [],
                 )
                 urls.append(url)
@@ -145,17 +145,7 @@ class PdfUrlQuerySet(models.QuerySet):
         return organization
 
 
-class PdfUrl(models.Model):
-    url = models.TextField(
-        unique=True,
-        validators=[URLValidator()],
-    )
-    filename = models.CharField(
-        max_length=255,
-        null=False,
-        blank=False,
-        help_text=_('Ressursens filnavn.'),
-    )
+class Exam(models.Model):
     course = models.ForeignKey(
         to=Course,
         on_delete=models.CASCADE,
@@ -198,6 +188,46 @@ class PdfUrl(models.Model):
     solutions = models.BooleanField(
         default=False,
         help_text=_('Om filen inneholder løsningsforslag.'),
+    )
+
+    class Meta:
+        ordering = ('course_code', '-year', '-solutions')
+        unique_together = (
+            'course_code',
+            'language',
+            'year',
+            'season',
+            'solutions',
+        )
+
+    def save(self, *args, **kwargs) -> None:
+        if self.course and not self.course_code:
+            self.course_code = self.course.course_code
+        elif self.course_code and not self.course:
+            try:
+                self.course = Course.objects.get(course_code=self.course_code)
+            except Course.DoesNotExist:
+                pass
+
+        super().save(*args, **kwargs)
+
+
+class PdfUrl(models.Model):
+    url = models.TextField(
+        unique=True,
+        validators=[URLValidator()],
+    )
+    filename = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False,
+        help_text=_('Ressursens filnavn.'),
+    )
+    exam = models.ForeignKey(
+        to=Exam,
+        on_delete=models.SET_NULL,
+        null=True,
+        help_text=_('Hvilket eksamenssett URLen trolig tjener.'),
     )
     probably_exam = models.BooleanField(
         default=False,
@@ -256,10 +286,6 @@ class PdfUrl(models.Model):
         if not self.id:
             self.created_at = timezone.now()
         self.updated_at = timezone.now()
-
-        if self.course and not self.course_code:
-            self.course_code = self.course.course_code
-
         super().save(*args, **kwargs)
 
     def parse_url(self) -> None:
@@ -269,16 +295,13 @@ class PdfUrl(models.Model):
             return
 
         parser = ExamURLParser(url=self.url)
-        self.course_code = parser.code
-
-        try:
-            self.course = Course.objects.get(course_code=self.course_code)
-        except Course.DoesNotExist:
-            self.course = None
-
         self.filename = parser.filename
-        self.language = parser.language
-        self.year = parser.year
-        self.season = parser.season
-        self.solutions = parser.solutions
         self.probably_exam = parser.probably_exam
+        self.exam, _ = Exam.objects.get_or_create(
+            language=parser.language,
+            year=parser.year,
+            season=parser.season,
+            solutions=parser.solutions,
+            course_code=parser.code,
+        )
+        self.save()

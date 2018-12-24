@@ -39,7 +39,10 @@ class MathematicalSciencesCourseCrawler:
 
     @property
     def has_content(self) -> bool:
-        response = requests.get(self.homepage_url)
+        try:
+            response = requests.get(self.homepage_url)
+        except Exception:
+            return False
         if not response.ok:
             return False
         return True

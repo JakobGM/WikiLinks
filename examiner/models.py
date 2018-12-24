@@ -190,6 +190,17 @@ class Exam(models.Model):
         help_text=_('Om filen inneholder løsningsforslag.'),
     )
 
+    def __repr__(self) -> str:
+        return (
+            'Exam('
+            f"course_code='{self.course_code}', "
+            f'year={self.year}, '
+            f'season={self.season}, '
+            f'language={self.language}, '
+            f'solutions={self.solutions}'
+            ')'
+        )
+
     class Meta:
         ordering = ('course_code', '-year', '-solutions')
         unique_together = (
@@ -253,9 +264,19 @@ class PdfUrl(models.Model):
     updated_at = models.DateTimeField()
     objects = PdfUrlQuerySet.as_manager()
 
-    def backup_file(self) -> None:
-        """Download and backup file from url, and save to self.file_backup."""
-        response = requests.get(self.url, stream=True, allow_redirects=True)
+    def backup_file(self) -> bool:
+        """
+        Download and backup file from url, and save to self.file_backup.
+
+        :return: True if the PDF backup is a new unique backup, else False.
+        """
+        try:
+            response = requests.get(self.url, stream=True, allow_redirects=True)
+        except ConnectionError:
+            self.dead_link = True
+            self.save()
+            return
+
         if not response.ok:
             self.dead_link = True
             self.save()
@@ -273,7 +294,9 @@ class PdfUrl(models.Model):
 
         try:
             file_backup = Pdf.objects.get(sha1_hash=sha1_hash)
+            new = False
         except Pdf.DoesNotExist:
+            new = True
             file_backup = Pdf(sha1_hash=sha1_hash)
             file_backup.file.save(name=sha1_hash, content=content_file)
             file_backup.save()
@@ -281,6 +304,7 @@ class PdfUrl(models.Model):
         self.scraped_pdf = file_backup
         self.dead_link = False
         self.save()
+        return new
 
     def save(self, *args, **kwargs) -> None:
         if not self.id:

@@ -200,6 +200,16 @@ class PdfPage(models.Model):
         ordering = ('pdf', 'number')
         unique_together = ('pdf', 'number')
 
+    def __repr__(self) -> str:
+        """Return programmer representation of PdfPage object."""
+        return (
+            'PdfPage('
+            f'pdf={repr(self.pdf)}, '
+            f'number={self.number}, '
+            f'confidence={self.confidence}'
+            ')'
+        )
+
 
 class PdfUrlQuerySet(models.QuerySet):
     def organize(self):

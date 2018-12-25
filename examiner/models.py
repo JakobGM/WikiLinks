@@ -312,7 +312,7 @@ class PdfUrl(models.Model):
         self.updated_at = timezone.now()
         super().save(*args, **kwargs)
 
-    def parse_url(self) -> None:
+    def parse(self) -> None:
         """Set field attributes by parsing the provided url."""
         if self.id and self.verified_by.count() != 0:
             # The metadata has been verified, so we should not mutate

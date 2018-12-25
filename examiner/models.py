@@ -20,6 +20,84 @@ from examiner.pdf import PdfReader
 from semesterpage.models import Course
 
 
+class Exam(models.Model):
+    course = models.ForeignKey(
+        to=Course,
+        on_delete=models.CASCADE,
+        related_name='exam_urls',
+        blank=True,
+        null=True,
+        help_text=_('Faget som eksamenen tilhører.'),
+    )
+    course_code = models.CharField(
+        max_length=10,
+        blank=True,
+        null=True,
+        help_text=_('Eksamens fagkode.'),
+    )
+    language = models.CharField(
+        max_length=20,
+        null=True,
+        choices=[
+            ('Bokmål', 'Bokmål'),
+            ('Nynorsk', 'Nynorsk'),
+            ('Engelsk', 'Engelsk'),
+            (None, 'Ukjent'),
+        ],
+        help_text=_('Språket som eksamen er skrevet i.'),
+    )
+    year = models.PositiveSmallIntegerField(
+        null=True,
+        help_text=_('Året som eksamen ble holdt.'),
+    )
+    season = models.PositiveSmallIntegerField(
+        null=True,
+        choices=[
+            (1, 'Vår'),
+            (2, 'Kontinuasjonseksamen'),
+            (3, 'Høst'),
+            (None, 'Ukjent'),
+        ],
+        help_text=_('Semestertype når eksamen ble holdt.'),
+    )
+    solutions = models.BooleanField(
+        default=False,
+        help_text=_('Om filen inneholder løsningsforslag.'),
+    )
+
+    def __repr__(self) -> str:
+        return (
+            'Exam('
+            f"course_code='{self.course_code}', "
+            f'year={self.year}, '
+            f'season={self.season}, '
+            f'language={self.language}, '
+            f'solutions={self.solutions}'
+            ')'
+        )
+
+    class Meta:
+        ordering = ('course_code', '-year', '-solutions')
+        unique_together = (
+            'course_code',
+            'language',
+            'year',
+            'season',
+            'solutions',
+        )
+
+    def save(self, *args, **kwargs) -> None:
+        if self.course and not self.course_code:
+            self.course_code = self.course.course_code
+        elif self.course_code and not self.course:
+            try:
+                self.course = Course.objects.get(course_code=self.course_code)
+            except Course.DoesNotExist:
+                pass
+
+        super().save(*args, **kwargs)
+
+
 def upload_path(instance, filename):
     """Return path to save FileBackup.file backups."""
     return f'examiner/FileBackup/' + filename
@@ -39,6 +117,12 @@ class Pdf(models.Model):
             regex='^[0-9a-f]{40}$',
             message='Not a valid SHA1 hash string.',
         )],
+    )
+    exam = models.ForeignKey(
+        to=Exam,
+        on_delete=models.SET_NULL,
+        null=True,
+        help_text=_('Hvilket eksamenssett PDFen trolig inneholder.'),
     )
     created_at = models.DateTimeField(editable=False)
     updated_at = models.DateTimeField()
@@ -143,84 +227,6 @@ class PdfUrlQuerySet(models.QuerySet):
             course_dict['nick_name'] = course.display_name
 
         return organization
-
-
-class Exam(models.Model):
-    course = models.ForeignKey(
-        to=Course,
-        on_delete=models.CASCADE,
-        related_name='exam_urls',
-        blank=True,
-        null=True,
-        help_text=_('Faget som eksamenen tilhører.'),
-    )
-    course_code = models.CharField(
-        max_length=10,
-        blank=True,
-        null=True,
-        help_text=_('Eksamens fagkode.'),
-    )
-    language = models.CharField(
-        max_length=20,
-        null=True,
-        choices=[
-            ('Bokmål', 'Bokmål'),
-            ('Nynorsk', 'Nynorsk'),
-            ('Engelsk', 'Engelsk'),
-            (None, 'Ukjent'),
-        ],
-        help_text=_('Språket som eksamen er skrevet i.'),
-    )
-    year = models.PositiveSmallIntegerField(
-        null=True,
-        help_text=_('Året som eksamen ble holdt.'),
-    )
-    season = models.PositiveSmallIntegerField(
-        null=True,
-        choices=[
-            (1, 'Vår'),
-            (2, 'Kontinuasjonseksamen'),
-            (3, 'Høst'),
-            (None, 'Ukjent'),
-        ],
-        help_text=_('Semestertype når eksamen ble holdt.'),
-    )
-    solutions = models.BooleanField(
-        default=False,
-        help_text=_('Om filen inneholder løsningsforslag.'),
-    )
-
-    def __repr__(self) -> str:
-        return (
-            'Exam('
-            f"course_code='{self.course_code}', "
-            f'year={self.year}, '
-            f'season={self.season}, '
-            f'language={self.language}, '
-            f'solutions={self.solutions}'
-            ')'
-        )
-
-    class Meta:
-        ordering = ('course_code', '-year', '-solutions')
-        unique_together = (
-            'course_code',
-            'language',
-            'year',
-            'season',
-            'solutions',
-        )
-
-    def save(self, *args, **kwargs) -> None:
-        if self.course and not self.course_code:
-            self.course_code = self.course.course_code
-        elif self.course_code and not self.course:
-            try:
-                self.course = Course.objects.get(course_code=self.course_code)
-            except Course.DoesNotExist:
-                pass
-
-        super().save(*args, **kwargs)
 
 
 class PdfUrl(models.Model):

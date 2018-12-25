@@ -9,6 +9,8 @@ from typing import Optional, Union
 
 import pdftotext
 
+from tqdm import tqdm
+
 
 OCR_ENABLED = True
 logger = logging.getLogger()
@@ -91,7 +93,7 @@ class PdfReader:
 
         tiff_files = sorted(tiff_directory.iterdir())
         with PyTessBaseAPI(lang='nor+eng+equ', path=str(TESSDATA_DIR)) as api:
-            for page in tiff_files:
+            for page in tqdm(tiff_files, desc='PDF OCR'):
                 api.SetImageFile(str(page))
                 self.pages.append(api.GetUTF8Text())
                 word_confidences.append(api.AllWordConfidences())

@@ -127,7 +127,11 @@ class Pdf(models.Model):
     created_at = models.DateTimeField(editable=False)
     updated_at = models.DateTimeField()
 
-    def read_text(self, allow_ocr: bool = False) -> None:
+    def read_text(
+        self,
+        allow_ocr: bool = False,
+        force_ocr: bool = False,
+    ) -> None:
         """
         Read text from pdf and save result to self.text.
 
@@ -136,9 +140,11 @@ class Pdf(models.Model):
 
         :param allow_ocr: If True, slow OCR will be used for text extraction
           from non-indexed PDF files.
+        :param force_ocr: If True, OCR will be used even if text content can
+          be read directly from the PDF.
         """
         pdf = PdfReader(path=self.file.path)
-        pdf.read_text(allow_ocr=allow_ocr)
+        pdf.read_text(allow_ocr=allow_ocr, force_ocr=force_ocr)
         for page_number, page in enumerate(pdf.pages):
             PdfPage.objects.create(
                 pdf=self,

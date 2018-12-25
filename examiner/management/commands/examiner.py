@@ -119,7 +119,7 @@ class Command(BaseCommand):
         for pdf in Pdf.objects.all():
             if pdf.pages.count() > 0:
                 continue
-            pdf.read_text()
+            pdf.read_text(allow_ocr=True)
             pdf.save()
             self.stdout.write(self.style.SUCCESS(
                 f'Saved {pdf.pages.count()} new pages',

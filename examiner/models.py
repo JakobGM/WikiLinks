@@ -162,6 +162,16 @@ class Pdf(models.Model):
         self.updated_at = timezone.now()
         super().save(*args, **kwargs)
 
+    def __repr__(self) -> str:
+        """Return programmer representation of Pdf object."""
+        return (
+            'Pdf('
+            f"sha1_hash='{self.sha1_hash}', "
+            f'exam={self.exam}, '
+            f'pages={self.pages.count()}'
+            ')'
+        )
+
 
 class PdfPage(models.Model):
     pdf = models.ForeignKey(
@@ -335,3 +345,7 @@ class PdfUrl(models.Model):
             course_code=parser.code,
         )
         self.save()
+
+    def __repr__(self) -> str:
+        """Return programmer representation of PdfUrl object."""
+        return f"PdfUrl(url='{self.url}')"

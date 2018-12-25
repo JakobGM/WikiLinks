@@ -99,8 +99,8 @@ class PdfReader:
                 word_confidences.append(api.AllWordConfidences())
 
         self.page_confidences = [
-            int(mean(word_confidences))
-            for word_confidences
+            int(mean(word_confidence)) if word_confidence else None
+            for word_confidence
             in word_confidences
         ]
         self.mean_confidence = int(mean(

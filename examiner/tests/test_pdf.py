@@ -23,6 +23,12 @@ def pdf_path() -> Path:
     return Path(__file__).parent / 'data' / 'ocr.pdf'
 
 
+@pytest.fixture
+def ocr_many_pages() -> Path:
+    """PDF which requires OCR and has lots of pages."""
+    return Path(__file__).parent / 'data' / 'ocr_many_pages.pdf'
+
+
 def test_creation_of_temporary_tiff_file(pdf_path):
     """PdfReader should create TIFF files in alphabetical order wrt. page num"""
     pdf_reader = PdfReader(path=pdf_path)
@@ -89,3 +95,9 @@ def test_read_text_of_non_indexed_pdf_with_ocr(monkeypatch, pdf_path):
     monkeypatch.setattr(PdfReader, 'ocr_text', lambda self: 'content')
     pdf = PdfReader(path=pdf_path)
     assert pdf.read_text(allow_ocr=True) == 'content'
+
+
+def test_pdf_with_many_pages_requires_ocr(ocr_many_pages):
+    """PDF with many pages should still be detected as OCR-depending"""
+    pdf = PdfReader(path=ocr_many_pages)
+    assert pdf.read_text(allow_ocr=False) is None

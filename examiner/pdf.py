@@ -61,7 +61,7 @@ class PdfReader:
         self.mean_confidence = None
         text = '\f'.join(self.pages)
 
-        if len(text) > 1:
+        if len(text.replace('\f', ' ').strip()) > 1:
             return text
         elif allow_ocr and OCR_ENABLED:
             return self.ocr_text()

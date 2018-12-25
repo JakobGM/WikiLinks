@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand, CommandError
 from examiner.crawlers import MathematicalSciencesCrawler
 from examiner.models import Pdf, PdfUrl
 from examiner.parsers import PdfParser
+from examiner.pdf import OCR_ENABLED
 from semesterpage.models import Course
 
 
@@ -53,8 +54,12 @@ class Command(BaseCommand):
         if options['crawl']:
             self.crawl(course_code=course_code)
         if options['backup']:
+            if not OCR_ENABLED:
+                raise CommandError('OCR dependencies not properly installed!')
             self.backup(course_code=course_code)
         if options['parse']:
+            if not OCR_ENABLED:
+                raise CommandError('OCR dependencies not properly installed!')
             self.parse()
         if options['test']:
             self.test(gui=options['gui'])

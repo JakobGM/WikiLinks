@@ -22,7 +22,7 @@ def test_derive_course_from_course_code_on_save():
 
     url = 'http://www.example.com/TMA4130/2013h/oldExams/eksamen-bok_2006v.pdf'
     exam_url = PdfUrl(url=url)
-    exam_url.parse_url()
+    exam_url.parse()
     assert exam_url.exam.course == course
 
 
@@ -51,7 +51,7 @@ def test_parse_url():
     """The parse_url method should update model fields from url parsing."""
     url = 'http://www.example.com/TMA4130/2013h/oldExams/eksamen-bok_2006v.pdf'
     exam_url = PdfUrl(url=url)
-    exam_url.parse_url()
+    exam_url.parse()
     exam_url.save()
     assert exam_url.url == url
 
@@ -87,7 +87,7 @@ def test_parse_url_of_already_verified_url():
     exam_url = PdfUrl(url=url)
 
     # First, the parser infers 2006 as the year
-    exam_url.parse_url()
+    exam_url.parse()
     exam_url.save()
     assert exam_url.exam.year == 2006
 
@@ -101,7 +101,7 @@ def test_parse_url_of_already_verified_url():
     exam_url.verified_by.add(user)
 
     # On reparsing the url, attributes are not changed
-    exam_url.parse_url()
+    exam_url.parse()
     assert exam_url.exam.year == 2016
 
 
@@ -184,7 +184,7 @@ def test_file_backup_of_dead_link(tmpdir, settings):
 
     # We scrape this URL
     exam_url = PdfUrl(url=url)
-    exam_url.parse_url()
+    exam_url.parse()
     assert exam_url.dead_link is None
 
     # And then unsucessfully try to backup the file

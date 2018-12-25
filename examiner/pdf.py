@@ -46,15 +46,25 @@ class PdfReader:
         if not self.path.is_absolute():
             raise ValueError(f'PdfReader initialized with relative path {path}')
 
-    def read_text(self, *, allow_ocr: bool) -> Optional[str]:
+    def read_text(
+        self,
+        *,
+        allow_ocr: bool,
+        force_ocr: bool = False,
+    ) -> Optional[str]:
         """
         Return text content of PDF.
 
         :param allow_ocr: If text cant be extracted from PDF directly, since
           it does not contain text metadata, text will be extracted by OCR if
           True. This is much slower, approximately ~5s per page.
+        :param force_ocr: If True, OCR will be used instead of pdftotext in
+          all cases.
         :return: String of PDF text content, pages seperated with pagebreaks.
         """
+        if force_ocr:
+            return self.ocr_text()
+
         with open(self.path, 'rb') as file:
             pdf = pdftotext.PDF(file)
 

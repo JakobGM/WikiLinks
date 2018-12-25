@@ -101,3 +101,10 @@ def test_pdf_with_many_pages_requires_ocr(ocr_many_pages):
     """PDF with many pages should still be detected as OCR-depending"""
     pdf = PdfReader(path=ocr_many_pages)
     assert pdf.read_text(allow_ocr=False) is None
+
+
+def test_force_ocr(monkeypatch):
+    """The force_ocr parameter should force the use of OCR in all cases."""
+    monkeypatch.setattr(PdfReader, 'ocr_text', lambda self: 'content')
+    pdf = PdfReader(path='/')
+    assert pdf.read_text(allow_ocr=True, force_ocr=True) == 'content'

@@ -173,7 +173,6 @@ class ExamURLParser:
 
         return year, season
 
-
     @classmethod
     def _code(cls, string: str) -> Optional[str]:
         """Return course code related to the URL."""

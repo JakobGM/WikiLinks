@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from examiner.crawlers import MathematicalSciencesCrawler
 from examiner.models import Pdf, PdfUrl
+from examiner.parsers import PdfParser
 from semesterpage.models import Course
 
 
@@ -28,6 +29,18 @@ class Command(BaseCommand):
             help='Read and parse content of PDF backups.',
         )
         parser.add_argument(
+            '--test',
+            action='store_true',
+            dest='test',
+            help='Run examiner interactive tests.',
+        )
+        parser.add_argument(
+            '--gui',
+            action='store_true',
+            dest='gui',
+            help='If GUI tools can be invoked by the command.',
+        )
+        parser.add_argument(
             'course_code',
             nargs='?',
             type=str,
@@ -43,6 +56,8 @@ class Command(BaseCommand):
             self.backup(course_code=course_code)
         if options['parse']:
             self.parse()
+        if options['test']:
+            self.test(gui=options['gui'])
 
     def crawl(self, course_code: str) -> None:
         """Crawl PDF links from the internet."""
@@ -107,3 +122,25 @@ class Command(BaseCommand):
             new_content += 1
 
         self.stdout.write(self.style.SUCCESS(f'{new_content} new PDFs read!'))
+
+    def test(self, gui: bool = False) -> None:
+        pdfs = Pdf.objects.all()
+        for pdf in pdfs:
+            self.stdout.write(self.style.SUCCESS(repr(pdf)))
+            self.stdout.write('Hosted at:')
+            for pdf_url in pdf.hosted_at.all():
+                self.stdout.write(' - ' + pdf_url.url)
+
+            self.stdout.write('-' * 35 + 'FIRST PAGE' + '-' * 35)
+            self.stdout.write(pdf.pages.first().text)
+            self.stdout.write('-' * 80)
+
+            parser = PdfParser(text=pdf.pages.first().text)
+            if parser.language is None:
+                self.stdout.write(pdf.text)
+                self.stdout.write(
+                    self.style.ERROR('Could not determine language!'),
+                )
+                self.stdout.write('Hosted at: ' + pdf.hosted_at.first().url)
+                input()
+            self.stdout.write('\n')

@@ -293,3 +293,21 @@ def test_string_content():
 
     assert 'population model' in pages[2].text
     assert 'population model' not in pages[0].text
+
+
+@responses.activate
+@pytest.mark.django_db
+def test_deletion_of_file_on_delete(tmpdir, settings):
+    """FileField file should be cleaned up on Pdf deletion."""
+    # Create Pdf object with associated downloaded file
+    sha1_hash = '4dc828ea76ab618be6d72d135af13c40de3b9ce6'
+    pdf = Pdf(sha1_hash=sha1_hash)
+    pdf.file.save(content=ContentFile('Exam text'), name=sha1_hash, save=True)
+
+    # The file should now exist on disk
+    filepath = Path(settings.MEDIA_ROOT, pdf.file.name)
+    assert filepath.is_file()
+
+    # But after deleting the model, the file should be cleaned as well
+    pdf.delete()
+    assert not filepath.is_file()

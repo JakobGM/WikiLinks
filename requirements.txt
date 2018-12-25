@@ -64,6 +64,7 @@ six==1.10.0               # via bleach, django-dbbackup, django-extensions, drop
 sqlparse==0.2.3           # via django-debug-toolbar
 subdomains==2.1.1
 tesserocr==2.4.0
+tqdm==4.28.1
 typed-ast==1.0.4          # via mypy
 ukpostcodeparser==1.1.1   # via faker
 urllib3==1.22             # via dropbox, requests

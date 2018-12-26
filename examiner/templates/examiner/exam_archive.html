@@ -88,7 +88,7 @@
         <div style="color: silver; display: inline-block;">(nynorsk)</div>
         {% endif %}
       </a>
-      <div style="display:none;">{{ urls.0.file_backup.text }}</div>
+      <div style="display:none;">{{ urls.0.scraped_pdf.text }}</div>
 
       {% for alt_url in urls|slice:"1:" %}
       {% if forloop.first %}
@@ -118,6 +118,7 @@
         &nbsp;<i class="fa fa-question-circle" style="color:grey"></i>
         {% endif %}
         <i>{{ urls.0.filename }}</i>
+        <div style="display:none;">{{ urls.0.scraped_pdf.text }}</div>
 
         {% for alt_url in urls|slice:"1:" %}
         {% if forloop.first %}

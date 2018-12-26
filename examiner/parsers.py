@@ -1,5 +1,5 @@
 import re
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 from django.utils.encoding import uri_to_iri
 
@@ -330,4 +330,223 @@ class ExamURLParser:
             f'{"LF" if self.solutions else "Eksamen"} '
             f'{self.year or "Ukjent"} {self.season.value} '
             f'({self.language.value or "Ukjent språk"})'
+        )
+
+
+NYNORSK_WORDS = [
+    'nynorsk',
+    'løysning',
+    'oppgåve',
+    'fagleg',
+    'frå-til',
+    'tillatne',
+    'sidetal:',
+    'ikkje',
+]
+NYNORSK_WORDS_PATTERN = re.compile(
+    r'(\b' + r'\b|\b'.join(NYNORSK_WORDS) + r'\b)',
+    re.IGNORECASE,
+)
+
+BOKMAL_WORDS = [
+    'bokmål',
+    'eksamen',
+    'løsning',
+    'løsningsforslag',
+    'oppgave',
+    'faglig',
+    'fra-til',
+    'tillate',
+    'sidetall:',
+]
+BOKMAL_WORDS_PATTERN = re.compile(
+    r'(\b' + r'\b|\b'.join(BOKMAL_WORDS) + r'\b)',
+    re.IGNORECASE,
+)
+
+ENGLISH_WORDS = [
+    'english',
+    'exam',
+    'page',
+    'fall',
+    'solutions',
+]
+ENGLISH_WORDS_PATTERN = re.compile(
+    r'(\b' + r'\b|\b'.join(ENGLISH_WORDS) + r'\b)',
+    re.IGNORECASE,
+)
+
+
+SPRING_WORDS = [
+    r'mai',
+    r'may',
+    r'juni',
+    r'june',
+    r'spring',
+]
+SPRING_WORDS_PATTERN = re.compile(
+    r'(\b' + r'\b|\b'.join(SPRING_WORDS) + r'\b)',
+    re.IGNORECASE,
+)
+
+CONTINUATION_WORDS = [r'\baugust\b']
+CONTINUATION_WORDS_PATTERN = re.compile(
+    r'(\b' + r'\b|\b'.join(CONTINUATION_WORDS) + r'\b)',
+    re.IGNORECASE,
+)
+
+AUTUMN_WORDS = [
+    r'december',
+    r'desember',
+    r'november',
+    r'autumn',
+    r'januar',
+    r'january',
+    r'fall',
+]
+AUTUMN_WORDS_PATTERN = re.compile(
+    r'(\b' + r'\b|\b'.join(AUTUMN_WORDS) + r'\b)',
+    re.IGNORECASE,
+)
+
+EXAM_WORDS = [
+    r'eksamen',
+    r'exam',
+]
+EXAM_WORDS_PATTERN = re.compile(
+    r'(\b' + r'\b|\b'.join(EXAM_WORDS) + r'\b)',
+    re.IGNORECASE,
+)
+
+SOLUTIONS_WORDS = [
+    r'LF',
+    r'løsningsforslag',
+    r'løysningsforslag',
+    r'solution',
+    r'solutions',
+]
+SOLUTIONS_WORDS_PATTERN = re.compile(
+    r'(\b' + r'\b|\b'.join(SOLUTIONS_WORDS) + r'\b)',
+    re.IGNORECASE,
+)
+
+COURSE_CODES = [
+    r'TMA\d\d\d\d',
+    r'MA\d\d\d\d',
+    r'TFY\d\d\d\d',
+    r'SIF\d\d\d\d',
+    r'TIØ\d\d\d\d',
+]
+COURSE_CODES_PATTERN = re.compile(
+    r'(\b' + r'\b|\b'.join(COURSE_CODES) + r'\b)',
+    re.IGNORECASE,
+)
+
+YEAR_PATTERN = re.compile(r'((?:20[0-2][0-9]|19[7-9][0-9]))')
+DATE_PATTERN = re.compile(
+    r'(?P<day>[0-3][0-9])'
+    r'(?:\.|/)'
+    r'(?P<month>[0-1][0-9])'
+    r'(?:\.|/)'
+    r'(?P<year>[9012][0-9])',
+)
+
+
+class PdfParser:
+    """
+    Naive PDF content classifier.
+
+    The class uses simple regexes in order to determine the content of a PDF,
+    focusing on determining which Exam model object should be connected to
+    the Pdf model object.
+    """
+
+    def __init__(self, text: str) -> None:
+        """Constructor for PDF parser."""
+        self.probably_exam = self._probably_exam(text=text)
+        self.course_codes = self._course_codes(text=text)
+        self.language = self._language(text=text)
+        self.year, self.season = self._date(text=text)
+        self.solutions = self._solutions(text=text)
+
+    def _probably_exam(cls, text: str) -> bool:
+        """Return True if the text probably is related to an exam."""
+        return bool(re.search(EXAM_WORDS_PATTERN, text))
+
+    def _solutions(cls, text: str) -> bool:
+        """Return True if the text probably contains solutions."""
+        return bool(re.search(SOLUTIONS_WORDS_PATTERN, text))
+
+    @classmethod
+    def _course_codes(cls, text: str) -> List[str]:
+        """Return course codes present in the text."""
+        return [
+            match.group(0)
+            for match
+            in re.finditer(COURSE_CODES_PATTERN, text)
+        ]
+
+    @classmethod
+    def _language(cls, text: str) -> Language:
+        """Return Language of the text."""
+        if re.search(NYNORSK_WORDS_PATTERN, text):
+            return Language.NYNORSK
+        elif re.search(ENGLISH_WORDS_PATTERN, text):
+            return Language.ENGLISH
+        elif re.search(BOKMAL_WORDS_PATTERN, text):
+            return Language.BOKMAL
+        else:
+            return Language.UNKNOWN
+
+    @classmethod
+    def _date(cls, text: str) -> Tuple[int, Season]:
+        """Return year and season of the text."""
+        if re.search(SPRING_WORDS_PATTERN, text):
+            season = Season.SPRING
+        elif re.search(CONTINUATION_WORDS_PATTERN, text):
+            season = Season.CONTINUATION
+        elif re.search(AUTUMN_WORDS_PATTERN, text):
+            season = Season.AUTUMN
+        else:
+            season = Season.UNKNOWN
+
+        year = re.search(YEAR_PATTERN, text)
+        if year:
+            year = int(year.group(0))
+
+        if not year or not season:
+            date_match = re.search(DATE_PATTERN, text)
+            if not date_match:
+                return year, season
+
+            if not year:
+                year = date_match.group('year')
+                if int(year[0]) in (0, 1, 2):
+                    year = int('20' + year)
+                else:
+                    year = int('19' + year)
+
+            if not season:
+                month = int(date_match.group('month'))
+                if month in (1, 10, 11, 12):
+                    season = Season.AUTUMN
+                elif month in (7, 8, 9):
+                    season = Season.CONTINUATION
+                elif month in (4, 5, 6):
+                    season = Season.SPRING
+                else:
+                    season = Season.UNKNOWN
+
+        return year, season
+
+    def __repr__(self) -> str:
+        return (
+            '<Exam '
+            f"course_code='{self.course_codes}' "
+            f'year={self.year} '
+            f'season={self.season} '
+            f'language={self.language} '
+            f'solutions={self.solutions} '
+            f'probably_exam={self.probably_exam}'
+            '>'
         )

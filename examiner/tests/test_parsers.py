@@ -1,6 +1,8 @@
+from typing import List
+
 import pytest
 
-from examiner.parsers import ExamURLParser, Language, Season
+from examiner.parsers import ExamURLParser, Language, PdfParser, Season
 
 
 class ExamURL:
@@ -353,3 +355,79 @@ def test_tokenize():
         ExamURLParser.tokenize('LFeksamener2006-2010.pdf') ==
         '_lf_eksamener2006-2010.pdf'
     )
+
+
+class ExamPDF:
+    def __init__(
+        self,
+        pages: List[str],
+        course_codes: List[str],
+        year: int,
+        season: Season,
+        solutions: bool,
+        language: Language,
+        probably_exam: bool,
+    ):
+        self.pages = pages
+        self.course_codes = course_codes
+        self.year = year
+        self.season = season
+        self.solutions = solutions
+        self.language = language
+        self.probably_exam = probably_exam
+
+    def __repr__(self) -> str:
+        return f'ExamPDF(text="""{self.pages[0]}""")'
+
+
+ExamPDFs = [
+    ExamPDF(
+        pages=[
+            """
+            NTNU TMA4115 Matematikk 3
+            Institutt for matematiske fag
+            eksamen 11.08.05
+            Løsningsforslag
+            Eksamenssettet har 12 punkter.
+            """,
+        ],
+        course_codes=['TMA4115'],
+        year=2005,
+        season=Season.CONTINUATION,
+        solutions=True,
+        language=Language.BOKMAL,
+        probably_exam=True,
+    )
+]
+
+
+class TestExamPdfParser:
+    @pytest.mark.parametrize('pdf', ExamPDFs)
+    def test_year_parsing(self, pdf):
+        url_parser = PdfParser(text=pdf.pages[0])
+        assert url_parser.year == pdf.year
+
+    @pytest.mark.parametrize('pdf', ExamPDFs)
+    def test_course_code_parsing(self, pdf):
+        url_parser = PdfParser(text=pdf.pages[0])
+        assert url_parser.course_codes == pdf.course_codes
+
+    @pytest.mark.parametrize('pdf', ExamPDFs)
+    def test_season_parser(self, pdf):
+        url_parser = PdfParser(text=pdf.pages[0])
+        assert url_parser.season == pdf.season
+
+    @pytest.mark.parametrize('pdf', ExamPDFs)
+    def test_solutions_parser(self, pdf):
+        url_parser = PdfParser(text=pdf.pages[0])
+        assert url_parser.solutions == pdf.solutions
+
+    @pytest.mark.parametrize('pdf', ExamPDFs)
+    def test_probably_exam(self, pdf):
+        url_parser = PdfParser(text=pdf.pages[0])
+        assert url_parser.probably_exam == pdf.probably_exam
+
+    @pytest.mark.parametrize('pdf', ExamPDFs)
+    def test_language_parser(self, pdf):
+        url_parser = PdfParser(text=pdf.pages[0])
+        assert url_parser.language == pdf.language

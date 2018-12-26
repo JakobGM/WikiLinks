@@ -114,19 +114,26 @@ class Command(BaseCommand):
         ))
 
     def parse(self) -> None:
-        """Read content of backed up PDF files."""
-        new_content = 0
+        """Read content of backed up PDF files and classify content."""
+        successes = 0
+        errors = 0
         for pdf in Pdf.objects.all():
             if pdf.pages.count() > 0:
                 continue
-            pdf.read_text(allow_ocr=True)
-            pdf.save()
-            self.stdout.write(self.style.SUCCESS(
-                f'Saved {pdf.pages.count()} new pages',
-            ))
-            new_content += 1
+            parse_success = pdf.parse(read=True, allow_ocr=True, save=True)
+            if not parse_success:
+                errors += 1
+                self.stdout.write(self.style.ERROR(f'PDF parse error!'))
+                continue
 
-        self.stdout.write(self.style.SUCCESS(f'{new_content} new PDFs read!'))
+            self.stdout.write(self.style.SUCCESS(
+                f'Saved {pdf.pages.count()} new pages. Exam: {repr(pdf.exam)}',
+            ))
+            successes += 1
+
+        self.stdout.write(self.style.SUCCESS(f'{successes} new PDFs read!'))
+        if errors:
+            self.stdout.write(self.style.ERROR(f'{errors} errors!'))
 
     def test(self, gui: bool = False) -> None:
         pdfs = Pdf.objects.all()

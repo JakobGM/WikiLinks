@@ -7,8 +7,9 @@ import pytest
 
 import responses
 
-from examiner.models import Exam, Pdf, PdfUrl
+from examiner.models import Exam, Pdf, PdfPage, PdfUrl
 from examiner.parsers import Language, Season
+from examiner.pdf import PdfReaderException
 from dataporten.tests.factories import UserFactory
 from semesterpage.tests.factories import CourseFactory
 
@@ -311,3 +312,44 @@ def test_deletion_of_file_on_delete(tmpdir, settings):
     # But after deleting the model, the file should be cleaned as well
     pdf.delete()
     assert not filepath.is_file()
+
+
+@pytest.mark.django_db
+def test_parse_pdf():
+    """Exam type should be determinable from pdf content."""
+    # The PDF contains the following content
+    sha1_hash = '0000000000000000000000000000000000000000'
+    pdf = Pdf(sha1_hash=sha1_hash)
+    text = """
+        NTNU TMA4115 Matematikk 3
+        Institutt for matematiske fag
+        eksamen 11.08.05
+        Eksamenssettet har 12 punkter.
+    """
+    content = ContentFile(text)
+    pdf.file.save(content=content, name=sha1_hash, save=True)
+
+    # No errors should be raised when no pages has been saved yet, but False
+    # should be returned to indicate a lack of success.
+    pdf.parse(allow_ocr=True) is False  # Malformed plain text PDF
+    pdf.parse(allow_ocr=False) is False
+
+    assert pdf.content_type is None
+    assert pdf.exam is None
+
+    # But now we add a cover page and parse its content
+    PdfPage.objects.create(text=text, pdf=pdf, number=0)
+    pdf.refresh_from_db()
+    print(pdf.pages.first().text)
+    assert pdf.parse() is True
+
+    # It should now be determined that the pdf contains an exam
+    assert pdf.content_type == 'Exam'
+
+    # And all metadata should be saved
+    exam = pdf.exam
+    assert exam.language == Language.BOKMAL
+    assert exam.course_code == 'TMA4115'
+    assert exam.solutions is False
+    assert exam.year == 2005
+    assert exam.season == Season.CONTINUATION

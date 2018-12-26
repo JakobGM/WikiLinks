@@ -35,6 +35,10 @@ else:
 TESSDATA_DIR = Path(__file__).parent / 'tessdata'
 
 
+class PdfReaderException(Exception):
+    """Exception raised when PDF content can't be read."""
+
+
 class PdfReader:
     def __init__(self, path: Union[Path, str]) -> None:
         """
@@ -66,7 +70,15 @@ class PdfReader:
             return self.ocr_text()
 
         with open(self.path, 'rb') as file:
-            pdf = pdftotext.PDF(file)
+            try:
+                pdf = pdftotext.PDF(file)
+            except pdftotext.Error:
+                if not (allow_ocr and OCR_ENABLED):
+                    raise PdfReaderException(
+                        'Can not read text from PDF and OCR is disabled!'
+                    )
+                else:
+                    return self.ocr_text()
 
         self.pages = [page for page in pdf]
         self.page_confidences = [None] * len(self.pages)
@@ -102,6 +114,9 @@ class PdfReader:
         tiff_directory = self._tiff_directory()
 
         tiff_files = sorted(tiff_directory.iterdir())
+        if len(tiff_files) == 0:
+            raise PdfReaderException('Could not convert PDF to TIFF format!')
+
         with PyTessBaseAPI(lang='nor+eng+equ', path=str(TESSDATA_DIR)) as api:
             for page in tqdm(tiff_files, desc='PDF OCR'):
                 api.SetImageFile(str(page))

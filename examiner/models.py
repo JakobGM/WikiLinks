@@ -15,8 +15,8 @@ from django.utils import timezone
 
 import requests
 
-from examiner.parsers import ExamURLParser, Season
-from examiner.pdf import PdfReader
+from examiner.parsers import ExamURLParser, PdfParser, Season
+from examiner.pdf import PdfReader, PdfReaderException
 from semesterpage.models import Course
 
 
@@ -124,6 +124,18 @@ class Pdf(models.Model):
         null=True,
         help_text=_('Hvilket eksamenssett PDFen trolig inneholder.'),
     )
+    content_type = models.CharField(
+        max_length=20,
+        null=True,
+        default=None,
+        choices=[
+            ('Exam', 'Eksamen'),
+            ('Exercise', 'Øving'),
+            ('Other', 'Annet'),
+            (None, 'Ubestemt'),
+        ],
+        help_text=_('PDF-ens innholdstype, f.eks. "eksamen".'),
+    )
     created_at = models.DateTimeField(editable=False)
     updated_at = models.DateTimeField()
 
@@ -131,7 +143,7 @@ class Pdf(models.Model):
         self,
         allow_ocr: bool = False,
         force_ocr: bool = False,
-    ) -> None:
+    ) -> bool:
         """
         Read text from pdf and save result to self.text.
 
@@ -142,9 +154,18 @@ class Pdf(models.Model):
           from non-indexed PDF files.
         :param force_ocr: If True, OCR will be used even if text content can
           be read directly from the PDF.
+        :return: True if pages were actually read and persisted.
         """
         pdf = PdfReader(path=self.file.path)
-        pdf.read_text(allow_ocr=allow_ocr, force_ocr=force_ocr)
+        try:
+            pdf.read_text(allow_ocr=allow_ocr, force_ocr=force_ocr)
+        except PdfReaderException:
+            return False
+
+        pages = pdf.pages
+        if len(pages) == 0:
+            return False
+
         for page_number, page in enumerate(pdf.pages):
             PdfPage.objects.create(
                 pdf=self,
@@ -152,6 +173,7 @@ class Pdf(models.Model):
                 text=page,
                 confidence=pdf.page_confidences[page_number],
             )
+        return True
 
     @property
     def text(self) -> str:
@@ -161,6 +183,54 @@ class Pdf(models.Model):
         Pages are separated by pagebreaks, i.e. '\f'.
         """
         return '\f'.join([page.text for page in self.pages.order_by('number')])
+
+    def parse(
+        self,
+        save: bool = True,
+        read: bool = True,
+        allow_ocr: bool = True,
+    ) -> bool:
+        """
+        Parse PDF content and classify the related Exam model object.
+
+        :param save: If the Pdf should be saved when parsing finishes.
+        :param read: If PDF content should be read if no pages are found.
+        :param allow_ocr: If OCR can be used when reading PDF content.
+        :return: True if parsing was a success.
+        """
+        first_page = self.pages.first()
+        if not first_page and not read:
+            return False
+
+        if not first_page:
+            success = self.read_text(allow_ocr=allow_ocr)
+            if not success:
+                return False
+            else:
+                first_page = self.pages.first()
+
+        assert first_page.number == 0
+        pdf_parser = PdfParser(text=first_page.text)
+
+        if pdf_parser.probably_exam:
+            self.content_type = 'Exam'
+
+        # TODO: Support several course codes
+        if pdf_parser.course_codes:
+            course_code = pdf_parser.course_codes[0]
+        else:
+            course_code = None
+
+        self.exam, _ = Exam.objects.get_or_create(
+            course_code=course_code,
+            language=pdf_parser.language,
+            year=pdf_parser.year,
+            season=pdf_parser.season,
+            solutions=pdf_parser.solutions,
+        )
+        if save:
+            self.save()
+        return True
 
     def save(self, *args, **kwargs) -> None:
         if not self.id:

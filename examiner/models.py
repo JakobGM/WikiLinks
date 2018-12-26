@@ -24,7 +24,7 @@ class Exam(models.Model):
     course = models.ForeignKey(
         to=Course,
         on_delete=models.CASCADE,
-        related_name='exam_urls',
+        related_name='exams',
         blank=True,
         null=True,
         help_text=_('Faget som eksamenen tilhører.'),

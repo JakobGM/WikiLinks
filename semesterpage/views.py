@@ -254,7 +254,7 @@ class CourseAutocomplete(autocomplete.Select2QuerySetView):
         if self.q:
             course_code = Q(course_code__istartswith=self.q)
             full_name = Q(full_name__istartswith=self.q)
-            display_name = Q(display_name__startswith=self.q)
+            display_name = Q(display_name__istartswith=self.q)
             qs = qs.filter(course_code | full_name | display_name)
 
         return qs

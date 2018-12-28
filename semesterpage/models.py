@@ -358,7 +358,7 @@ class Course(LinkList):
         _('emnekode'),
         unique=True,
         db_index=True,
-        max_length=10,
+        max_length=15,
         help_text=_('F.eks. "TDT4102"')
     )
     semesters = models.ManyToManyField(

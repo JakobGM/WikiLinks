@@ -81,7 +81,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(repr(crawler)))
             for url in crawler.pdf_urls():
                 exam_url, new = PdfUrl.objects.get_or_create(url=url)
-                exam_url.parse_url()
+                exam_url.parse()
                 self.stdout.write(f' * {repr(exam_url.exam)}\n   {url}')
 
                 if new:

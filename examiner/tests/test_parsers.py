@@ -433,6 +433,51 @@ ExamPDFs = [
         language=Language.NYNORSK,
         probably_exam=True,
     ),
+    ExamPDF(  # First in list of valid course codes
+        pages=[
+            """
+            Eksamen TMA4122/23
+            10. august 2009
+            Løsningsforslag
+            """,
+        ],
+        course_codes=['TMA4122', 'TMA4123'],
+        year=2009,
+        season=Season.CONTINUATION,
+        solutions=True,
+        language=Language.BOKMAL,
+        probably_exam=True,
+    ),
+    ExamPDF(  # Last in list of valid course codes
+        pages=[
+            """
+            Eksamen TIØ4122/23
+            10. august 2009
+            Løsningsforslag
+            """,
+        ],
+        course_codes=['TIØ4122', 'TIØ4123'],
+        year=2009,
+        season=Season.CONTINUATION,
+        solutions=True,
+        language=Language.BOKMAL,
+        probably_exam=True,
+    ),
+    ExamPDF(  # Middle of list of valid course codes
+        pages=[
+            """
+            Eksamen TFY4122/23
+            10. august 2009
+            Løsningsforslag
+            """,
+        ],
+        course_codes=['TFY4122', 'TFY4123'],
+        year=2009,
+        season=Season.CONTINUATION,
+        solutions=True,
+        language=Language.BOKMAL,
+        probably_exam=True,
+    ),
 ]
 
 

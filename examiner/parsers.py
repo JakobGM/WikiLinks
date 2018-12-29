@@ -438,8 +438,9 @@ COURSE_CODES = [
     r'SIF\d\d\d\d',
     r'TIØ\d\d\d\d',
 ]
+COMBINING_COURSE = r'(?:/(\d{1,4}))?'   # e.g. TMA4123/24
 COURSE_CODES_PATTERN = re.compile(
-    r'(\b' + r'\b|\b'.join(COURSE_CODES) + r'\b)',
+    r'((?:' + r'|'.join(COURSE_CODES) + r'))' + COMBINING_COURSE,
     re.IGNORECASE,
 )
 
@@ -481,11 +482,23 @@ class PdfParser:
     @classmethod
     def _course_codes(cls, text: str) -> List[str]:
         """Return course codes present in the text."""
-        return [
-            match.group(0)
-            for match
-            in re.finditer(COURSE_CODES_PATTERN, text)
-        ]
+        course_codes = []
+        for match in re.finditer(COURSE_CODES_PATTERN, text):
+            # E.g. TMA4123
+            primary = match.group(1).upper()
+            course_codes.append(primary)
+
+            if match.group(2) is None:
+                continue
+
+            # E.g. TMA4123/24 -> TMA4124
+            secondary = match.group(2).upper()
+            try:
+                course_codes.append(primary[:-len(secondary)] + secondary)
+            except IndexError:
+                pass
+
+        return course_codes
 
     @classmethod
     def _language(cls, text: str) -> Language:

@@ -308,6 +308,24 @@ ExamURLs = (
         language=Language.UNKNOWN,
         probably_exam=True,
     ),
+    ExamURL(
+        url=r'http://www.math.ntnu.no/emner/TMA4220/2012h/exam/eks_fem_2004_fasit.pdf',
+        code='TMA4220',
+        year=2004,
+        season=Season.AUTUMN,
+        solutions=True,
+        language=Language.BOKMAL,
+        probably_exam=True,
+    ),
+    ExamURL(
+        url=r'https://wiki.math.ntnu.no/_media/tma4190/2014v/loysforslag4190mai2014.pdf',
+        code='TMA4190',
+        year=2014,
+        season=Season.SPRING,
+        solutions=True,
+        language=Language.NYNORSK,
+        probably_exam=True,
+    ),
 )
 
 class TestExamURLParser:
@@ -397,7 +415,24 @@ ExamPDFs = [
         solutions=True,
         language=Language.BOKMAL,
         probably_exam=True,
-    )
+    ),
+    ExamPDF(
+        pages=[
+            """
+            Eksamen i TMA4190 Mangfoldigheter
+            fredag 30 mai, 2014
+            LØYSINGSFORSLAG
+            Oppgåve 1
+            Vi de…nerer funksjonane F : R4 ! R2 og G : R2 ! R4 ved å sette...
+            """,
+        ],
+        course_codes=['TMA4190'],
+        year=2014,
+        season=Season.SPRING,
+        solutions=True,
+        language=Language.NYNORSK,
+        probably_exam=True,
+    ),
 ]
 
 

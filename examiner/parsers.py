@@ -208,7 +208,7 @@ class ExamURLParser:
     @property
     def solutions(self) -> bool:
         solution_pattern = re.compile(
-            r'(lf|losning|loesning|fasit|solution|sol[^a-zA-Z])',
+            r'(lf|losning|loesning|loys|fasit|solution|sol[^a-zA-Z])',
             re.IGNORECASE,
         )
         solution = solution_pattern.findall(self.filename)
@@ -265,7 +265,7 @@ class ExamURLParser:
         nynorsk_words = '(?:' + '|'.join([
             'nn',
             'nynorsk',
-            'loysning',
+            'loys',
             'ny' + non_letter,
         ]) + ')'
         bokmal_words = '(?:' + '|'.join([
@@ -421,7 +421,7 @@ EXAM_WORDS_PATTERN = re.compile(
 SOLUTIONS_WORDS = [
     r'LF',
     r'løsningsforslag',
-    r'løysningsforslag',
+    r'løysingsforslag',
     r'solution',
     r'solutions',
 ]

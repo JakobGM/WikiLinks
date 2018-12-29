@@ -390,7 +390,7 @@ SPRING_WORDS_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-CONTINUATION_WORDS = [r'\baugust\b']
+CONTINUATION_WORDS = [r'august', r'summer']
 CONTINUATION_WORDS_PATTERN = re.compile(
     r'(\b' + r'\b|\b'.join(CONTINUATION_WORDS) + r'\b)',
     re.IGNORECASE,

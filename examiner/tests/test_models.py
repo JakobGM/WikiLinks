@@ -9,7 +9,6 @@ import responses
 
 from examiner.models import Exam, Pdf, PdfPage, PdfUrl
 from examiner.parsers import Language, Season
-from examiner.pdf import PdfReaderException
 from dataporten.tests.factories import UserFactory
 from semesterpage.tests.factories import CourseFactory
 
@@ -23,7 +22,7 @@ def test_derive_course_from_course_code_on_save():
 
     url = 'http://www.example.com/TMA4130/2013h/oldExams/eksamen-bok_2006v.pdf'
     exam_url = PdfUrl(url=url)
-    exam_url.parse()
+    exam_url.classify()
     assert exam_url.exam.course == course
 
 
@@ -48,11 +47,11 @@ def test_prevention_of_non_unique_url():
 
 
 @pytest.mark.django_db
-def test_parse_url():
-    """The parse_url method should update model fields from url parsing."""
+def test_url_classify_method():
+    """The classify method should update model fields from url parsing."""
     url = 'http://www.example.com/TMA4130/2013h/oldExams/eksamen-bok_2006v.pdf'
     exam_url = PdfUrl(url=url)
-    exam_url.parse()
+    exam_url.classify()
     exam_url.save()
     assert exam_url.url == url
 
@@ -82,13 +81,13 @@ def test_parse_url():
 
 
 @pytest.mark.django_db
-def test_parse_url_of_already_verified_url():
+def test_classify_url_of_already_verified_url():
     """Parsing a verified url should not mutate the object."""
     url = 'http://www.example.com/TMA4130/2013h/oldExams/eksamen-bok_2006v.pdf'
     exam_url = PdfUrl(url=url)
 
     # First, the parser infers 2006 as the year
-    exam_url.parse()
+    exam_url.classify()
     exam_url.save()
     assert exam_url.exam.year == 2006
 
@@ -102,7 +101,7 @@ def test_parse_url_of_already_verified_url():
     exam_url.verified_by.add(user)
 
     # On reparsing the url, attributes are not changed
-    exam_url.parse()
+    exam_url.classify()
     assert exam_url.exam.year == 2016
 
 
@@ -185,7 +184,7 @@ def test_file_backup_of_dead_link(tmpdir, settings):
 
     # We scrape this URL
     exam_url = PdfUrl(url=url)
-    exam_url.parse()
+    exam_url.classify()
     assert exam_url.dead_link is None
 
     # And then unsucessfully try to backup the file
@@ -315,7 +314,7 @@ def test_deletion_of_file_on_delete(tmpdir, settings):
 
 
 @pytest.mark.django_db
-def test_parse_pdf():
+def test_classify_pdf():
     """Exam type should be determinable from pdf content."""
     # The PDF contains the following content
     sha1_hash = '0000000000000000000000000000000000000000'
@@ -331,17 +330,17 @@ def test_parse_pdf():
 
     # No errors should be raised when no pages has been saved yet, but False
     # should be returned to indicate a lack of success.
-    pdf.parse(allow_ocr=True) is False  # Malformed plain text PDF
-    pdf.parse(allow_ocr=False) is False
+    pdf.classify(allow_ocr=True) is False  # Malformed plain text PDF
+    pdf.classify(allow_ocr=False) is False
 
     assert pdf.content_type is None
     assert pdf.exam is None
 
-    # But now we add a cover page and parse its content
+    # But now we add a cover page and classify its content
     PdfPage.objects.create(text=text, pdf=pdf, number=0)
     pdf.refresh_from_db()
     print(pdf.pages.first().text)
-    assert pdf.parse() is True
+    assert pdf.classify() is True
 
     # It should now be determined that the pdf contains an exam
     assert pdf.content_type == 'Exam'

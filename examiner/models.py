@@ -23,7 +23,7 @@ from semesterpage.models import Course
 class Exam(models.Model):
     course = models.ForeignKey(
         to=Course,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name='exams',
         blank=True,
         null=True,

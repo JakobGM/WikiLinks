@@ -1,11 +1,11 @@
 """ Dataporten test settings and fixtures """
 
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import User
 import pytest
 import responses
 
-from .factories import DataportenUserFactory, UserFactory
-from .utils import mock_usergroups_request
+from .factories import DataportenUserFactory
+from .utils import mock_usergroups_request, mock_userinfo_request
 from ..models import DataportenGroupManager
 from ..parsers import Course
 
@@ -13,7 +13,8 @@ from ..parsers import Course
 @pytest.fixture
 @responses.activate
 def dataporten():
-    group_json = mock_usergroups_request()
+    mock_usergroups_request()
+    mock_userinfo_request()
     return DataportenGroupManager('dummy_token')
 
 

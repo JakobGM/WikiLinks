@@ -45,7 +45,7 @@ class TestSyncDataportenCoursesWithDB:
 
 class TestSyncOptionsOfUserWithDataporten:
     @pytest.mark.django_db
-    def test_new_user(self):
+    def test_new_user(self, dataporten):
         dp_user = DataportenUserFactory()
         sync_dataporten_courses_with_db(dp_user.dataporten.courses.all)
 

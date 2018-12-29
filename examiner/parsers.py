@@ -345,7 +345,7 @@ NYNORSK_WORDS = [
     'ikkje',
 ]
 NYNORSK_WORDS_PATTERN = re.compile(
-    r'(\b' + r'\b|\b'.join(NYNORSK_WORDS) + r'\b)',
+    r'\b(' + r'|'.join(NYNORSK_WORDS) + r')\b',
     re.IGNORECASE,
 )
 
@@ -361,7 +361,7 @@ BOKMAL_WORDS = [
     'sidetall:',
 ]
 BOKMAL_WORDS_PATTERN = re.compile(
-    r'(\b' + r'\b|\b'.join(BOKMAL_WORDS) + r'\b)',
+    r'\b(' + r'|'.join(BOKMAL_WORDS) + r')\b',
     re.IGNORECASE,
 )
 
@@ -373,7 +373,7 @@ ENGLISH_WORDS = [
     'solutions',
 ]
 ENGLISH_WORDS_PATTERN = re.compile(
-    r'(\b' + r'\b|\b'.join(ENGLISH_WORDS) + r'\b)',
+    r'\b(' + r'|'.join(ENGLISH_WORDS) + r')\b',
     re.IGNORECASE,
 )
 
@@ -386,13 +386,13 @@ SPRING_WORDS = [
     r'spring',
 ]
 SPRING_WORDS_PATTERN = re.compile(
-    r'(\b' + r'\b|\b'.join(SPRING_WORDS) + r'\b)',
+    r'\b(' + r'|'.join(SPRING_WORDS) + r')\b',
     re.IGNORECASE,
 )
 
 CONTINUATION_WORDS = [r'august', r'summer']
 CONTINUATION_WORDS_PATTERN = re.compile(
-    r'(\b' + r'\b|\b'.join(CONTINUATION_WORDS) + r'\b)',
+    r'\b(' + r'|'.join(CONTINUATION_WORDS) + r')\b',
     re.IGNORECASE,
 )
 
@@ -406,7 +406,7 @@ AUTUMN_WORDS = [
     r'fall',
 ]
 AUTUMN_WORDS_PATTERN = re.compile(
-    r'(\b' + r'\b|\b'.join(AUTUMN_WORDS) + r'\b)',
+    r'\b(' + r'|'.join(AUTUMN_WORDS) + r')\b',
     re.IGNORECASE,
 )
 
@@ -415,7 +415,7 @@ EXAM_WORDS = [
     r'exam',
 ]
 EXAM_WORDS_PATTERN = re.compile(
-    r'(\b' + r'\b|\b'.join(EXAM_WORDS) + r'\b)',
+    r'\b(' + r'|'.join(EXAM_WORDS) + r')\b',
     re.IGNORECASE,
 )
 
@@ -427,7 +427,7 @@ SOLUTIONS_WORDS = [
     r'solutions',
 ]
 SOLUTIONS_WORDS_PATTERN = re.compile(
-    r'(\b' + r'\b|\b'.join(SOLUTIONS_WORDS) + r'\b)',
+    r'\b(' + r'|'.join(SOLUTIONS_WORDS) + r')\b',
     re.IGNORECASE,
 )
 

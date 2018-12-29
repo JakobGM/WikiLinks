@@ -487,6 +487,41 @@ ExamPDFs = [
         language=Language.ENGLISH,
         probably_exam=False,
     ),
+    ExamPDF(  # Contains word solutions in problem discription
+        pages=[
+            """
+            Norwegian University of Science and Technology         Page 1 of 2
+            Department of Mathematical Sciences
+            Contact during the exam: Hans Pettersen
+            (Telephone 735 96688)
+            EXAM IN MA1201 LINEAR ALGEBRA AND GEOMETRY
+                                 Monday 3rd December 2007
+                                   Time: kl. 09.00 - 13.00
+                            Permitted aids: No permitted aids.
+                                          English
+            All answers must be justified. All problems will count the same
+            when grading the exam.
+            Grades: 21st December 2007.
+            Problem 1
+            a) We consider the following system of equations
+                                      x + 2y − 3z = 1
+                                    2x + y + 3αz = 2
+                                    2x +              2z = β
+            where α and β are constants. For what values of α and β does the
+            system of equa-
+            tions have
+            (i) no solutions
+            (ii) infinite number of solutions
+            (iii) exactly one solution?
+            """,
+        ],
+        course_codes=['MA1201'],
+        year=2007,
+        season=Season.AUTUMN,
+        solutions=False,
+        language=Language.ENGLISH,
+        probably_exam=True,
+    ),
 ]
 
 

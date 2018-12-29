@@ -24,10 +24,10 @@ class Command(BaseCommand):
             help='Backup PDF files from the internet.',
         )
         parser.add_argument(
-            '--parse',
+            '--classify',
             action='store_true',
-            dest='parse',
-            help='Read and parse content of PDF backups.',
+            dest='classify',
+            help='Read and classify content of PDF backups.',
         )
         parser.add_argument(
             '--test',
@@ -57,10 +57,10 @@ class Command(BaseCommand):
             if not OCR_ENABLED:
                 raise CommandError('OCR dependencies not properly installed!')
             self.backup(course_code=course_code)
-        if options['parse']:
+        if options['classify']:
             if not OCR_ENABLED:
                 raise CommandError('OCR dependencies not properly installed!')
-            self.parse()
+            self.classify()
         if options['test']:
             self.test(gui=options['gui'])
 
@@ -81,7 +81,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(repr(crawler)))
             for url in crawler.pdf_urls():
                 exam_url, new = PdfUrl.objects.get_or_create(url=url)
-                exam_url.parse()
+                exam_url.classify()
                 self.stdout.write(f' * {repr(exam_url.exam)}\n   {url}')
 
                 if new:
@@ -113,17 +113,15 @@ class Command(BaseCommand):
             f'{new_backups} new PDFs backed up!',
         ))
 
-    def parse(self) -> None:
+    def classify(self) -> None:
         """Read content of backed up PDF files and classify content."""
         successes = 0
         errors = 0
         for pdf in Pdf.objects.all():
-            if pdf.pages.count() > 0:
-                continue
-            parse_success = pdf.parse(read=True, allow_ocr=True, save=True)
-            if not parse_success:
+            classify_success = pdf.classify(read=True, allow_ocr=True, save=True)
+            if not classify_success:
                 errors += 1
-                self.stdout.write(self.style.ERROR(f'PDF parse error!'))
+                self.stdout.write(self.style.ERROR(f'PDF classify error!'))
                 continue
 
             self.stdout.write(self.style.SUCCESS(

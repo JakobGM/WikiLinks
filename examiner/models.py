@@ -184,7 +184,7 @@ class Pdf(models.Model):
         """
         return '\f'.join([page.text for page in self.pages.order_by('number')])
 
-    def parse(
+    def classify(
         self,
         save: bool = True,
         read: bool = True,
@@ -421,7 +421,7 @@ class PdfUrl(models.Model):
         self.updated_at = timezone.now()
         super().save(*args, **kwargs)
 
-    def parse(self) -> None:
+    def classify(self) -> None:
         """Set field attributes by parsing the provided url."""
         if self.id and self.verified_by.count() != 0:
             # The metadata has been verified, so we should not mutate

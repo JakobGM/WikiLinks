@@ -62,3 +62,6 @@ pdftotext
 
 # Easy-to-use progress bar for time consuming operations
 tqdm
+
+# For enabling responses in all pytest tests, preventing internet access
+pytest-responses

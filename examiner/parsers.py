@@ -442,7 +442,7 @@ COURSE_CODES_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-YEAR_PATTERN = re.compile(r'((?:20[0-2][0-9]|19[7-9][0-9]))')
+YEAR_PATTERN = re.compile(r'\b((?:20[0-2][0-9]|19[7-9][0-9]))\b')
 DATE_PATTERN = re.compile(
     r'(?P<day>[0-3][0-9])'
     r'(?:\.|/)'

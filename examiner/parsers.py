@@ -56,8 +56,9 @@ class ExamURLParser:
         'december',
         'nov',
         'november',
+        'hoest',
     )
-    SPRING_SEASONS = ('v', 'jun', 'juni', 'june', 'mai', 'may')
+    SPRING_SEASONS = ('v', 'jun', 'juni', 'june', 'mai', 'may', 'vaar')
     CONTINUATION_SEASONS = ('k', 'kont', 'continuation')
 
     def __init__(self, url: str) -> None:

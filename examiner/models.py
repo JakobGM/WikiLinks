@@ -297,17 +297,24 @@ class PdfUrlQuerySet(models.QuerySet):
         for course_code, urls in organization.items():
             organization[course_code] = {'years': {}}
             for url in urls:
+                if url.scraped_pdf and url.scraped_pdf.exam:
+                    # Use classification of PDF content
+                    exam = url.scraped_pdf.exam
+                else:
+                    # Use classification of URL
+                    exam = url.exam
+
                 year = organization[course_code]['years'].setdefault(
-                    url.exam.year,
+                    exam.year,
                     {},
                 )
                 semester = year.setdefault(
-                    Season.str_from_field(url.exam.season),
+                    Season.str_from_field(exam.season),
                     {'solutions': {}, 'exams': {}}
                 )
-                key = 'solutions' if url.exam.solutions else 'exams'
+                key = 'solutions' if exam.solutions else 'exams'
                 urls = semester[key].setdefault(
-                    url.exam.language or 'Ukjent',
+                    exam.language or 'Ukjent',
                     [],
                 )
                 urls.append(url)

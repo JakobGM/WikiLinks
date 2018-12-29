@@ -478,6 +478,15 @@ ExamPDFs = [
         language=Language.BOKMAL,
         probably_exam=True,
     ),
+    ExamPDF(  # Middle of list of valid course codes
+        pages=["TMA4115 Calculus 3, Summer 2017, Solutions Page 1 of 6"],
+        course_codes=['TMA4115'],
+        year=2017,
+        season=Season.CONTINUATION,
+        solutions=True,
+        language=Language.ENGLISH,
+        probably_exam=False,
+    ),
 ]
 
 

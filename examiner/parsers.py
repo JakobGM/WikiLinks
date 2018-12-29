@@ -453,6 +453,18 @@ DATE_PATTERN = re.compile(
     r'(?P<year>[9012][0-9])',
 )
 
+PROBLEMS_BEGINNING_WORDS = [
+    r'^\s*problem 1a?\)?',
+    r'^\s*task 1a?\)?',
+    r'^\s*oppgave 1a?\)?',
+    r'^\s*oppgåve 1a?\)?',
+    r'^\s*\ba\)',
+]
+PROBLEMS_BEGINNING_PATTERN = re.compile(
+    r'(?:' + r'|'.join(PROBLEMS_BEGINNING_WORDS) + r')',
+    re.IGNORECASE | re.MULTILINE,
+)
+
 
 class PdfParser:
     """
@@ -465,11 +477,20 @@ class PdfParser:
 
     def __init__(self, text: str) -> None:
         """Constructor for PDF parser."""
+        # Find the text that occurs before the first problem, for now only
+        # used for finding if the exam set contains solutions. This is important
+        # because problems will often mentoin "find the solutions...".
+        problems_beginning = re.search(PROBLEMS_BEGINNING_PATTERN, text)
+        if problems_beginning:
+            entry_text = text[:problems_beginning.span()[0] + 1]
+        else:
+            entry_text = text
+
         self.probably_exam = self._probably_exam(text=text)
         self.course_codes = self._course_codes(text=text)
         self.language = self._language(text=text)
         self.year, self.season = self._date(text=text)
-        self.solutions = self._solutions(text=text)
+        self.solutions = self._solutions(text=entry_text)
 
     def _probably_exam(cls, text: str) -> bool:
         """Return True if the text probably is related to an exam."""

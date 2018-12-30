@@ -34,9 +34,12 @@ tmp/
 # Djangotest cache
 .cache/
 # Python autocompletion
-.ropeproject/ 
+.ropeproject/
 # Ctags
 tags
 
 # Production specific
 koku_env/
+
+# TODO document
+TODO.md

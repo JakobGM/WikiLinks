@@ -548,6 +548,29 @@ class TestExamClassification:
             {'TMA4000', 'TMA4100', 'TMA4200', 'TMA4300'}
         )
 
+    @pytest.mark.django_db
+    def test_determining_solutions_of_exam_without_content(self):
+        """Solutions should by OR determined."""
+        sha1_hash = '0000000000000000000000000000000000000000'
+        pdf = Pdf.objects.create(sha1_hash=sha1_hash)
+
+        text = "Bad OCR handwritten content"
+        PdfPage.objects.create(text=text, pdf=pdf, number=0)
+
+        # Only one url contains solutions but it is completely trusted
+        urls = [
+            'http://wiki.math.ntnu.no/TMA4000/exams/problems1.pdf',
+            'http://wiki.math.ntnu.no/TMA4000/exams/problems2.pdf',
+            'http://wiki.math.ntnu.no/TMA4000/exams/problems3_solutions.pdf',
+        ]
+        for url in urls:
+            PdfUrl.objects.create(url=url, scraped_pdf=pdf)
+
+        # Results in 4 courses all together
+        pdf.classify()
+        assert pdf.exams.count() == 1
+        assert pdf.exams.first().solutions is True
+
 
 class TestExamRelatedCourse:
     """Tests for ExamRelatedCourse."""

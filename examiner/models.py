@@ -326,6 +326,13 @@ class Pdf(models.Model):
         # All the exams belonging to URLs which host this PDF
         url_exams = Exam.objects.filter(pdfurl__scraped_pdf=self)
 
+        # The solutions parsers are relatively conservative, so we can OR
+        # determine it from all the parsers.
+        solutions = any([
+            pdf_parser.solutions,
+            *url_exams.values_list('solutions', flat=True)
+        ])
+
         # Get course codes from pdf content and URL classifications
         course_codes = set(pdf_parser.course_codes)
         course_codes.update(
@@ -336,7 +343,7 @@ class Pdf(models.Model):
 
         # Now replace None values from the PDF parser with the most frequent
         # values in the URL parse results.
-        for field in ('language', 'year', 'season', 'solutions'):
+        for field in ('language', 'year', 'season'):
             parser_field_value = getattr(pdf_parser, field)
             if parser_field_value is not None:
                 # The PDF parser is more trusted than the URL parser
@@ -373,7 +380,7 @@ class Pdf(models.Model):
                 language=pdf_parser.language,
                 year=pdf_parser.year,
                 season=pdf_parser.season,
-                solutions=pdf_parser.solutions,
+                solutions=solutions,
             )
 
             # And create the new relation

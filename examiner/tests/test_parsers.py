@@ -326,6 +326,24 @@ ExamURLs = (
         language=Language.NYNORSK,
         probably_exam=True,
     ),
+    ExamURL(
+        url=r'https://wiki.math.ntnu.no/_media/tma4320/2018v/tma_4320_physics_project_1.pdf',
+        code='TMA4320',
+        year=2018,
+        season=Season.SPRING,
+        solutions=False,
+        language=Language.UNKNOWN,
+        probably_exam=False,
+    ),
+    ExamURL(
+        url=r'http://www.math.ntnu.no/~arvidn/TMA4295V09/TMA4295_2007_lf.pdf',
+        code='TMA4295',
+        year=2007,
+        season=Season.SPRING,
+        solutions=True,
+        language=Language.BOKMAL,
+        probably_exam=False,
+    ),
 )
 
 class TestExamURLParser:

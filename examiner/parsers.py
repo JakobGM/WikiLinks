@@ -179,7 +179,7 @@ class ExamURLParser:
         """Return course code related to the URL."""
         code_pattern = re.compile(cls.COURSE_PATTERNS, re.IGNORECASE)
         code = code_pattern.findall(string)
-        return code[-1].upper() if code else None
+        return code[-1].replace('_', '').upper() if code else None
 
     @property
     def year(self) -> Optional[int]:

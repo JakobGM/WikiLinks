@@ -118,7 +118,11 @@ class Command(BaseCommand):
         successes = 0
         errors = 0
         for pdf in Pdf.objects.all():
-            classify_success = pdf.classify(read=True, allow_ocr=True, save=True)
+            classify_success = pdf.classify(
+                read=True,
+                allow_ocr=True,
+                save=True,
+            )
             if not classify_success:
                 errors += 1
                 self.stdout.write(self.style.ERROR(f'PDF classify error!'))
@@ -141,16 +145,37 @@ class Command(BaseCommand):
             for pdf_url in pdf.hosted_at.all():
                 self.stdout.write(' - ' + pdf_url.url)
 
+            first_page = pdf.pages.first()
             self.stdout.write('-' * 35 + 'FIRST PAGE' + '-' * 35)
-            self.stdout.write(pdf.pages.first().text)
+            self.stdout.write(first_page.text)
             self.stdout.write('-' * 80)
 
             parser = PdfParser(text=pdf.pages.first().text)
-            if parser.language is None:
-                self.stdout.write(pdf.text)
+            self.stdout.write(repr(parser))
+
+            exam_not_determined = (
+                parser.language is None or
+                parser.season is None or
+                parser.year is None or
+                not parser.course_codes
+            )
+            if exam_not_determined and (first_page.confidence or 100) > 60:
+                # self.stdout.write(pdf.text)
                 self.stdout.write(
-                    self.style.ERROR('Could not determine language!'),
+                    self.style.ERROR('Could not exam type!'),
                 )
+                self.stdout.write(f'Page confidence: {first_page.confidence}')
                 self.stdout.write('Hosted at: ' + pdf.hosted_at.first().url)
-                input()
+                answer = input('[r] Reparse, [o] Force OCR: ')
+                if answer == 'r':
+                    url = pdf.hosted_at.first()
+                    pdf.delete()
+                    url.backup_file()
+                    pdf = url.scraped_pdf
+                    pdf.read_text(allow_ocr=True)
+                    continue
+                if answer == 'o':
+                    pdf.pages.all().delete()
+                    pdf.read_text(force_ocr=True)
+                    continue
             self.stdout.write('\n')

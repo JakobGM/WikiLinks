@@ -8,7 +8,14 @@ import pytest
 
 import responses
 
-from examiner.models import Exam, ExamRelatedCourse, Pdf, PdfPage, PdfUrl
+from examiner.models import (
+    Exam,
+    ExamPdf,
+    ExamRelatedCourse,
+    Pdf,
+    PdfPage,
+    PdfUrl,
+)
 from examiner.parsers import Language, Season
 from dataporten.tests.factories import UserFactory
 from semesterpage.tests.factories import CourseFactory
@@ -197,6 +204,13 @@ def test_file_backup_of_dead_link(tmpdir, settings):
 @pytest.mark.django_db
 def test_queryset_organize_method():
     """ExamURLs should be organizable in hierarchy."""
+    # All links are related to this course
+    CourseFactory(
+        full_name='Mathematics 1',
+        display_name='Maths 1',
+        course_code='TMA4000',
+    )
+
     exam1 = Exam.objects.create(
         course_code='TMA4000',
         year=2016,
@@ -232,11 +246,36 @@ def test_queryset_organize_method():
         exam=eksamen_losning,
     )
 
-    CourseFactory(
-        full_name='Mathematics 1',
-        display_name='Maths 1',
+    # The URL classifier could not determine the language
+    url_exam_2015 = Exam.objects.create(
         course_code='TMA4000',
+        year=2015,
+        season=Season.SPRING,
+        solutions=False,
+        language=Language.UNKNOWN,
     )
+
+    # But the PDF classifier managed to determine it
+    pdf_exam_2015 = Exam.objects.create(
+        course_code='TMA4000',
+        year=2015,
+        season=Season.SPRING,
+        solutions=False,
+        language=Language.ENGLISH,
+    )
+    exam_2015_pdf = Pdf.objects.create()
+    ExamPdf.objects.create(
+        exam=pdf_exam_2015,
+        pdf=exam_2015_pdf,
+    )
+
+    # The pdf is scraped
+    exam_2015_url = PdfUrl.objects.create(
+        url='http://exams.com/exam_2015',
+        exam=url_exam_2015,
+        scraped_pdf=exam_2015_pdf,
+    )
+
     organization = PdfUrl.objects.all().organize()
     assert organization == {
         'TMA4000': {
@@ -250,6 +289,12 @@ def test_queryset_organize_method():
                             'Bokmål': [eksamen_url_losning],
                             'Engelsk': [exam_url_solutions],
                         },
+                    },
+                },
+                2015: {
+                    'Vår': {
+                        'exams': {'Engelsk': [exam_2015_url]},
+                        'solutions': {},
                     },
                 },
             },
@@ -314,45 +359,97 @@ def test_deletion_of_file_on_delete(tmpdir, settings):
     assert not filepath.is_file()
 
 
-@pytest.mark.django_db
-def test_classify_pdf():
-    """Exam type should be determinable from pdf content."""
-    # The PDF contains the following content
-    sha1_hash = '0000000000000000000000000000000000000000'
-    pdf = Pdf(sha1_hash=sha1_hash)
-    text = """
-        NTNU TMA4115 Matematikk 3
-        Institutt for matematiske fag
-        eksamen 11.08.05
-        Eksamenssettet har 12 punkter.
-    """
-    content = ContentFile(text)
-    pdf.file.save(content=content, name=sha1_hash, save=True)
+class TestExamClassification:
 
-    # No errors should be raised when no pages has been saved yet, but False
-    # should be returned to indicate a lack of success.
-    pdf.classify(allow_ocr=True) is False  # Malformed plain text PDF
-    pdf.classify(allow_ocr=False) is False
+    @pytest.mark.django_db
+    def test_classify_pdf(self):
+        """Exam type should be determinable from pdf content."""
+        # The PDF contains the following content
+        sha1_hash = '0000000000000000000000000000000000000000'
+        pdf = Pdf(sha1_hash=sha1_hash)
+        text = """
+            NTNU TMA4115 Matematikk 3
+            Institutt for matematiske fag
+            eksamen 11.08.05
+            Eksamenssettet har 12 punkter.
+        """
+        content = ContentFile(text)
+        pdf.file.save(content=content, name=sha1_hash, save=True)
 
-    assert pdf.content_type is None
-    assert pdf.exam is None
+        # No errors should be raised when no pages has been saved yet, but
+        # False should be returned to indicate a lack of success.
+        pdf.classify(allow_ocr=True) is False  # Malformed plain text PDF
+        pdf.classify(allow_ocr=False) is False
 
-    # But now we add a cover page and classify its content
-    PdfPage.objects.create(text=text, pdf=pdf, number=0)
-    pdf.refresh_from_db()
-    print(pdf.pages.first().text)
-    assert pdf.classify() is True
+        assert pdf.content_type is None
+        assert pdf.exams.count() == 0
 
-    # It should now be determined that the pdf contains an exam
-    assert pdf.content_type == 'Exam'
+        # But now we add a cover page and classify its content
+        PdfPage.objects.create(text=text, pdf=pdf, number=0)
+        pdf.refresh_from_db()
+        print(pdf.pages.first().text)
+        assert pdf.classify() is True
 
-    # And all metadata should be saved
-    exam = pdf.exam
-    assert exam.language == Language.BOKMAL
-    assert exam.course_code == 'TMA4115'
-    assert exam.solutions is False
-    assert exam.year == 2005
-    assert exam.season == Season.CONTINUATION
+        # It should now be determined that the pdf contains an exam
+        assert pdf.content_type == 'Exam'
+
+        # And all metadata should be saved
+        pdf = Pdf.objects.get(id=pdf.id)
+        assert pdf.exams.count() == 1
+        exam = pdf.exams.first()
+        assert exam.language == Language.BOKMAL
+        assert exam.course_code == 'TMA4115'
+        assert exam.solutions is False
+        assert exam.year == 2005
+        assert exam.season == Season.CONTINUATION
+
+        # When the classification method changes it result, old results
+        # should be removed. This is simulated here by mutating the exam.
+        exam.year == 1999
+        exam.save()
+        pdf.classify()
+        pdf = Pdf.objects.get(id=pdf.id)
+        assert pdf.exams.count() == 1
+        assert pdf.exams.first().year == 2005
+
+        # But verified exams should NOT be deleted
+        verified_exam = Exam.objects.create(
+            year=1999,
+            course_code=exam.course_code,
+            language=exam.language,
+            solutions=exam.solutions,
+        )
+        user = UserFactory.create(username='verifier')
+        verified_exam_pdf = ExamPdf.objects.create(exam=verified_exam, pdf=pdf)
+        verified_exam_pdf.verified_by.add(user)
+        pdf.classify()
+        pdf = Pdf.objects.get(id=pdf.id)
+        assert pdf.exams.count() == 2
+
+    @pytest.mark.django_db
+    def test_classify_pdf_with_several_course_codes(self):
+        """Several course codes should be supported for exam PDFs."""
+        sha1_hash = '0000000000000000000000000000000000000000'
+        pdf = Pdf(sha1_hash=sha1_hash)
+        text = """
+            Exsamen i TMA4000/10 og TIØ4000
+            Dato: 11.08.99
+            Løsningsforslag
+        """
+        content = ContentFile(text)
+        pdf.file.save(content=content, name=sha1_hash, save=True)
+        PdfPage.objects.create(text=text, pdf=pdf, number=0)
+        pdf.classify()
+        assert (
+            set(pdf.exams.values_list('course_code', flat=True)) ==
+            {'TMA4000', 'TMA4010', 'TIØ4000'}
+        )
+
+        for exam in pdf.exams.all():
+            assert exam.year == 1999
+            assert exam.season == Season.CONTINUATION
+            assert exam.language == Language.BOKMAL
+            assert exam.solutions is True
 
 
 class TestExamRelatedCourse:

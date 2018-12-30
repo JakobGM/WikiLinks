@@ -129,7 +129,8 @@ class Command(BaseCommand):
                 continue
 
             self.stdout.write(self.style.SUCCESS(
-                f'Saved {pdf.pages.count()} new pages. Exam: {repr(pdf.exam)}',
+                f'PDF with {pdf.pages.count()} saved pages. '
+                f'Exam: {repr(pdf.exams.first())}',
             ))
             successes += 1
 

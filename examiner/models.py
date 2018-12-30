@@ -401,7 +401,7 @@ class Pdf(models.Model):
         return (
             'Pdf('
             f"sha1_hash='{self.sha1_hash}', "
-            f'exam={self.exam}, '
+            f'exam={self.exams.all()}, '
             f'pages={self.pages.count()}'
             ')'
         )

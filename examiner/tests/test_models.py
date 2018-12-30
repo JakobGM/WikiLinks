@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.db.utils import IntegrityError
 
@@ -7,7 +8,7 @@ import pytest
 
 import responses
 
-from examiner.models import Exam, Pdf, PdfPage, PdfUrl
+from examiner.models import Exam, ExamRelatedCourse, Pdf, PdfPage, PdfUrl
 from examiner.parsers import Language, Season
 from dataporten.tests.factories import UserFactory
 from semesterpage.tests.factories import CourseFactory
@@ -352,3 +353,75 @@ def test_classify_pdf():
     assert exam.solutions is False
     assert exam.year == 2005
     assert exam.season == Season.CONTINUATION
+
+
+class TestExamRelatedCourse:
+    """Tests for ExamRelatedCourse."""
+
+    @pytest.mark.django_db
+    def test_deriving_course_from_course_code(self):
+        """Secondary course should be derived from secondary course code."""
+        primary = CourseFactory(course_code='TMA4122')
+        secondary = CourseFactory(course_code='SIF5013')
+        relation = ExamRelatedCourse.objects.create(
+            primary_course=primary,
+            secondary_course_code='SIF5013',
+        )
+        assert relation.secondary_course.id == secondary.id
+
+    @pytest.mark.django_db
+    def test_when_course_cant_be_derived_from_course_code(self):
+        """Secondary course might not always exist in database."""
+        primary = CourseFactory(course_code='TMA4122')
+        relation = ExamRelatedCourse.objects.create(
+            primary_course=primary,
+            secondary_course_code='SIF5013',
+        )
+        assert relation.secondary_course is None
+
+    @pytest.mark.django_db
+    def test_creating_two_primary_courses_for_one_secondary_course(self):
+        """One secondary course can't have two primary courses."""
+        primary = CourseFactory(course_code='TMA4122')
+        new_primary = CourseFactory(course_code='TMA4123')
+
+        ExamRelatedCourse.objects.create(
+            primary_course=primary,
+            secondary_course_code='SIF5013',
+        )
+        with pytest.raises(ValidationError):
+            ExamRelatedCourse.objects.create(
+                primary_course=new_primary,
+                secondary_course_code='SIF5013',
+            )
+
+    @pytest.mark.django_db
+    def test_setting_a_primary_course_as_a_secondary_one(self):
+        """A course can't be secondary and primary at the same time."""
+        primary = CourseFactory(course_code='TMA4122')
+        another_primary = CourseFactory(course_code='TMA4123')
+
+        ExamRelatedCourse.objects.create(
+            primary_course=primary,
+            secondary_course_code='SIF5013',
+        )
+        with pytest.raises(ValidationError):
+            ExamRelatedCourse.objects.create(
+                primary_course=another_primary,
+                secondary_course_code='TMA4122',
+            )
+
+    @pytest.mark.django_db
+    def test_primary_course_with_several_secondary_courses(self):
+        """But one primary course may have several secondary ones."""
+        primary = CourseFactory(course_code='TMA4122')
+
+        ExamRelatedCourse.objects.create(
+            primary_course=primary,
+            secondary_course_code='SIF5013',
+        )
+        ExamRelatedCourse.objects.create(
+            primary_course=primary,
+            secondary_course_code='SIF5014',
+        )
+        assert primary.secondary_courses.count() == 2

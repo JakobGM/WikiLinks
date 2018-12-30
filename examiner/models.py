@@ -323,11 +323,45 @@ class Pdf(models.Model):
         if pdf_parser.probably_exam:
             self.content_type = 'Exam'
 
-        # TODO: Support several course codes
-        if pdf_parser.course_codes:
-            course_codes = pdf_parser.course_codes
-        else:
-            course_codes = [None]
+        # All the exams belonging to URLs which host this PDF
+        url_exams = Exam.objects.filter(pdfurl__scraped_pdf=self)
+
+        # Get course codes from pdf content and URL classifications
+        course_codes = set(pdf_parser.course_codes)
+        course_codes.update(
+            url_exams.values_list('course_code', flat=True)
+        )
+        if not course_codes:
+            course_codes = {None}
+
+        # Now replace None values from the PDF parser with the most frequent
+        # values in the URL parse results.
+        for field in ('language', 'year', 'season', 'solutions'):
+            parser_field_value = getattr(pdf_parser, field)
+            if parser_field_value is not None:
+                # The PDF parser is more trusted than the URL parser
+                continue
+
+            ordered_field_values = (
+                # All the exams of the URLs
+                url_exams
+                # Collapsed into a list of field values
+                .values_list(field)
+                # Annotated with the number of occurences of each value
+                .annotate(count=models.Count(field))
+                # Ordered by decreasing frequency
+                .order_by('-' + field)
+            )
+            if not ordered_field_values.exists():
+                # No URLs exist
+                continue
+
+            # Extracting the value that occurs the most
+            setattr(
+                pdf_parser,
+                field,
+                ordered_field_values.first()[0],
+            )
 
         # Delete old relations that are NOT verified
         ExamPdf.objects.filter(pdf=self, verified_by=None).delete()

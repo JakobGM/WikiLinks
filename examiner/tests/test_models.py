@@ -451,6 +451,103 @@ class TestExamClassification:
             assert exam.language == Language.BOKMAL
             assert exam.solutions is True
 
+    @pytest.mark.django_db
+    def test_combining_urls_and_content_for_classification(self):
+        """Exam classification should OR combine PDF and URL parsing."""
+        sha1_hash = '0000000000000000000000000000000000000000'
+        pdf = Pdf.objects.create(sha1_hash=sha1_hash)
+        text = """
+            Exsamen i TMA4000
+            Dato: USPESIFISERT
+            Løsningsforslag
+        """
+        PdfPage.objects.create(text=text, pdf=pdf, number=0)
+
+        # The first URL is disregarded as the other two are more popular
+        urls = [
+            'http://wiki.math.ntnu.no/TMA4000/exams/2017_kont.pdf',
+            'http://wiki.math.ntnu.no/TMA4000/exams/h2018.pdf',
+            'http://wiki.math.ntnu.no/TMA4000/exams/2018h.pdf',
+        ]
+        for url in urls:
+            pdf_url = PdfUrl.objects.create(url=url, scraped_pdf=pdf)
+            assert pdf_url.exam.year and pdf_url.exam.season
+
+        pdf.classify()
+        assert pdf.exams.count() == 1
+
+        exam = pdf.exams.first()
+        assert exam.course_code == 'TMA4000'
+        assert exam.solutions is True
+        assert exam.language == Language.BOKMAL
+        assert exam.year == 2018
+        assert exam.season == Season.AUTUMN
+
+    @pytest.mark.django_db
+    def test_classifiying_bad_content(self):
+        """Classification should handle onle Nones."""
+        sha1_hash = '0000000000000000000000000000000000000000'
+        pdf = Pdf.objects.create(sha1_hash=sha1_hash)
+        text = 'Bad OCR!'
+        PdfPage.objects.create(text=text, pdf=pdf, number=0)
+
+        # First handle bad OCR without any URLs
+        pdf.classify()
+        assert pdf.exams.count() == 1
+
+        exam = pdf.exams.first()
+        assert exam.solutions is False
+        assert exam.course_code is None
+        assert exam.language is None
+        assert exam.year is None
+        assert exam.season is None
+
+        # And handle bad OCR with bad URLs
+        urls = [
+            'http://bad.url/1.pdf',
+            'http://bad.url/2.pdf',
+            'http://bad.url/3.pdf',
+        ]
+        for url in urls:
+            PdfUrl.objects.create(url=url, scraped_pdf=pdf)
+
+        pdf.classify()
+        assert pdf.exams.count() == 1
+
+        exam = pdf.exams.first()
+        assert exam.solutions is False
+        assert exam.course_code is None
+        assert exam.language is None
+        assert exam.year is None
+        assert exam.season is None
+
+    @pytest.mark.django_db
+    def test_using_courses_from_url_in_classification(self):
+        """Exam course classification should AND combine PDF and URL parsing."""
+        sha1_hash = '0000000000000000000000000000000000000000'
+        pdf = Pdf.objects.create(sha1_hash=sha1_hash)
+
+        # 1 course in exam
+        text = "Exsamen i TMA4000"
+        PdfPage.objects.create(text=text, pdf=pdf, number=0)
+
+        # 3 additional courses in URL parsing
+        urls = [
+            'http://wiki.math.ntnu.no/TMA4100/exams/problems.pdf',
+            'http://wiki.math.ntnu.no/TMA4200/exams/problems.pdf',
+            'http://wiki.math.ntnu.no/TMA4300/exams/problems.pdf',
+        ]
+        for url in urls:
+            PdfUrl.objects.create(url=url, scraped_pdf=pdf)
+
+        # Results in 4 courses all together
+        pdf.classify()
+        assert pdf.exams.count() == 4
+        assert (
+            set(pdf.exams.values_list('course_code', flat=True)) ==
+            {'TMA4000', 'TMA4100', 'TMA4200', 'TMA4300'}
+        )
+
 
 class TestExamRelatedCourse:
     """Tests for ExamRelatedCourse."""

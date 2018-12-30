@@ -188,6 +188,28 @@ def upload_path(instance, filename):
     return f'examiner/FileBackup/' + filename
 
 
+class ExamPdf(models.Model):
+    """Model used for through relation Pdf.exams."""
+
+    pdf = models.ForeignKey(
+        to='Pdf',
+        on_delete=models.PROTECT,
+        null=False,
+        blank=False,
+    )
+    exam = models.ForeignKey(
+        to=Exam,
+        on_delete=models.PROTECT,
+        null=False,
+        blank=False,
+    )
+    verified_by = models.ManyToManyField(
+        to=User,
+        help_text=_('Brukere som har verifisert metadataen.'),
+        related_name='verified_exam_pdfs',
+    )
+
+
 class Pdf(models.Model):
     file = models.FileField(
         upload_to=upload_path,
@@ -203,11 +225,12 @@ class Pdf(models.Model):
             message='Not a valid SHA1 hash string.',
         )],
     )
-    exam = models.ForeignKey(
+    exams = models.ManyToManyField(
         to=Exam,
-        on_delete=models.SET_NULL,
+        through=ExamPdf,
+        related_name='pdfs',
         null=True,
-        help_text=_('Hvilket eksamenssett PDFen trolig inneholder.'),
+        help_text=_('Hvilke eksamenssett PDFen trolig inneholder.'),
     )
     content_type = models.CharField(
         max_length=20,
@@ -302,17 +325,26 @@ class Pdf(models.Model):
 
         # TODO: Support several course codes
         if pdf_parser.course_codes:
-            course_code = pdf_parser.course_codes[0]
+            course_codes = pdf_parser.course_codes
         else:
-            course_code = None
+            course_codes = [None]
 
-        self.exam, _ = Exam.objects.get_or_create(
-            course_code=course_code,
-            language=pdf_parser.language,
-            year=pdf_parser.year,
-            season=pdf_parser.season,
-            solutions=pdf_parser.solutions,
-        )
+        # Delete old relations that are NOT verified
+        ExamPdf.objects.filter(pdf=self, verified_by=None).delete()
+
+        for course_code in course_codes:
+            # Get exam model object which this PDF is related to
+            exam, _ = Exam.objects.get_or_create(
+                course_code=course_code,
+                language=pdf_parser.language,
+                year=pdf_parser.year,
+                season=pdf_parser.season,
+                solutions=pdf_parser.solutions,
+            )
+
+            # And create the new relation
+            ExamPdf.objects.create(exam=exam, pdf=self)
+
         if save:
             self.save()
         return True
@@ -382,9 +414,9 @@ class PdfUrlQuerySet(models.QuerySet):
         for course_code, urls in organization.items():
             organization[course_code] = {'years': {}}
             for url in urls:
-                if url.scraped_pdf and url.scraped_pdf.exam:
+                if url.scraped_pdf and url.scraped_pdf.exams.count():
                     # Use classification of PDF content
-                    exam = url.scraped_pdf.exam
+                    exam = url.scraped_pdf.exams.first()
                 else:
                     # Use classification of URL
                     exam = url.exam

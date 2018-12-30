@@ -9,6 +9,7 @@ from django.core.validators import (
     MinValueValidator,
     RegexValidator,
     URLValidator,
+    ValidationError,
 )
 from django.db import models
 from django.utils import timezone
@@ -18,6 +19,90 @@ import requests
 from examiner.parsers import ExamURLParser, PdfParser, Season
 from examiner.pdf import PdfReader, PdfReaderException
 from semesterpage.models import Course
+
+
+class ExamRelatedCourse(models.Model):
+    """
+    Model representing an exam relation between two distinct courses.
+
+    Examples of where this relation will be applicable:
+
+    1) If a course has been discontinued, but a new course is, for all intents
+    and purposes, a continuation of the old one.
+
+    2) If a course changes its course code. For instance the SIFXXXX -> TMAXXXX
+    re-organization at the Department of Mathematics at NTNU.
+
+    3) Two separate courses always have a common exam each year.
+
+    In this case, we link the course code of one course, for instance 'SIF5013',
+    to another course, 'TMA4122'. This relation will group up such courses into
+    a single exam archive view for all those courses.
+    """
+    primary_course = models.ForeignKey(
+        to=Course,
+        on_delete=models.CASCADE,
+        related_name='secondary_courses',
+        unique=False,
+        blank=False,
+        null=False,
+        help_text=_('Faget som regnes som hovedfaget.'),
+    )
+    secondary_course = models.OneToOneField(
+        to=Course,
+        on_delete=models.SET_NULL,
+        related_name='primary_course',
+        unique=True,
+        blank=True,
+        null=True,
+        help_text=_('Faget som er underordnet hovedfaget.'),
+    )
+    secondary_course_code = models.CharField(
+        _('sekundæremnekode'),
+        unique=True,
+        null=False,
+        blank=False,
+        max_length=15,
+        help_text=_('Emnekoden til sekundærfaget, f.eks. "SIF5013".')
+    )
+
+    def clean(self, *args, **kwargs) -> None:
+        """Derive secondary course from secondary course code if in db."""
+        super().clean(*args, **kwargs)
+        self.secondary_course_code = self.secondary_course_code.upper()
+        try:
+            self.secondary_course = (
+                Course.objects.get(course_code=self.secondary_course_code)
+            )
+        except Course.DoesNotExist:
+            self.secondary_course = None
+
+    def validate_unique(self, *args, **kwargs):
+        """Enforce uniqueness constraints."""
+        super().validate_unique(*args, **kwargs)
+
+        # Prevent primary course to be set as a secondary one
+        if (
+            ExamRelatedCourse
+            .objects
+            .filter(primary_course__course_code=self.secondary_course_code)
+            .exists()
+        ):
+            raise ValidationError(
+                f'Secondary course {self.secondary_course}'
+                'is already set as primary course for another course!'
+            )
+
+    def save(self, *args, **kwargs):
+        """
+        Clean and save the ExamRelatedCourse object.
+
+        As the call to the clean method overrides the save method, we must
+        invoke it explicitly here.
+        See: https://stackoverflow.com/a/32251978
+        """
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class Exam(models.Model):

@@ -536,9 +536,13 @@ class PdfUrl(models.Model):
         if not self.id:
             self.created_at = timezone.now()
         self.updated_at = timezone.now()
+
+        if not self.exam:
+            self.classify(save=False)
+
         super().save(*args, **kwargs)
 
-    def classify(self) -> None:
+    def classify(self, save: bool = True) -> None:
         """Set field attributes by parsing the provided url."""
         if self.id and self.verified_by.count() != 0:
             # The metadata has been verified, so we should not mutate
@@ -554,7 +558,8 @@ class PdfUrl(models.Model):
             solutions=parser.solutions,
             course_code=parser.code,
         )
-        self.save()
+        if save:
+            self.save()
 
     def __repr__(self) -> str:
         """Return programmer representation of PdfUrl object."""

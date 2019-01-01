@@ -565,7 +565,7 @@ class PdfUrl(models.Model):
         except Pdf.DoesNotExist:
             new = True
             file_backup = Pdf(sha1_hash=sha1_hash)
-            file_backup.file.save(name=sha1_hash, content=content_file)
+            file_backup.file.save(name=sha1_hash + '.pdf', content=content_file)
             file_backup.save()
 
         self.scraped_pdf = file_backup

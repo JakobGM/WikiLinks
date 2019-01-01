@@ -65,3 +65,6 @@ tqdm
 
 # For enabling responses in all pytest tests, preventing internet access
 pytest-responses
+
+# For easy form rendering, originally introduced for exam pdf verification
+django-crispy-forms

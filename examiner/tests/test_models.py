@@ -147,7 +147,10 @@ def test_file_backup(tmpdir, settings):
     assert file_backup.sha1_hash == expected_sha1_hash
 
     # And the stored file should be named according to its hash
-    assert file_backup.file.name == 'examiner/FileBackup/' + expected_sha1_hash
+    assert (
+        file_backup.file.name ==
+        'examiner/FileBackup/' + expected_sha1_hash + '.pdf'
+    )
 
     # The directory for file backups should now contain one file
     backup_directory = Path(settings.MEDIA_ROOT / 'examiner/FileBackup/')

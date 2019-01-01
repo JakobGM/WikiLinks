@@ -7,7 +7,7 @@ from crispy_forms.bootstrap import InlineRadios
 
 from dal import autocomplete
 
-from examiner.models import Exam
+from examiner.models import DocumentInfo
 from semesterpage.models import Course
 
 
@@ -31,7 +31,7 @@ class VerifyExamForm(forms.ModelForm):
     )
 
     class Meta:
-        model = Exam
+        model = DocumentInfo
         exclude = ['course', 'course_code']
         labels = {
             'language': _('Språk'),

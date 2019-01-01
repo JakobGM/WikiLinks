@@ -9,7 +9,7 @@ import pytest
 import responses
 
 from examiner.models import (
-    Exam,
+    DocumentInfo,
     ExamPdf,
     ExamRelatedCourse,
     Pdf,
@@ -23,9 +23,9 @@ from semesterpage.tests.factories import CourseFactory
 
 @pytest.mark.django_db
 def test_derive_course_from_course_code_on_save():
-    """Exam model objects should connect course code and course on save."""
+    """DocumentInfo model should connect course code and course on save."""
     course = CourseFactory(course_code='TMA4130')
-    exam = Exam.objects.create(course_code='TMA4130')
+    exam = DocumentInfo.objects.create(course_code='TMA4130')
     assert exam.course == course
 
     url = 'http://www.example.com/TMA4130/2013h/oldExams/eksamen-bok_2006v.pdf'
@@ -38,7 +38,7 @@ def test_derive_course_from_course_code_on_save():
 def test_derive_course_code_from_course_on_save():
     """The course code should be derived from the course foreign key."""
     course = CourseFactory(course_code='TMA4130')
-    exam = Exam.objects.create(course=course)
+    exam = DocumentInfo.objects.create(course=course)
     assert exam.course_code == 'TMA4130'
 
 
@@ -100,7 +100,7 @@ def test_classify_url_of_already_verified_url():
     assert exam_url.exam.year == 2006
 
     # Then the exam year is modified by a user
-    exam_url.exam = Exam.objects.create(year=2016)
+    exam_url.exam = DocumentInfo.objects.create(year=2016)
     exam_url.save()
 
     # And thereafter verified by that user
@@ -214,7 +214,7 @@ def test_queryset_organize_method():
         course_code='TMA4000',
     )
 
-    exam1 = Exam.objects.create(
+    exam1 = DocumentInfo.objects.create(
         course_code='TMA4000',
         year=2016,
         season=Season.SPRING,
@@ -225,7 +225,7 @@ def test_queryset_organize_method():
         exam=exam1,
     )
 
-    exam1_solutions = Exam.objects.create(
+    exam1_solutions = DocumentInfo.objects.create(
         course_code='TMA4000',
         year=2016,
         season=Season.SPRING,
@@ -237,7 +237,7 @@ def test_queryset_organize_method():
         exam=exam1_solutions
     )
 
-    eksamen_losning = Exam.objects.create(
+    eksamen_losning = DocumentInfo.objects.create(
         course_code='TMA4000',
         year=2016,
         season=Season.SPRING,
@@ -250,7 +250,7 @@ def test_queryset_organize_method():
     )
 
     # The URL classifier could not determine the language
-    url_exam_2015 = Exam.objects.create(
+    url_exam_2015 = DocumentInfo.objects.create(
         course_code='TMA4000',
         year=2015,
         season=Season.SPRING,
@@ -259,7 +259,7 @@ def test_queryset_organize_method():
     )
 
     # But the PDF classifier managed to determine it
-    pdf_exam_2015 = Exam.objects.create(
+    pdf_exam_2015 = DocumentInfo.objects.create(
         course_code='TMA4000',
         year=2015,
         season=Season.SPRING,
@@ -416,7 +416,7 @@ class TestExamClassification:
         assert pdf.exams.first().year == 2005
 
         # But verified exams should NOT be deleted
-        verified_exam = Exam.objects.create(
+        verified_exam = DocumentInfo.objects.create(
             year=1999,
             course_code=exam.course_code,
             language=exam.language,

@@ -413,6 +413,7 @@ AUTUMN_WORDS_PATTERN = re.compile(
 EXAM_WORDS = [
     r'eksamen',
     r'exam',
+    r'examination',
 ]
 EXAM_WORDS_PATTERN = re.compile(
     r'\b(' + r'|'.join(EXAM_WORDS) + r')\b',

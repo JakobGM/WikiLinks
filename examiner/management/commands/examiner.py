@@ -1,5 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
+from tqdm import tqdm
+
 from examiner.crawlers import MathematicalSciencesCrawler
 from examiner.models import Pdf, PdfUrl
 from examiner.parsers import PdfParser
@@ -114,7 +116,9 @@ class Command(BaseCommand):
         ))
 
     def classify(self) -> None:
-        """Read content of backed up PDF files and classify content."""
+        """
+        Read content of backed up PDF files and classify content incl. URLs.
+        """
         successes = 0
         errors = 0
         for pdf in Pdf.objects.all():
@@ -137,6 +141,10 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f'{successes} new PDFs read!'))
         if errors:
             self.stdout.write(self.style.ERROR(f'{errors} errors!'))
+
+        self.stdout.write('Classifying URLs')
+        for url in tqdm(PdfUrl.objects.all()):
+            url.classify()
 
     def test(self, gui: bool = False) -> None:
         pdfs = Pdf.objects.all()

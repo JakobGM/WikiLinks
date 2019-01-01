@@ -5,7 +5,7 @@ from examiner import views
 
 urlpatterns = [
     url(
-        r'^$',
+        r'^all$',
         views.exams,
         name='all_exams',
     ),

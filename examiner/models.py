@@ -130,7 +130,7 @@ class DocumentInfo(models.Model):
     course = models.ForeignKey(
         to=Course,
         on_delete=models.SET_NULL,
-        related_name='exams',
+        related_name='docinfos',
         null=True,
         blank=True,
         help_text=_('Faget som eksamenen tilhører.'),
@@ -280,7 +280,6 @@ class Pdf(models.Model):
         to=DocumentInfo,
         through=ExamPdf,
         related_name='pdfs',
-        null=True,
         help_text=_('Hvilke eksamenssett PDFen trolig inneholder.'),
     )
     created_at = models.DateTimeField(editable=False)
@@ -360,7 +359,7 @@ class Pdf(models.Model):
         pdf_parser = PdfParser(text=first_page.text)
 
         # All the document informations belonging to URLs which host this PDF
-        doc_infos = DocumentInfo.objects.filter(pdfurl__scraped_pdf=self)
+        doc_infos = DocumentInfo.objects.filter(urls__scraped_pdf=self)
 
         # The solutions parsers are relatively conservative, so we can OR
         # determine it from all the parsers.
@@ -543,6 +542,7 @@ class PdfUrl(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         help_text=_('Hvilken innholdstype URLen trolig tjener.'),
+        related_name='urls',
     )
     probably_exam = models.BooleanField(
         default=False,

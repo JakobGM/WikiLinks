@@ -486,15 +486,19 @@ class PdfParser:
         else:
             entry_text = text
 
-        self.probably_exam = self._probably_exam(text=text)
+        self.content_type = self._content_type(text=text)
         self.course_codes = self._course_codes(text=text)
         self.language = self._language(text=text)
         self.year, self.season = self._date(text=text)
         self.solutions = self._solutions(text=entry_text)
 
-    def _probably_exam(cls, text: str) -> bool:
+    def _content_type(cls, text: str) -> Optional[str]:
         """Return True if the text probably is related to an exam."""
-        return bool(re.search(EXAM_WORDS_PATTERN, text))
+        from examiner.models import DocumentInfo
+        if bool(re.search(EXAM_WORDS_PATTERN, text)):
+            return DocumentInfo.EXAM
+        else:
+            return DocumentInfo.UNDETERMINED
 
     def _solutions(cls, text: str) -> bool:
         """Return True if the text probably contains solutions."""

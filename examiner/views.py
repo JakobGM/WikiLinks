@@ -2,12 +2,14 @@ from random import randint
 from typing import Optional
 
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.db.models import F
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views.generic.edit import FormView
 
 from examiner.forms import VerifyExamForm
-from examiner.models import ExamPdf, PdfUrl
+from examiner.models import DocumentInfo, ExamPdf, PdfUrl
 from semesterpage.models import Course, Semester, StudyProgram
 
 
@@ -40,7 +42,7 @@ def exams(request, course_code: Optional[str] = None):
     return render(request, 'examiner/exam_archive.html', context)
 
 
-class VerifyView(FormView):
+class VerifyView(FormView, LoginRequiredMixin):
     template_name = 'examiner/verify.html'
     form_class = VerifyExamForm
     http_method_names = ['get', 'post']
@@ -55,11 +57,20 @@ class VerifyView(FormView):
         exams = pdf.exams.all()
         form = VerifyExamForm(
             instance=pdf.exams.first(),
-            initial={'courses': exams.values_list('course', flat=True)},
+            initial={
+                'courses': exams.values_list('course', flat=True),
+                'pdf': pdf,
+                'verifier': request.user,
+            },
         )
         context = {'pdf': pdf, 'form': form}
         add_context(request, context)
         return render(request, 'examiner/verify.html', context)
+
+    @transaction.atomic
+    def form_valid(self, form):
+        form.save(commit=True)
+        return redirect(to='examiner:verify_random')
 
 
 def add_context(request, context):

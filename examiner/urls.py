@@ -6,7 +6,7 @@ from examiner import views
 urlpatterns = [
     url(
         r'^all$',
-        views.exams,
+        views.ExamsView.as_view(),
         name='all_exams',
     ),
     url(
@@ -21,7 +21,7 @@ urlpatterns = [
     ),
     url(
         r'^(?P<course_code>[a-zA-Z]{3,4}\d\d\d\d)$',
-        views.exams,
+        views.ExamsView.as_view(),
         name='course',
     ),
 ]

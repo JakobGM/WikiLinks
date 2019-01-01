@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, Optional
 
 import pytest
 
+from examiner.models import DocumentInfo
 from examiner.parsers import ExamURLParser, Language, PdfParser, Season
 
 
@@ -402,7 +403,7 @@ class ExamPDF:
         season: Season,
         solutions: bool,
         language: Language,
-        probably_exam: bool,
+        content_type: Optional[str],
     ):
         self.pages = pages
         self.course_codes = course_codes
@@ -410,7 +411,7 @@ class ExamPDF:
         self.season = season
         self.solutions = solutions
         self.language = language
-        self.probably_exam = probably_exam
+        self.content_type = content_type
 
     def __repr__(self) -> str:
         return f'ExamPDF(text="""{self.pages[0]}""")'
@@ -432,7 +433,7 @@ ExamPDFs = [
         season=Season.CONTINUATION,
         solutions=True,
         language=Language.BOKMAL,
-        probably_exam=True,
+        content_type=DocumentInfo.EXAM,
     ),
     ExamPDF(
         pages=[
@@ -449,7 +450,7 @@ ExamPDFs = [
         season=Season.SPRING,
         solutions=True,
         language=Language.NYNORSK,
-        probably_exam=True,
+        content_type=DocumentInfo.EXAM,
     ),
     ExamPDF(  # First in list of valid course codes
         pages=[
@@ -464,7 +465,7 @@ ExamPDFs = [
         season=Season.CONTINUATION,
         solutions=True,
         language=Language.BOKMAL,
-        probably_exam=True,
+        content_type=DocumentInfo.EXAM,
     ),
     ExamPDF(  # Last in list of valid course codes
         pages=[
@@ -479,7 +480,7 @@ ExamPDFs = [
         season=Season.CONTINUATION,
         solutions=True,
         language=Language.BOKMAL,
-        probably_exam=True,
+        content_type=DocumentInfo.EXAM,
     ),
     ExamPDF(  # Middle of list of valid course codes
         pages=[
@@ -494,7 +495,7 @@ ExamPDFs = [
         season=Season.CONTINUATION,
         solutions=True,
         language=Language.BOKMAL,
-        probably_exam=True,
+        content_type=DocumentInfo.EXAM,
     ),
     ExamPDF(  # Middle of list of valid course codes
         pages=["TMA4115 Calculus 3, Summer 2017, Solutions Page 1 of 6"],
@@ -503,7 +504,7 @@ ExamPDFs = [
         season=Season.CONTINUATION,
         solutions=True,
         language=Language.ENGLISH,
-        probably_exam=False,
+        content_type=DocumentInfo.UNDETERMINED,
     ),
     ExamPDF(  # Contains word solutions in problem discription
         pages=[
@@ -538,7 +539,7 @@ ExamPDFs = [
         season=Season.AUTUMN,
         solutions=False,
         language=Language.ENGLISH,
-        probably_exam=True,
+        content_type=DocumentInfo.EXAM,
     ),
 ]
 
@@ -565,9 +566,9 @@ class TestExamPdfParser:
         assert url_parser.solutions == pdf.solutions
 
     @pytest.mark.parametrize('pdf', ExamPDFs)
-    def test_probably_exam(self, pdf):
+    def test_content_type(self, pdf):
         url_parser = PdfParser(text=pdf.pages[0])
-        assert url_parser.probably_exam == pdf.probably_exam
+        assert url_parser.content_type == pdf.content_type
 
     @pytest.mark.parametrize('pdf', ExamPDFs)
     def test_language_parser(self, pdf):

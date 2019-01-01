@@ -106,12 +106,33 @@ class ExamRelatedCourse(models.Model):
 
 
 class DocumentInfo(models.Model):
+    EXAM = 'Exam'
+    EXERCISE = 'Exercise'
+    IRRELEVANT = 'Irrelevant'
+    PROJECT = 'Project'
+    UNDETERMINED = None
+
+    content_type = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        default=None,
+        choices=[
+            (EXAM, 'Eksamen'),
+            (EXERCISE, 'Øving'),
+            (PROJECT, 'Prosjekt'),
+            (IRRELEVANT, 'Urelevant'),
+            (UNDETERMINED, 'Ubestemt'),
+        ],
+        help_text=_('PDF-ens innholdstype, f.eks. "eksamen".'),
+    )
+
     course = models.ForeignKey(
         to=Course,
         on_delete=models.SET_NULL,
         related_name='exams',
-        blank=True,
         null=True,
+        blank=True,
         help_text=_('Faget som eksamenen tilhører.'),
     )
     course_code = models.CharField(
@@ -123,6 +144,7 @@ class DocumentInfo(models.Model):
     language = models.CharField(
         max_length=20,
         null=True,
+        blank=True,
         choices=[
             ('Bokmål', 'Bokmål'),
             ('Nynorsk', 'Nynorsk'),
@@ -133,10 +155,12 @@ class DocumentInfo(models.Model):
     )
     year = models.PositiveSmallIntegerField(
         null=True,
+        blank=True,
         help_text=_('Året som eksamen ble holdt.'),
     )
     season = models.PositiveSmallIntegerField(
         null=True,
+        blank=True,
         choices=[
             (1, 'Vår'),
             (2, 'Kontinuasjonseksamen'),
@@ -149,29 +173,56 @@ class DocumentInfo(models.Model):
         default=False,
         help_text=_('Om filen inneholder løsningsforslag.'),
     )
+    exercise_number = models.PositiveSmallIntegerField(
+        _('Øvingsnummer'),
+        default=None,
+        null=True,
+        blank=True,
+        help_text=_(
+            'Øvingsnummer hvis dokumentet er en øving eller et prosjekt.',
+        ),
+    )
 
     def __repr__(self) -> str:
         return (
             'DocumentInfo('
+            f'content_type={self.content_type}, '
             f"course_code='{self.course_code}', "
             f'year={self.year}, '
             f'season={self.season}, '
             f'language={self.language}, '
-            f'solutions={self.solutions}'
+            f'solutions={self.solutions}, '
+            f'exercise_number={self.exercise_number}'
             ')'
         )
 
     class Meta:
         ordering = ('course_code', '-year', '-solutions')
         unique_together = (
+            'content_type',
             'course_code',
             'language',
             'year',
             'season',
             'solutions',
+            'exercise_number',
         )
 
+    def clean(self, *args, **kwargs) -> None:
+        """Derive secondary course from secondary course code if in db."""
+        super().clean(*args, **kwargs)
+        has_exercise_number = self.exercise_number is not None
+        should_have_exercise_number = self.content_type in (
+            self.EXERCISE,
+            self.PROJECT,
+        )
+        if has_exercise_number and not should_have_exercise_number:
+            raise ValidationError(
+                _('Bare øvinger og prosjekter kan ha øvingsnummer'),
+            )
+
     def save(self, *args, **kwargs) -> None:
+        self.full_clean()
         if self.course and not self.course_code:
             self.course_code = self.course.course_code
         elif self.course_code and not self.course:
@@ -231,18 +282,6 @@ class Pdf(models.Model):
         related_name='pdfs',
         null=True,
         help_text=_('Hvilke eksamenssett PDFen trolig inneholder.'),
-    )
-    content_type = models.CharField(
-        max_length=20,
-        null=True,
-        default=None,
-        choices=[
-            ('Exam', 'Eksamen'),
-            ('Exercise', 'Øving'),
-            ('Other', 'Annet'),
-            (None, 'Ubestemt'),
-        ],
-        help_text=_('PDF-ens innholdstype, f.eks. "eksamen".'),
     )
     created_at = models.DateTimeField(editable=False)
     updated_at = models.DateTimeField()
@@ -320,9 +359,6 @@ class Pdf(models.Model):
         assert first_page.number == 0
         pdf_parser = PdfParser(text=first_page.text)
 
-        if pdf_parser.probably_exam:
-            self.content_type = 'Exam'
-
         # All the document informations belonging to URLs which host this PDF
         doc_infos = DocumentInfo.objects.filter(pdfurl__scraped_pdf=self)
 
@@ -381,6 +417,7 @@ class Pdf(models.Model):
                 year=pdf_parser.year,
                 season=pdf_parser.season,
                 solutions=solutions,
+                content_type=pdf_parser.content_type,
             )
 
             # And create the new relation
@@ -590,14 +627,21 @@ class PdfUrl(models.Model):
             return
 
         parser = ExamURLParser(url=self.url)
-        self.filename = parser.filename
+
         self.probably_exam = parser.probably_exam
+        if parser.probably_exam:
+            content_type = DocumentInfo.EXAM
+        else:
+            content_type = DocumentInfo.UNDETERMINED
+
+        self.filename = parser.filename
         self.exam, _ = DocumentInfo.objects.get_or_create(
             language=parser.language,
             year=parser.year,
             season=parser.season,
             solutions=parser.solutions,
             course_code=parser.code,
+            content_type=content_type,
         )
         if save:
             self.save()

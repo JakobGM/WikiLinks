@@ -32,6 +32,7 @@ def test_derive_course_from_course_code_on_save():
     exam_url = PdfUrl(url=url)
     exam_url.classify()
     assert exam_url.exam.course == course
+    assert exam_url.exam.content_type == DocumentInfo.EXAM
 
 
 @pytest.mark.django_db
@@ -75,6 +76,7 @@ def test_url_classify_method():
     assert exam_url.exam.year == 2006
     assert exam_url.exam.season == Season.SPRING
     assert exam_url.exam.solutions is False
+    assert exam_url.exam.content_type == DocumentInfo.EXAM
     assert exam_url.verified_by.count() == 0
     assert exam_url.created_at
     assert exam_url.updated_at
@@ -381,10 +383,8 @@ class TestExamClassification:
 
         # No errors should be raised when no pages has been saved yet, but
         # False should be returned to indicate a lack of success.
-        pdf.classify(allow_ocr=True) is False  # Malformed plain text PDF
-        pdf.classify(allow_ocr=False) is False
-
-        assert pdf.content_type is None
+        assert pdf.classify(allow_ocr=True) is False  # Malformed plain text PDF
+        assert pdf.classify(allow_ocr=False) is False
         assert pdf.exams.count() == 0
 
         # But now we add a cover page and classify its content
@@ -392,9 +392,6 @@ class TestExamClassification:
         pdf.refresh_from_db()
         print(pdf.pages.first().text)
         assert pdf.classify() is True
-
-        # It should now be determined that the pdf contains an exam
-        assert pdf.content_type == 'Exam'
 
         # And all metadata should be saved
         pdf = Pdf.objects.get(id=pdf.id)
@@ -405,6 +402,7 @@ class TestExamClassification:
         assert exam.solutions is False
         assert exam.year == 2005
         assert exam.season == Season.CONTINUATION
+        assert exam.content_type == DocumentInfo.EXAM
 
         # When the classification method changes it result, old results
         # should be removed. This is simulated here by mutating the exam.
@@ -645,3 +643,38 @@ class TestExamRelatedCourse:
             secondary_course_code='SIF5014',
         )
         assert primary.secondary_courses.count() == 2
+
+
+class TestDocumentInfoContentType:
+    """Tests related to DocumentInfo.content_type."""
+
+    @pytest.mark.django_db
+    def test_default_type_of_document_info_being_unknown(self):
+        docinfo = DocumentInfo()
+        assert docinfo.content_type == DocumentInfo.UNDETERMINED
+        assert docinfo.exercise_number is None
+
+    @pytest.mark.django_db
+    def test_number_only_being_allowed_for_exercise(self):
+        """Number can only be set for exercises and projects."""
+        DocumentInfo.objects.create(
+            content_type=DocumentInfo.EXERCISE,
+            exercise_number=1,
+        )
+        DocumentInfo.objects.create(
+            content_type=DocumentInfo.PROJECT,
+            exercise_number=1,
+        )
+        with pytest.raises(ValidationError):
+            DocumentInfo.objects.create(
+                content_type=DocumentInfo.EXAM,
+                exercise_number=1,
+            )
+            DocumentInfo.objects.create(
+                content_type=DocumentInfo.UNDETERMINED,
+                exercise_number=1,
+            )
+            DocumentInfo.objects.create(
+                content_type=DocumentInfo.IRRELEVANT,
+                exercise_number=1,
+            )

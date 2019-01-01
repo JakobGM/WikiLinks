@@ -1,3 +1,4 @@
+from random import randint
 from typing import Optional
 
 from django.conf import settings
@@ -40,9 +41,10 @@ def exams(request, course_code: Optional[str] = None):
 
 def verify(request):
     """View for verifying PDF exam information."""
-    pdf = ExamPdf.objects.filter(
+    exam_pdfs = ExamPdf.objects.filter(
         verified_by__isnull=True,
-    ).first().pdf
+    )
+    pdf = exam_pdfs[randint(0, exam_pdfs.count() - 1)].pdf
 
     exams = pdf.exams.all()
     form = VerifyExamForm(

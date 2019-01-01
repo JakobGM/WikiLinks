@@ -3,7 +3,7 @@ from django.shortcuts import reverse
 
 import pytest
 
-from examiner.models import Exam, ExamPdf, Pdf
+from examiner.models import DocumentInfo, ExamPdf, Pdf
 
 
 @pytest.mark.django_db
@@ -19,7 +19,7 @@ def test_verify_view(client):
     pdf = Pdf.objects.create()
     content = ContentFile('exam text')
     pdf.file.save(name='file', content=content)
-    exam = Exam.objects.create()
+    exam = DocumentInfo.objects.create()
     ExamPdf.objects.create(pdf=pdf, exam=exam)
     response = client.get(reverse('examiner:verify_random'))
     assert response.status_code == 200

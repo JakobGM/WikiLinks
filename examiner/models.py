@@ -105,7 +105,7 @@ class ExamRelatedCourse(models.Model):
         super().save(*args, **kwargs)
 
 
-class Exam(models.Model):
+class DocumentInfo(models.Model):
     course = models.ForeignKey(
         to=Course,
         on_delete=models.SET_NULL,
@@ -152,7 +152,7 @@ class Exam(models.Model):
 
     def __repr__(self) -> str:
         return (
-            'Exam('
+            'DocumentInfo('
             f"course_code='{self.course_code}', "
             f'year={self.year}, '
             f'season={self.season}, '
@@ -198,7 +198,7 @@ class ExamPdf(models.Model):
         blank=False,
     )
     exam = models.ForeignKey(
-        to=Exam,
+        to=DocumentInfo,
         on_delete=models.PROTECT,
         null=False,
         blank=False,
@@ -226,7 +226,7 @@ class Pdf(models.Model):
         )],
     )
     exams = models.ManyToManyField(
-        to=Exam,
+        to=DocumentInfo,
         through=ExamPdf,
         related_name='pdfs',
         null=True,
@@ -299,7 +299,7 @@ class Pdf(models.Model):
         allow_ocr: bool = True,
     ) -> bool:
         """
-        Parse PDF content and classify the related Exam model object.
+        Parse PDF content and classify the related DocumentInfo model object.
 
         :param save: If the Pdf should be saved when parsing finishes.
         :param read: If PDF content should be read if no pages are found.
@@ -323,20 +323,20 @@ class Pdf(models.Model):
         if pdf_parser.probably_exam:
             self.content_type = 'Exam'
 
-        # All the exams belonging to URLs which host this PDF
-        url_exams = Exam.objects.filter(pdfurl__scraped_pdf=self)
+        # All the document informations belonging to URLs which host this PDF
+        doc_infos = DocumentInfo.objects.filter(pdfurl__scraped_pdf=self)
 
         # The solutions parsers are relatively conservative, so we can OR
         # determine it from all the parsers.
         solutions = any([
             pdf_parser.solutions,
-            *url_exams.values_list('solutions', flat=True)
+            *doc_infos.values_list('solutions', flat=True)
         ])
 
         # Get course codes from pdf content and URL classifications
         course_codes = set(pdf_parser.course_codes)
         course_codes.update(
-            url_exams.values_list('course_code', flat=True)
+            doc_infos.values_list('course_code', flat=True)
         )
         if not course_codes:
             course_codes = {None}
@@ -350,8 +350,8 @@ class Pdf(models.Model):
                 continue
 
             ordered_field_values = (
-                # All the exams of the URLs
-                url_exams
+                # All the docinfos of the URLs
+                doc_infos
                 # Collapsed into a list of field values
                 .values_list(field)
                 # Annotated with the number of occurences of each value
@@ -374,8 +374,8 @@ class Pdf(models.Model):
         ExamPdf.objects.filter(pdf=self, verified_by=None).delete()
 
         for course_code in course_codes:
-            # Get exam model object which this PDF is related to
-            exam, _ = Exam.objects.get_or_create(
+            # Get docinfos model object which this PDF is related to
+            docinfo, _ = DocumentInfo.objects.get_or_create(
                 course_code=course_code,
                 language=pdf_parser.language,
                 year=pdf_parser.year,
@@ -384,7 +384,7 @@ class Pdf(models.Model):
             )
 
             # And create the new relation
-            ExamPdf.objects.create(exam=exam, pdf=self)
+            ExamPdf.objects.create(exam=docinfo, pdf=self)
 
         if save:
             self.save()
@@ -502,10 +502,10 @@ class PdfUrl(models.Model):
         help_text=_('Ressursens filnavn.'),
     )
     exam = models.ForeignKey(
-        to=Exam,
+        to=DocumentInfo,
         on_delete=models.SET_NULL,
         null=True,
-        help_text=_('Hvilket eksamenssett URLen trolig tjener.'),
+        help_text=_('Hvilken innholdstype URLen trolig tjener.'),
     )
     probably_exam = models.BooleanField(
         default=False,
@@ -592,7 +592,7 @@ class PdfUrl(models.Model):
         parser = ExamURLParser(url=self.url)
         self.filename = parser.filename
         self.probably_exam = parser.probably_exam
-        self.exam, _ = Exam.objects.get_or_create(
+        self.exam, _ = DocumentInfo.objects.get_or_create(
             language=parser.language,
             year=parser.year,
             season=parser.season,

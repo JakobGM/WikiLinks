@@ -381,6 +381,12 @@ def test_raising_validation_errors_of_wrong_sha1_formatting():
         )
 
 
+def test_get_absolute_url_for_pdf():
+    """PDF absolute URL should point to verify form view for that pdf."""
+    sha1_hash = '4dc828ea76ab618be6d72d135af13c40de3b9ce6'
+    pdf = Pdf(sha1_hash=sha1_hash)
+    assert pdf.get_absolute_url() == '/exams/verify/' + sha1_hash
+
 
 class TestExamClassification:
 

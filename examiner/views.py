@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import FormView
 
 from examiner.forms import VerifyExamForm
-from examiner.models import ExamPdf, Pdf, PdfUrl
+from examiner.models import DocumentInfoSource, Pdf, PdfUrl
 from semesterpage.models import Course, Semester, StudyProgram
 
 
@@ -56,7 +56,7 @@ class VerifyView(FormView, LoginRequiredMixin):
                 sha1_hash=sha1_hash,
             )
         else:
-            exam_pdfs = ExamPdf.objects.filter(
+            exam_pdfs = DocumentInfoSource.objects.filter(
                 verified_by__isnull=True,
             )
             pdf = exam_pdfs[randint(0, exam_pdfs.count() - 1)].pdf

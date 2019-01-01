@@ -7,7 +7,7 @@ from crispy_forms.layout import Field, Fieldset, Layout, Submit
 
 from dal import autocomplete
 
-from examiner.models import ExamPdf, DocumentInfo, Pdf
+from examiner.models import DocumentInfoSource, DocumentInfo, Pdf
 from semesterpage.models import Course
 
 
@@ -113,8 +113,8 @@ class VerifyExamForm(forms.ModelForm):
                 course_code=course.course_code,
                 **data,
             )
-            exam_pdf, _ = ExamPdf.objects.get_or_create(
-                exam=docinfo,
+            exam_pdf, _ = DocumentInfoSource.objects.get_or_create(
+                document_info=docinfo,
                 pdf=pdf,
                 verified_by__isnull=False,
             )

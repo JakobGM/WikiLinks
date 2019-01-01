@@ -1,5 +1,4 @@
 from random import randint
-from typing import Optional
 
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -7,6 +6,7 @@ from django.db import transaction
 from django.db.models import F
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import FormView
+from django.views.generic.list import ListView
 
 from examiner.forms import VerifyExamForm
 from examiner.models import DocumentInfoSource, Pdf, PdfUrl
@@ -16,30 +16,39 @@ from semesterpage.models import Course, Semester, StudyProgram
 DEFAULT_SEMESTER_PK = getattr(settings, 'DEFAULT_SEMESTER_PK', 1)
 
 
-def exams(request, course_code: Optional[str] = None):
-    exam_urls = (
-        PdfUrl
-        .objects
-        .order_by(
-            F('exam__course_code'),
-            F('exam__year').desc(nulls_last=True),
-            F('exam__solutions').desc(),
-        )
-    )
-    if course_code:
-        exam_urls = exam_urls.filter(
-            exam__course_code__iexact=course_code.upper(),
-        )
+class ExamsView(ListView):
+    model = PdfUrl
+    template_name = 'examiner/exam_archive.html'
+    http_method_names = ['get']
 
-    context = {'exam_courses': exam_urls.organize()}
-    add_context(request=request, context=context)
-    if course_code:
-        context['header_text'] = f' / exams / ' + course_code
-        context['course'] = Course.objects.get(course_code=course_code.upper())
-    else:
-        context['header_text'] = ' / exams'
+    def get_context_data(self, **kwargs):
+        super().get_context_data(**kwargs)
+        course_code = self.kwargs.get('course_code')
+        exam_urls = (
+            PdfUrl
+            .objects
+            .order_by(
+                F('exam__course_code'),
+                F('exam__year').desc(nulls_last=True),
+                F('exam__solutions').desc(),
+            )
+        )
+        if course_code:
+            exam_urls = exam_urls.filter(
+                exam__course_code__iexact=course_code.upper(),
+            )
 
-    return render(request, 'examiner/exam_archive.html', context)
+        context = {'exam_courses': exam_urls.organize()}
+        add_context(request=self.request, context=context)
+        if course_code:
+            context['header_text'] = f' / exams / ' + course_code
+            context['course'] = Course.objects.get(
+                course_code=course_code.upper(),
+            )
+        else:
+            context['header_text'] = ' / exams'
+
+        return context
 
 
 class VerifyView(FormView, LoginRequiredMixin):

@@ -19,9 +19,10 @@ def test_empty_exams_view(client):
 def test_verify_view(client, django_user_model):
     """Test PDF verification view."""
     # We have one PDF
-    pdf = Pdf.objects.create()
+    sha1_hash = '0000000000000000000000000000000000000000'
+    pdf = Pdf(sha1_hash=sha1_hash)
     content = ContentFile('exam text')
-    pdf.file.save(name='file', content=content)
+    pdf.file.save(name=sha1_hash + '.pdf', content=content)
 
     # And three courses
     course1 = CourseFactory(course_code='TMA1000')

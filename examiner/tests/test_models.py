@@ -268,7 +268,9 @@ def test_queryset_organize_method():
         solutions=False,
         language=Language.ENGLISH,
     )
-    exam_2015_pdf = Pdf.objects.create()
+    sha1_hash = '0000000000000000000000000000000000000000'
+    exam_2015_pdf = Pdf(sha1_hash=sha1_hash)
+    exam_2015_pdf.file.save(sha1_hash + '.pdf', ContentFile('exam text'))
     ExamPdf.objects.create(
         exam=pdf_exam_2015,
         pdf=exam_2015_pdf,
@@ -312,9 +314,9 @@ def test_string_content():
     """FileBackup PDFs should be parsable."""
     pdf_path = Path(__file__).parent / 'data' / 'matmod_exam_des_2017.pdf'
     pdf_content = ContentFile(pdf_path.read_bytes())
-    sha1 = 'a8c5b61d8e750db6e719937a251e93b9'
+    sha1 = '0000000000000000000000000000000000000000'
     pdf_backup = Pdf(sha1_hash=sha1)
-    pdf_backup.file.save(sha1, content=pdf_content)
+    pdf_backup.file.save(name=sha1 + '.pdf', content=pdf_content)
     pdf_backup.read_text()
     pdf_backup.save()
 
@@ -353,7 +355,7 @@ def test_deletion_of_file_on_delete(tmpdir, settings):
     # Create Pdf object with associated downloaded file
     sha1_hash = '4dc828ea76ab618be6d72d135af13c40de3b9ce6'
     pdf = Pdf(sha1_hash=sha1_hash)
-    pdf.file.save(content=ContentFile('Exam text'), name=sha1_hash, save=True)
+    pdf.file.save(content=ContentFile('Exam text'), name=sha1_hash + '.pdf')
 
     # The file should now exist on disk
     filepath = Path(settings.MEDIA_ROOT, pdf.file.name)
@@ -362,6 +364,22 @@ def test_deletion_of_file_on_delete(tmpdir, settings):
     # But after deleting the model, the file should be cleaned as well
     pdf.delete()
     assert not filepath.is_file()
+
+
+@pytest.mark.django_db
+def test_raising_validation_errors_of_wrong_sha1_formatting():
+    """SHA1 hash format should be enforced, also for filenames."""
+    with pytest.raises(ValidationError):
+        Pdf.objects.create(sha1_hash='WRONG HASH FORMAT')
+
+    correct_sha1_hash = '4dc828ea76ab618be6d72d135af13c40de3b9ce6'
+    pdf = Pdf(sha1_hash=correct_sha1_hash)
+    with pytest.raises(ValidationError):
+        pdf.file.save(
+            content=ContentFile(''),
+            name=correct_sha1_hash.replace('4', '3') + '.pdf',
+        )
+
 
 
 class TestExamClassification:
@@ -379,7 +397,7 @@ class TestExamClassification:
             Eksamenssettet har 12 punkter.
         """
         content = ContentFile(text)
-        pdf.file.save(content=content, name=sha1_hash, save=True)
+        pdf.file.save(content=content, name=sha1_hash + '.pdf', save=True)
 
         # No errors should be raised when no pages has been saved yet, but
         # False should be returned to indicate a lack of success.
@@ -438,7 +456,7 @@ class TestExamClassification:
             Løsningsforslag
         """
         content = ContentFile(text)
-        pdf.file.save(content=content, name=sha1_hash, save=True)
+        pdf.file.save(content=content, name=sha1_hash + '.pdf', save=True)
         PdfPage.objects.create(text=text, pdf=pdf, number=0)
         pdf.classify()
         assert (
@@ -456,7 +474,8 @@ class TestExamClassification:
     def test_combining_urls_and_content_for_classification(self):
         """Exam classification should OR combine PDF and URL parsing."""
         sha1_hash = '0000000000000000000000000000000000000000'
-        pdf = Pdf.objects.create(sha1_hash=sha1_hash)
+        pdf = Pdf(sha1_hash=sha1_hash)
+        pdf.file.save(sha1_hash + '.pdf', ContentFile('Exam text'))
         text = """
             Exsamen i TMA4000
             Dato: USPESIFISERT
@@ -488,8 +507,9 @@ class TestExamClassification:
     def test_classifiying_bad_content(self):
         """Classification should handle onle Nones."""
         sha1_hash = '0000000000000000000000000000000000000000'
-        pdf = Pdf.objects.create(sha1_hash=sha1_hash)
         text = 'Bad OCR!'
+        pdf = Pdf(sha1_hash=sha1_hash)
+        pdf.file.save(sha1_hash + '.pdf', ContentFile(text))
         PdfPage.objects.create(text=text, pdf=pdf, number=0)
 
         # First handle bad OCR without any URLs
@@ -526,7 +546,8 @@ class TestExamClassification:
     def test_using_courses_from_url_in_classification(self):
         """Exam course classification should AND combine PDF and URL parsing."""
         sha1_hash = '0000000000000000000000000000000000000000'
-        pdf = Pdf.objects.create(sha1_hash=sha1_hash)
+        pdf = Pdf(sha1_hash=sha1_hash)
+        pdf.file.save(sha1_hash + '.pdf', ContentFile('Exam text'))
 
         # 1 course in exam
         text = "Exsamen i TMA4000"
@@ -553,7 +574,8 @@ class TestExamClassification:
     def test_determining_solutions_of_exam_without_content(self):
         """Solutions should by OR determined."""
         sha1_hash = '0000000000000000000000000000000000000000'
-        pdf = Pdf.objects.create(sha1_hash=sha1_hash)
+        pdf = Pdf(sha1_hash=sha1_hash)
+        pdf.file.save(sha1_hash + '.pdf', ContentFile('Exam text'))
 
         text = "Bad OCR handwritten content"
         PdfPage.objects.create(text=text, pdf=pdf, number=0)

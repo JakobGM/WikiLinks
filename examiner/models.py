@@ -1,4 +1,5 @@
 import hashlib
+import re
 from gettext import gettext as _
 from tempfile import NamedTemporaryFile
 
@@ -426,10 +427,26 @@ class Pdf(models.Model):
             self.save()
         return True
 
+    def clean(self, *args, **kwargs) -> None:
+        """Ensure correct SHA1 hash formatting, also for filenames."""
+        super().clean(*args, **kwargs)
+        sha1_pattern = re.compile(r'^[0-9a-f]{40}$')
+        if not sha1_pattern.match(self.sha1_hash):
+            raise ValidationError('Not valid SHA1 formatted hash!')
+
+        if (
+            len(self.file.name) < 44 or
+            self.file and self.file.name[-44:] != self.sha1_hash + '.pdf'
+        ):
+            raise ValidationError(
+                f'Pdf.file must be named "{self.sha1_hash}.pdf"!',
+            )
+
     def save(self, *args, **kwargs) -> None:
         if not self.id:
             self.created_at = timezone.now()
         self.updated_at = timezone.now()
+        self.full_clean()
         super().save(*args, **kwargs)
 
     def __repr__(self) -> str:

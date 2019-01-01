@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.helper import FormHelper
@@ -6,7 +7,7 @@ from crispy_forms.layout import Field, Fieldset, Layout, Submit
 
 from dal import autocomplete
 
-from examiner.models import DocumentInfo
+from examiner.models import ExamPdf, DocumentInfo, Pdf
 from semesterpage.models import Course
 
 
@@ -27,6 +28,14 @@ class VerifyExamForm(forms.ModelForm):
                 'data-minimum-input-length': 3,
             },
         )
+    )
+    pdf = forms.ModelChoiceField(
+        label=_('Pdf'),
+        queryset=Pdf.objects.all(),
+    )
+    verifier = forms.ModelChoiceField(
+        label=_('Bruker som verifiserer'),
+        queryset=get_user_model().objects.all(),
     )
 
     class Meta:
@@ -60,6 +69,8 @@ class VerifyExamForm(forms.ModelForm):
                 'season',
                 'solutions',
                 'exercise_number',
+                Field('pdf', type='hidden', readonly=True),
+                Field('verifier', type='hidden', readonly=True),
             ),
             Submit(
                 'verify',
@@ -80,3 +91,32 @@ class VerifyExamForm(forms.ModelForm):
             (3, 'Høst'),
             (None, 'Ukjent'),
         ]
+
+        # Set required fields
+        self.fields['pdf'].required = True
+        self.fields['verifier'].required = True
+
+    def save(self, commit=True):
+        # Only committing save is implemented ATM
+        assert commit
+
+        docinfo = self.instance
+        data = self.cleaned_data
+
+        courses = data.pop('courses')
+        pdf = data.pop('pdf')
+        verifier = data.pop('verifier')
+
+        for course in courses:
+            docinfo, _ = DocumentInfo.objects.get_or_create(
+                course=course,
+                course_code=course.course_code,
+                **data,
+            )
+            exam_pdf, _ = ExamPdf.objects.get_or_create(
+                exam=docinfo,
+                pdf=pdf,
+                verified_by__isnull=False,
+            )
+            exam_pdf.verified_by.add(verifier)
+            exam_pdf.save()

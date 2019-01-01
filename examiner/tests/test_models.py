@@ -10,7 +10,7 @@ import responses
 
 from examiner.models import (
     DocumentInfo,
-    ExamPdf,
+    DocumentInfoSource,
     ExamRelatedCourse,
     Pdf,
     PdfPage,
@@ -271,8 +271,8 @@ def test_queryset_organize_method():
     sha1_hash = '0000000000000000000000000000000000000000'
     exam_2015_pdf = Pdf(sha1_hash=sha1_hash)
     exam_2015_pdf.file.save(sha1_hash + '.pdf', ContentFile('exam text'))
-    ExamPdf.objects.create(
-        exam=pdf_exam_2015,
+    DocumentInfoSource.objects.create(
+        document_info=pdf_exam_2015,
         pdf=exam_2015_pdf,
     )
 
@@ -445,7 +445,10 @@ class TestExamClassification:
             solutions=exam.solutions,
         )
         user = UserFactory.create(username='verifier')
-        verified_exam_pdf = ExamPdf.objects.create(exam=verified_exam, pdf=pdf)
+        verified_exam_pdf = DocumentInfoSource.objects.create(
+            document_info=verified_exam,
+            pdf=pdf,
+        )
         verified_exam_pdf.verified_by.add(user)
         pdf.classify()
         pdf = Pdf.objects.get(id=pdf.id)

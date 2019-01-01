@@ -4,7 +4,7 @@ from django.shortcuts import reverse
 import pytest
 
 from examiner.forms import VerifyExamForm
-from examiner.models import DocumentInfo, ExamPdf, Pdf
+from examiner.models import DocumentInfo, DocumentInfoSource, Pdf
 from semesterpage.tests.factories import CourseFactory
 
 
@@ -40,13 +40,13 @@ def test_verify_random_pdf_view(client, django_user_model):
         course=course1,
         **common_docinfo_attrs,
     )
-    ExamPdf.objects.create(pdf=pdf, exam=exam1)
+    DocumentInfoSource.objects.create(pdf=pdf, document_info=exam1)
 
     exam2 = DocumentInfo.objects.create(
         course=course2,
         **common_docinfo_attrs,
     )
-    ExamPdf.objects.create(pdf=pdf, exam=exam2)
+    DocumentInfoSource.objects.create(pdf=pdf, document_info=exam2)
 
     # We verify a random PDF in this case our PDF since there is only one
     user = django_user_model.objects.create_user(username='u', password='p')
@@ -81,7 +81,7 @@ def test_verify_random_pdf_view(client, django_user_model):
     assert response.status_code == 302
 
     # We have two new verified exams
-    verified_exams = ExamPdf.objects.filter(verified_by__in=[user])
+    verified_exams = DocumentInfoSource.objects.filter(verified_by__in=[user])
     assert verified_exams.count() == 2
 
     # Both are connected to our pdf
@@ -93,8 +93,8 @@ def test_verify_random_pdf_view(client, django_user_model):
     assert exam_pdf2.verified_by.first() == user
 
     # With two different courses
-    docinfo1 = exam_pdf1.exam
-    docinfo2 = exam_pdf2.exam
+    docinfo1 = exam_pdf1.document_info
+    docinfo2 = exam_pdf2.document_info
     assert docinfo1.course == course2
     assert docinfo2.course == course3
 
@@ -104,7 +104,9 @@ def test_verify_random_pdf_view(client, django_user_model):
         assert getattr(docinfo2, key) == value
 
     # The two other existing relations remain
-    assert ExamPdf.objects.filter(verified_by__isnull=True).count() == 2
+    assert DocumentInfoSource.objects.filter(
+        verified_by__isnull=True,
+    ).count() == 2
 
     # And we have alltogether 3 DocumentInfo objects
     assert DocumentInfo.objects.count() == 3
@@ -127,8 +129,8 @@ def test_verify_pdf_view(admin_client):
 
     # Both PDFs are connected to the same exam
     exam = DocumentInfo.objects.create()
-    ExamPdf.objects.create(pdf=pdf, exam=exam)
-    ExamPdf.objects.create(pdf=pdf2, exam=exam)
+    DocumentInfoSource.objects.create(pdf=pdf, document_info=exam)
+    DocumentInfoSource.objects.create(pdf=pdf2, document_info=exam)
 
     # And each resolves to a view with their own PDF as context
     response = admin_client.get(pdf.get_absolute_url())

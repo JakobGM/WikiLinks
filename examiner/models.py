@@ -241,8 +241,13 @@ def upload_path(instance, filename):
     return f'examiner/FileBackup/' + filename
 
 
-class ExamPdf(models.Model):
-    """Model used for through relation Pdf.exams."""
+class DocumentInfoSource(models.Model):
+    """
+    Model used for through relation Pdf.exams.
+
+    It contains information of which users verified the document information,
+    if any.
+    """
 
     pdf = models.ForeignKey(
         to='Pdf',
@@ -250,7 +255,7 @@ class ExamPdf(models.Model):
         null=False,
         blank=False,
     )
-    exam = models.ForeignKey(
+    document_info = models.ForeignKey(
         to=DocumentInfo,
         on_delete=models.PROTECT,
         null=False,
@@ -280,7 +285,7 @@ class Pdf(models.Model):
     )
     exams = models.ManyToManyField(
         to=DocumentInfo,
-        through=ExamPdf,
+        through=DocumentInfoSource,
         related_name='pdfs',
         help_text=_('Hvilke eksamenssett PDFen trolig inneholder.'),
     )
@@ -408,7 +413,7 @@ class Pdf(models.Model):
             )
 
         # Delete old relations that are NOT verified
-        ExamPdf.objects.filter(pdf=self, verified_by=None).delete()
+        DocumentInfoSource.objects.filter(pdf=self, verified_by=None).delete()
 
         for course_code in course_codes:
             # Get docinfos model object which this PDF is related to
@@ -422,7 +427,7 @@ class Pdf(models.Model):
             )
 
             # And create the new relation
-            ExamPdf.objects.create(exam=docinfo, pdf=self)
+            DocumentInfoSource.objects.create(document_info=docinfo, pdf=self)
 
         if save:
             self.save()

@@ -13,6 +13,7 @@ from django.core.validators import (
     ValidationError,
 )
 from django.db import models
+from django.shortcuts import reverse
 from django.utils import timezone
 
 import requests
@@ -448,6 +449,13 @@ class Pdf(models.Model):
         self.updated_at = timezone.now()
         self.full_clean()
         super().save(*args, **kwargs)
+
+    def get_absolute_url(self) -> str:
+        """Return URL to PDF document verification form view."""
+        return reverse(
+            viewname='examiner:verify_pdf',
+            kwargs={'sha1_hash': self.sha1_hash},
+        )
 
     def __repr__(self) -> str:
         """Return programmer representation of Pdf object."""

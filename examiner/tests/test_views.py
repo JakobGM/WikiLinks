@@ -16,7 +16,7 @@ def test_empty_exams_view(client):
 
 
 @pytest.mark.django_db
-def test_verify_view(client, django_user_model):
+def test_verify_random_pdf_view(client, django_user_model):
     """Test PDF verification view."""
     # We have one PDF
     sha1_hash = '0000000000000000000000000000000000000000'
@@ -108,3 +108,30 @@ def test_verify_view(client, django_user_model):
 
     # And we have alltogether 3 DocumentInfo objects
     assert DocumentInfo.objects.count() == 3
+
+
+@pytest.mark.django_db
+def test_verify_pdf_view(admin_client):
+    """Test PDF verification of specific model objects."""
+    # We have one PDF
+    sha1_hash = '0000000000000000000000000000000000000000'
+    pdf = Pdf(sha1_hash=sha1_hash)
+    content = ContentFile('exam text')
+    pdf.file.save(name=sha1_hash + '.pdf', content=content)
+
+    # And another one
+    sha1_hash2 = '1111111111111111111111111111111111111111'
+    pdf2 = Pdf(sha1_hash=sha1_hash2)
+    content2 = ContentFile('exam text')
+    pdf2.file.save(name=sha1_hash2 + '.pdf', content=content2)
+
+    # Both PDFs are connected to the same exam
+    exam = DocumentInfo.objects.create()
+    ExamPdf.objects.create(pdf=pdf, exam=exam)
+    ExamPdf.objects.create(pdf=pdf2, exam=exam)
+
+    # And each resolves to a view with their own PDF as context
+    response = admin_client.get(pdf.get_absolute_url())
+    assert response.context['pdf'] == pdf
+    response2 = admin_client.get(pdf2.get_absolute_url())
+    assert response2.context['pdf'] == pdf2

@@ -5,11 +5,11 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.db.models import F
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import FormView
 
 from examiner.forms import VerifyExamForm
-from examiner.models import DocumentInfo, ExamPdf, PdfUrl
+from examiner.models import ExamPdf, Pdf, PdfUrl
 from semesterpage.models import Course, Semester, StudyProgram
 
 
@@ -49,10 +49,17 @@ class VerifyView(FormView, LoginRequiredMixin):
 
     def get(self, request, *args, **kwargs):
         """View for verifying PDF exam information."""
-        exam_pdfs = ExamPdf.objects.filter(
-            verified_by__isnull=True,
-        )
-        pdf = exam_pdfs[randint(0, exam_pdfs.count() - 1)].pdf
+        sha1_hash = self.kwargs.get('sha1_hash')
+        if sha1_hash:
+            pdf = get_object_or_404(
+                klass=Pdf,
+                sha1_hash=sha1_hash,
+            )
+        else:
+            exam_pdfs = ExamPdf.objects.filter(
+                verified_by__isnull=True,
+            )
+            pdf = exam_pdfs[randint(0, exam_pdfs.count() - 1)].pdf
 
         exams = pdf.exams.all()
         form = VerifyExamForm(

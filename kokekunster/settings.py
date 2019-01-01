@@ -57,6 +57,9 @@ INSTALLED_APPS = (
     # Papertrail for django admin model objects
     'reversion',
 
+    # Form handling
+    'crispy_forms',
+
     # Responsible for trawling exam URLs
     'examiner',
 )
@@ -198,6 +201,8 @@ DATAPORTEN_CACHE_REQUESTS = True
 
 # Where to save the sqlite3 cache backend
 DATAPORTEN_CACHE_PATH = 'tmp/'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Determine run environment based on the environment variable 'PRODUCTION', and load proper settings
 

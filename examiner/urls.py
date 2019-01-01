@@ -10,6 +10,11 @@ urlpatterns = [
         name='all_exams',
     ),
     url(
+        r'^verify$',
+        views.verify,
+        name='verify_random',
+    ),
+    url(
         r'^(?P<course_code>[a-zA-Z]{3,4}\d\d\d\d)$',
         views.exams,
         name='course',

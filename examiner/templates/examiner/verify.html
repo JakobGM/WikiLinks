@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load rules static %}
+{% load crispy_forms_tags %}
+
+{% block extra_css %}
+{# Stuff for bootstrap v4 used in django-crispy-forms #}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+{# For django-autocomplete-light #}
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+{% endblock %}
+
+{% block navbar %}
+{% include "semesterpage/navbar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-3">
+<div class="row">
+
+
+<div class="col">
+<div id="pdf">
+    <object
+      id="pdf_content"
+      width="100%"
+      height="1075px"
+      type="application/pdf"
+      trusted="yes"
+      application="yes"
+      title="Assembly"
+      data="{{ pdf.file.url }}?#zoom=100&scrollbar=1&toolbar=1&navpanes=1">
+    <p>Kan ikke laste inn PDF, prøv med Mozilla Firefox.</p>
+    </object>
+</div>
+</div>
+
+<div class="col-3">
+{% crispy form %}
+
+<div class="card bg-light mt-4">
+  <div class="card-body">
+    <h5 class="card-title">URLer</h5>
+    <h6 class="card-subtitle mb-2 text-muted">
+      Hvor PDFen kan lastes ned.
+    </h6>
+  </div>
+  <ul class="list-group list-group-flush">
+    {% for url in pdf.hosted_at.all %}
+    <li class="list-group-item">
+      <a href="{{ url.url }}"> {{ url.filename }} </a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+
+</div>
+</div>
+</div>
+
+{% endblock %}

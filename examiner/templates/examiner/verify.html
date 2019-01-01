@@ -11,6 +11,22 @@
 
 {# For django-autocomplete-light #}
 <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+
+{# For hiding exercise number for irrelevant content types #}
+<script type="text/javascript">
+  function onContentTypeChange() {
+    select = document.getElementById('id_content_type');
+    newValue = select.options[select.selectedIndex].value;
+    exerciseField = document.getElementById('div_id_exercise_number');
+    console.log(exerciseField);
+
+    if (newValue === 'Exercise' || newValue === 'Project') {
+      exerciseField.style.display = 'block';
+    } else {
+      exerciseField.style.display = 'none';
+    }
+  }
+</script>
 {% endblock %}
 
 {% block navbar %}
@@ -63,4 +79,10 @@
 </div>
 </div>
 
+{% endblock %}
+
+{% block end %}
+<script type="text/javascript">
+  window.onload = onContentTypeChange;
+</script>
 {% endblock %}

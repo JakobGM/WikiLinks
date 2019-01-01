@@ -2,8 +2,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Fieldset, Layout, Submit
-from crispy_forms.bootstrap import InlineRadios
+from crispy_forms.layout import Field, Fieldset, Layout, Submit
 
 from dal import autocomplete
 
@@ -37,6 +36,7 @@ class VerifyExamForm(forms.ModelForm):
             'language': _('Språk'),
             'year': _('År'),
             'season': _('Semestertype'),
+            'content_type': _('Dokumenttype'),
             'solutions': _('LF'),
         }
 
@@ -50,11 +50,16 @@ class VerifyExamForm(forms.ModelForm):
         self.helper.layout = Layout(
             Fieldset(
                 _('PDF klassifisering'),
+                Field(
+                    'content_type',
+                    onchange='onContentTypeChange()',
+                ),
                 'courses',
                 'language',
                 'year',
                 'season',
                 'solutions',
+                'exercise_number',
             ),
             Submit(
                 'verify',
@@ -62,23 +67,16 @@ class VerifyExamForm(forms.ModelForm):
                 css_class='btn btn-success btn-block',
             ),
             Submit(
-                'exercise',
-                _('Øving'),
-                css_class='btn btn-primary btn-block',
-            ),
-            Submit(
                 'trash',
                 _('✖ Slett'),
                 css_class='btn btn-danger btn-block',
             ),
         )
-        # Use semester type radio buttons instead of dropdown
-        self.helper['season'].wrap(InlineRadios)
 
         # Change semester type radio button labels
         self.fields['season'].choices = [
             (1, 'Vår'),
             (2, 'Kont'),
-            (3, 'Vår'),
+            (3, 'Høst'),
             (None, 'Ukjent'),
         ]

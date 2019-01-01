@@ -11,7 +11,7 @@ urlpatterns = [
     ),
     url(
         r'^verify$',
-        views.verify,
+        views.VerifyView.as_view(),
         name='verify_random',
     ),
     url(

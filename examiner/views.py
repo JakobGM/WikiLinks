@@ -4,6 +4,7 @@ from typing import Optional
 from django.conf import settings
 from django.db.models import F
 from django.shortcuts import render
+from django.views.generic.edit import FormView
 
 from examiner.forms import VerifyExamForm
 from examiner.models import ExamPdf, PdfUrl
@@ -39,21 +40,26 @@ def exams(request, course_code: Optional[str] = None):
     return render(request, 'examiner/exam_archive.html', context)
 
 
-def verify(request):
-    """View for verifying PDF exam information."""
-    exam_pdfs = ExamPdf.objects.filter(
-        verified_by__isnull=True,
-    )
-    pdf = exam_pdfs[randint(0, exam_pdfs.count() - 1)].pdf
+class VerifyView(FormView):
+    template_name = 'examiner/verify.html'
+    form_class = VerifyExamForm
+    http_method_names = ['get', 'post']
 
-    exams = pdf.exams.all()
-    form = VerifyExamForm(
-        instance=pdf.exams.first(),
-        initial={'courses': exams.values_list('course', flat=True)},
-    )
-    context = {'pdf': pdf, 'form': form}
-    add_context(request, context)
-    return render(request, 'examiner/verify.html', context)
+    def get(self, request, *args, **kwargs):
+        """View for verifying PDF exam information."""
+        exam_pdfs = ExamPdf.objects.filter(
+            verified_by__isnull=True,
+        )
+        pdf = exam_pdfs[randint(0, exam_pdfs.count() - 1)].pdf
+
+        exams = pdf.exams.all()
+        form = VerifyExamForm(
+            instance=pdf.exams.first(),
+            initial={'courses': exams.values_list('course', flat=True)},
+        )
+        context = {'pdf': pdf, 'form': form}
+        add_context(request, context)
+        return render(request, 'examiner/verify.html', context)
 
 
 def add_context(request, context):

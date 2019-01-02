@@ -425,6 +425,7 @@ SOLUTIONS_WORDS = [
     r'LF',
     r'løsningsforslag',
     r'løysingsforslag',
+    r'løsning',
     r'solution',
     r'solutions',
 ]

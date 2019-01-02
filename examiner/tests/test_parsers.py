@@ -541,7 +541,7 @@ ExamPDFs = [
         language=Language.ENGLISH,
         content_type=DocumentInfo.EXAM,
     ),
-    ExamPDF(  # Contains word solutions in problem discription
+    ExamPDF(  # Contains course code with whitespace
         pages=[
             """
             TMA 4195 Mathematical Modeling,
@@ -555,6 +555,21 @@ ExamPDFs = [
         solutions=True,
         language=Language.ENGLISH,
         content_type=DocumentInfo.UNDETERMINED,
+    ),
+    ExamPDF(  # Contains specific solutions word 'løsning'
+        pages=[
+            """
+            MATEMATISK MODELLERING (TMA4195)
+            Eksamen torsdag 3. desember 2009
+            Løsning med kommentarer
+            """
+        ],
+        course_codes=['TMA4195'],
+        year=2009,
+        season=Season.AUTUMN,
+        solutions=True,
+        language=Language.BOKMAL,
+        content_type=DocumentInfo.EXAM,
     ),
 ]
 

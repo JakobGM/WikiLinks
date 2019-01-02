@@ -9,7 +9,7 @@ from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 
 from examiner.forms import VerifyExamForm
-from examiner.models import DocumentInfoSource, Pdf, PdfUrl
+from examiner.models import DocumentInfo, DocumentInfoSource, Pdf, PdfUrl
 from semesterpage.models import Course, Semester, StudyProgram
 
 
@@ -24,21 +24,21 @@ class ExamsView(ListView):
     def get_context_data(self, **kwargs):
         super().get_context_data(**kwargs)
         course_code = self.kwargs.get('course_code')
-        exam_urls = (
-            PdfUrl
+        docinfos = (
+            DocumentInfo
             .objects
             .order_by(
-                F('exam__course_code'),
-                F('exam__year').desc(nulls_last=True),
-                F('exam__solutions').desc(),
+                F('course_code'),
+                F('year').desc(nulls_last=True),
+                F('solutions').desc(),
             )
         )
         if course_code:
-            exam_urls = exam_urls.filter(
-                exam__course_code__iexact=course_code.upper(),
+            docinfos = docinfos.filter(
+                course_code__iexact=course_code.upper(),
             )
 
-        context = {'exam_courses': exam_urls.organize()}
+        context = {'exam_courses': docinfos.organize()}
         add_context(request=self.request, context=context)
         if course_code:
             context['header_text'] = f' / exams / ' + course_code

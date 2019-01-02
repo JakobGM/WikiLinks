@@ -30,6 +30,12 @@
 
 <script src="http://rawgithub.com/stidges/jquery-searchable/master/dist/jquery.searchable-1.1.0.min.js"></script>
 
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+  integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+  crossorigin="anonymous">
+
 {% for course_code, course_content in exam_courses.items %}
 <div class="course">
 
@@ -73,21 +79,23 @@
 
     <td>
       {% for language, urls in exam_set.exams.items %}
-      <a href="{{ urls.0.url }}" target="_blank">
-        {% if language == 'Engelsk' %}
-        🇬🇧
-        {% elif language == 'Nynorsk' %}
-        🇳🇴
-        {% elif language == 'Bokmål' %}
-        🇳🇴
-        {% else %}
-        &nbsp;<i class="fa fa-question-circle" style="color:grey"></i>
-        {% endif %}
-        <i>{{ urls.0.filename }}</i>
-        {% if language == 'Nynorsk' %}
-        <div style="color: silver; display: inline-block;">(nynorsk)</div>
-        {% endif %}
-      </a>
+      <div class="my-1" style="display: inline-block;">
+        <a href="{{ urls.0.url }}" target="_blank">
+          {% if language == 'Engelsk' %}
+          🇬🇧
+          {% elif language == 'Nynorsk' %}
+          🇳🇴
+          {% elif language == 'Bokmål' %}
+          🇳🇴
+          {% else %}
+          &nbsp;<i class="fa fa-question-circle" style="color:grey"></i>
+          {% endif %}
+          {{ urls.0.filename | truncatechars:25 }}
+          {% if language == 'Nynorsk' %}
+          <div style="color: silver; display: inline-block;">(nynorsk)</div>
+          {% endif %}
+        </a>
+      </div>
       <div style="display:none;">{{ urls.0.scraped_pdf.text }}</div>
 
       {% for alt_url in urls|slice:"1:" %}
@@ -107,18 +115,24 @@
 
     <td>
     {% for language, urls in exam_set.solutions.items %}
-      <a href="{{ urls.0.url }}" target="_blank">
-        {% if language == 'Engelsk' %}
-        🇬🇧
-        {% elif language == 'Nynorsk' %}
-        🇳🇴
-        {% elif language == 'Bokmål' %}
-        🇳🇴
-        {% else %}
-        &nbsp;<i class="fa fa-question-circle" style="color:grey"></i>
-        {% endif %}
-        <i>{{ urls.0.filename }}</i>
-        <div style="display:none;">{{ urls.0.scraped_pdf.text }}</div>
+      <div class="my-1" style="display: inline-block;">
+        <a href="{{ urls.0.url }}" target="_blank">
+          {% if language == 'Engelsk' %}
+          🇬🇧
+          {% elif language == 'Nynorsk' %}
+          🇳🇴
+          {% elif language == 'Bokmål' %}
+          🇳🇴
+          {% else %}
+          &nbsp;<i class="fa fa-question-circle" style="color:grey"></i>
+          {% endif %}
+          <i>{{ urls.0.filename | truncatechars:25 }}</i>
+          {% if language == 'Nynorsk' %}
+          <div style="color: silver; display: inline-block;">(nynorsk)</div>
+          {% endif %}
+        </a>
+      </div>
+      <div style="display:none;">{{ urls.0.scraped_pdf.text }}</div>
 
         {% for alt_url in urls|slice:"1:" %}
         {% if forloop.first %}
@@ -227,6 +241,16 @@ th {
 tr:nth-child(1) {
   background-color: #7a7a7a;
   color: white;
+}
+
+/* Overwrite bootstrap which changes anchor tags styling */
+tr a {
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+tr a:visited {
+  color: black;
 }
 </style>
 {% endblock %}

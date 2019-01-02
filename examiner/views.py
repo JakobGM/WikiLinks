@@ -51,7 +51,7 @@ class ExamsView(ListView):
         return context
 
 
-class VerifyView(FormView, LoginRequiredMixin):
+class VerifyView(LoginRequiredMixin, FormView):
     template_name = 'examiner/verify.html'
     form_class = VerifyExamForm
     http_method_names = ['get', 'post']

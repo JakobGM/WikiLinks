@@ -12,10 +12,6 @@ from semesterpage.models import Course
 
 
 class VerifyExamForm(forms.ModelForm):
-    """
-    Filler.
-    """
-
     courses = forms.ModelMultipleChoiceField(
         label=_('Fag'),
         queryset=Course.objects.all(),
@@ -120,3 +116,39 @@ class VerifyExamForm(forms.ModelForm):
             )
             exam_pdf.verified_by.add(verifier)
             exam_pdf.save()
+
+
+class ExamsSearchForm(forms.ModelForm):
+    courses = forms.ModelMultipleChoiceField(
+        label=_('Fag'),
+        queryset=Course.objects.all(),
+        widget=autocomplete.ModelSelect2Multiple(
+            url='semesterpage-course-autocomplete',
+            attrs={
+                'data-placeholder': _('Fagkode/fagnavn'),
+
+                # Only trigger autocompletion after 3 characters have been typed
+                'data-minimum-input-length': 3,
+            },
+        )
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'verify-form'
+        self.helper.form_method = 'post'
+        self.helper.form_action = 'verify'
+
+        self.helper.layout = Layout(
+            Fieldset(
+                _('PDF klassifisering'),
+                'courses',
+            ),
+            Submit(
+                'search',
+                _('&check; Søk'),
+                css_class='btn btn-success btn-block',
+            ),
+        )
+        self.fields['pdf'].required = True

@@ -107,6 +107,49 @@ class ExamRelatedCourse(models.Model):
         super().save(*args, **kwargs)
 
 
+class DocumentInfoQueryset(models.QuerySet):
+    def organize(self):
+        self = self.filter(pdfs__isnull=False).prefetch_related('course')
+
+        organization = {}
+        for docinfo in self:
+            course_dict = organization.setdefault(
+                docinfo.course_code,
+                {'years': {}},
+            )
+            if docinfo.course and 'full_name' not in course_dict:
+                course_dict['full_name'] = docinfo.course.full_name
+                course_dict['nick_name'] = docinfo.course.display_name
+
+            year = organization[docinfo.course_code]['years'].setdefault(
+                docinfo.year,
+                {},
+            )
+            semester = year.setdefault(
+                Season.str_from_field(docinfo.season),
+                {'solutions': {}, 'exams': {}}
+            )
+            key = 'solutions' if docinfo.solutions else 'exams'
+            urls = semester[key].setdefault(
+                docinfo.language or 'Ukjent',
+                [],
+            )
+            try:
+                url = DocumentInfoSource.objects.filter(
+                    document_info=docinfo,
+                    verified_by__isnull=False,
+                ).first().pdf.hosted_at.filter(dead_link=False).first()
+            except (AttributeError, DocumentInfoSource.DoesNotExist):
+                url = DocumentInfoSource.objects.filter(
+                    document_info=docinfo,
+                ).first().pdf.hosted_at.filter(dead_link=False).first()
+
+            if url not in urls:
+                urls.append(url)
+
+        return organization
+
+
 class DocumentInfo(models.Model):
     EXAM = 'Exam'
     EXERCISE = 'Exercise'
@@ -184,6 +227,7 @@ class DocumentInfo(models.Model):
             'Øvingsnummer hvis dokumentet er en øving eller et prosjekt.',
         ),
     )
+    objects = DocumentInfoQueryset.as_manager()
 
     def __repr__(self) -> str:
         return (
@@ -511,51 +555,6 @@ class PdfPage(models.Model):
         )
 
 
-class PdfUrlQuerySet(models.QuerySet):
-    def organize(self):
-        organization = {}
-        for url in self.prefetch_related('exam'):
-            urls = organization.setdefault(url.exam.course_code, [])
-            urls.append(url)
-
-        for course_code, urls in organization.items():
-            organization[course_code] = {'years': {}}
-            for url in urls:
-                if url.scraped_pdf and url.scraped_pdf.exams.count():
-                    # Use classification of PDF content
-                    exam = url.scraped_pdf.exams.first()
-                else:
-                    # Use classification of URL
-                    exam = url.exam
-
-                year = organization[course_code]['years'].setdefault(
-                    exam.year,
-                    {},
-                )
-                semester = year.setdefault(
-                    Season.str_from_field(exam.season),
-                    {'solutions': {}, 'exams': {}}
-                )
-                key = 'solutions' if exam.solutions else 'exams'
-                urls = semester[key].setdefault(
-                    exam.language or 'Ukjent',
-                    [],
-                )
-                urls.append(url)
-
-            organization[course_code] = dict(organization[course_code])
-
-        courses = Course.objects.filter(
-            course_code__in=organization.keys(),
-        )
-        for course in courses:
-            course_dict = organization[course.course_code]
-            course_dict['full_name'] = course.full_name
-            course_dict['nick_name'] = course.display_name
-
-        return organization
-
-
 class PdfUrl(models.Model):
     url = models.TextField(
         unique=True,
@@ -596,7 +595,6 @@ class PdfUrl(models.Model):
     )
     created_at = models.DateTimeField(editable=False)
     updated_at = models.DateTimeField()
-    objects = PdfUrlQuerySet.as_manager()
 
     def backup_file(self) -> bool:
         """
@@ -672,6 +670,7 @@ class PdfUrl(models.Model):
             solutions=parser.solutions,
             course_code=parser.code,
             content_type=content_type,
+            exercise_number=None,
         )
         if save:
             self.save()

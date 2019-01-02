@@ -371,6 +371,7 @@ ENGLISH_WORDS = [
     'page',
     'fall',
     'solutions',
+    'solution',
 ]
 ENGLISH_WORDS_PATTERN = re.compile(
     r'\b(' + r'|'.join(ENGLISH_WORDS) + r')\b',
@@ -433,11 +434,11 @@ SOLUTIONS_WORDS_PATTERN = re.compile(
 )
 
 COURSE_CODES = [
-    r'TMA\d\d\d\d',
-    r'MA\d\d\d\d',
-    r'TFY\d\d\d\d',
-    r'SIF\d\d\d\d',
-    r'TIØ\d\d\d\d',
+    r'TMA ?\d\d\d\d',
+    r'MA ?\d\d\d\d',
+    r'TFY ?\d\d\d\d',
+    r'SIF ?\d\d\d\d',
+    r'TIØ ?\d\d\d\d',
 ]
 COMBINING_COURSE = r'(?:/(\d{1,4}))?'   # e.g. TMA4123/24
 COURSE_CODES_PATTERN = re.compile(
@@ -511,7 +512,7 @@ class PdfParser:
         course_codes = []
         for match in re.finditer(COURSE_CODES_PATTERN, text):
             # E.g. TMA4123
-            primary = match.group(1).upper()
+            primary = match.group(1).upper().replace(' ', '')
             course_codes.append(primary)
 
             if match.group(2) is None:

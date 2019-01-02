@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
+from django.db.models import Q
 
 from tqdm import tqdm
 
@@ -69,10 +70,13 @@ class Command(BaseCommand):
     def crawl(self, course_code: str) -> None:
         """Crawl PDF links from the internet."""
         if course_code == 'ALL':
-            courses = Course.objects.filter(course_code__startswith='TMA')
+            courses = Course.objects.filter(
+                Q(course_code__startswith='TMA') |
+                Q(course_code__startswith='MA')
+            )
         else:
             course_code = course_code.upper()
-            if 'TMA' != course_code[:3]:
+            if 'TMA' != course_code[:3] and 'MA' != course_code[:2]:
                 raise CommandError('Only TMA course codes are supported ATM.')
             courses = Course.objects.filter(course_code=course_code)
 

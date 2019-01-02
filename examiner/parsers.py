@@ -329,8 +329,8 @@ class ExamURLParser:
         return (
             f'{self.code or "Ukjent"} '
             f'{"LF" if self.solutions else "Eksamen"} '
-            f'{self.year or "Ukjent"} {self.season.value} '
-            f'({self.language.value or "Ukjent språk"})'
+            f'{self.year or "Ukjent"} {self.season} '
+            f'({self.language or "Ukjent språk"})'
         )
 
 

@@ -541,6 +541,21 @@ ExamPDFs = [
         language=Language.ENGLISH,
         content_type=DocumentInfo.EXAM,
     ),
+    ExamPDF(  # Contains word solutions in problem discription
+        pages=[
+            """
+            TMA 4195 Mathematical Modeling,
+            30 November 2006
+            Solution with additional comments
+            """
+        ],
+        course_codes=['TMA4195'],
+        year=2006,
+        season=Season.AUTUMN,
+        solutions=True,
+        language=Language.ENGLISH,
+        content_type=DocumentInfo.UNDETERMINED,
+    ),
 ]
 
 

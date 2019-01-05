@@ -37,9 +37,9 @@
   crossorigin="anonymous">
 
 {% for course_code, course_content in exam_courses.items %}
-<div class="course">
+<div class="course container">
 
-<h1 class="course-header">
+<h1 class="mx-auto text-center mt-5" style="font-size: 3em;">
   {{ course_code }}
   {% if course_content.nick_name %}
   <br>
@@ -50,9 +50,11 @@
   {% endif %}
 </h1>
 
-<input type="text" class="class-search" id="search-{{ course_code }}" placeholder="Filter"></input>
+<div class="input-group input-group-lg my-3">
+  <input type="text" class="form-control class-search mx-auto" id="search-{{ course_code }}" placeholder="Søk i eksamstekst"></input>
+</div>
 
-<table id="table-{{ course_code }}" class="pure-table">
+<table id="table-{{ course_code }}" class="pure-table mx-auto">
   <tr>
     <th>År</th>
     <th>Semester</th>
@@ -188,40 +190,8 @@ $( 'table' ).each(function() {
 </script>
 
 <style>
-.course-header {
-  text-align: center;
-  font-size: 3em;
-}
-input{
-  border: none;
-  padding: 10px;
-  margin: 10px;
-  margin-bottom: 20px;
-  height: 2.5em;
-  width: 40%;
-  min-width: 25em;
-  max-width: 90%;
-  border:1px solid #eaeaea;
-  outline:none;
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-}
-input[type="text"] {
-  font-size: 1em;
-  padding: -1em;
-}
-input:hover {
-  border-color: #a0a0a0 #b9b9b9 #b9b9b9 #b9b9b9;
-}
-input:focus {
-  border-color: #4d90fe;
-}
 table {
-  min-width: 40%;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 15px;
+  width: 100%;
 }
 thead tr th:nth-child(-n + 2),
 tbody tr td:nth-child(-n + 2) {

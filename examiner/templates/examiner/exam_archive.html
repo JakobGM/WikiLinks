@@ -60,6 +60,15 @@
       Nytt fagsøk
     </button>
   </a>
+  <button
+    type="button"
+    class="mx-auto btn btn-outline-secondary btn-lg"
+    data-toggle="collapse"
+    data-target=".fix-button"
+    style="width: 10em;">
+    <i class="fa fa-pencil"></i>
+    Fiks feil
+  </button>
 </div>
 
 <div class="input-group input-group-lg my-3">
@@ -94,6 +103,12 @@
     <td>
       {% for language, urls in exam_set.exams.items %}
       <div class="my-1" style="display: inline-block;">
+        <a
+          type="button"
+          class="btn btn-outline-success btn-sm mr-2 fix-button collapse multi-collapse"
+          href="{{ urls.0.scraped_pdf.get_absolute_url }}">
+            Fiks
+        </a>
         <a href="{{ urls.0.url }}" target="_blank">
           {% if language == 'Engelsk' %}
           🇬🇧
@@ -130,6 +145,12 @@
     <td>
     {% for language, urls in exam_set.solutions.items %}
       <div class="my-1" style="display: inline-block;">
+        <a
+          type="button"
+          class="btn btn-outline-success btn-sm mr-2 fix-button collapse multi-collapse"
+          href="{{ urls.0.scraped_pdf.get_absolute_url }}">
+            Fiks
+        </a>
         <a href="{{ urls.0.url }}" target="_blank">
           {% if language == 'Engelsk' %}
           🇬🇧
@@ -173,6 +194,9 @@
 {% endblock %}
 
 {% block end %}
+{# Prevent usage of bootstrap as it breaks PureCSS tables #}
+<script src="{% static 'examiner/js/collapse.js' %}"></script>
+
 <script>
 $(document).tooltip({
   show: {
@@ -226,12 +250,12 @@ tr:nth-child(1) {
 }
 
 /* Overwrite bootstrap which changes anchor tags styling */
-tr a {
+tr a:not(.btn) {
   text-decoration: none;
   color: black;
   cursor: pointer;
 }
-tr a:visited {
+tr a:visited:not(.btn) {
   color: black;
 }
 </style>

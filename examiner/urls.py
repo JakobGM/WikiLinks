@@ -5,6 +5,11 @@ from examiner import views
 
 urlpatterns = [
     url(
+        r'^$',
+        views.SearchView.as_view(),
+        name='search',
+    ),
+    url(
         r'^all$',
         views.ExamsView.as_view(),
         name='all_exams',
@@ -20,8 +25,13 @@ urlpatterns = [
         name='verify_pdf',
     ),
     url(
-        r'^(?P<course_code>[a-zA-Z]{3,4}\d\d\d\d)$',
+        r'^course/(?P<course_code>.+)$',
         views.ExamsView.as_view(),
         name='course',
+    ),
+    url(
+        r'^course-autocomplete/$',
+        views.CourseWithExamsAutocomplete.as_view(),
+        name='course_autocomplete',
     ),
 ]

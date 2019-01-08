@@ -165,6 +165,10 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
+
+    # Find out how to fix these two
+    os.path.join(BASE_DIR, "examiner/static"),
+    os.path.join(BASE_DIR, "semesterpage/static"),
 ]
 
 # Media files (User-uploaded course logos)

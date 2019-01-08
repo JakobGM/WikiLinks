@@ -50,6 +50,18 @@
   {% endif %}
 </h1>
 
+<div class="text-center mt-3">
+  <a href="{% url "examiner:search" %}">
+    <button
+      type="button"
+      class="mx-auto btn btn-outline-secondary btn-lg"
+      style="width: 10em;">
+      <i class="fa fa-search"></i>
+      Nytt fagsøk
+    </button>
+  </a>
+</div>
+
 <div class="input-group input-group-lg my-3">
   <input type="text" class="form-control class-search mx-auto" id="search-{{ course_code }}" placeholder="Søk i eksamstekst"></input>
 </div>

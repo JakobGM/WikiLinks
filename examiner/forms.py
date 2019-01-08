@@ -118,17 +118,22 @@ class VerifyExamForm(forms.ModelForm):
             exam_pdf.save()
 
 
-class ExamsSearchForm(forms.ModelForm):
-    courses = forms.ModelMultipleChoiceField(
+class ExamsSearchForm(forms.Form):
+    """Form used for searching for exam archive for specific course."""
+
+    # Using ModelMultipleChoiceField here even though only one course is
+    # intendede to be submitted at a time. The multiple choice styling looks
+    # better in the frontend.
+    course = forms.ModelMultipleChoiceField(
         label=_('Fag'),
         queryset=Course.objects.all(),
         widget=autocomplete.ModelSelect2Multiple(
-            url='semesterpage-course-autocomplete',
+            url='examiner:course_autocomplete',
             attrs={
                 'data-placeholder': _('Fagkode/fagnavn'),
 
-                # Only trigger autocompletion after 3 characters have been typed
-                'data-minimum-input-length': 3,
+                # Only trigger autocompletion after 1 character has been typed
+                'data-minimum-input-length': 1,
             },
         )
     )
@@ -136,19 +141,22 @@ class ExamsSearchForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.form_id = 'verify-form'
+        self.helper.form_id = 'search-form'
         self.helper.form_method = 'post'
-        self.helper.form_action = 'verify'
+
+        # Post to same page
+        self.helper.form_action = ''
+
+        # Hide field labels
+        self.helper.form_show_labels = False
 
         self.helper.layout = Layout(
             Fieldset(
-                _('PDF klassifisering'),
-                'courses',
-            ),
-            Submit(
-                'search',
-                _('&check; Søk'),
-                css_class='btn btn-success btn-block',
+                _('Tast inn fag'),
+                Field(
+                    'course',
+                    onchange='search();',
+                    css_class='form-control-lg',
+                ),
             ),
         )
-        self.fields['pdf'].required = True

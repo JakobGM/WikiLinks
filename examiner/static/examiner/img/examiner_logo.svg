@@ -1,0 +1,32 @@
+<svg
+  version="1.1"
+  id="Layer_1"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  x="0px"
+  y="0px"
+
+  viewBox="0 0 460 460"
+  style="enable-background:new 0 0 460 460; filter: grayscale(100%);"
+  xml:space="preserve"
+  height="200px">
+  <g id="XMLID_444_">
+          <polygon id="XMLID_445_" style="fill:#FA6121;" points="155,0 5,0 5,460 155,460 165,230 	"/>
+          <circle id="XMLID_446_" style="fill:#BB4919;" cx="80" cy="400" r="30"/>
+          <polygon id="XMLID_447_" style="fill:#FFFFFF;" points="35,290 125,290 125,90 80,80 35,90 	"/>
+          <rect id="XMLID_448_" x="35" y="30" style="fill:#8BC0FF;" width="90" height="60"/>
+          <rect id="XMLID_449_" x="305" style="fill:#466289;" width="150" height="460"/>
+          <circle id="XMLID_450_" style="fill:#233145;" cx="380" cy="400" r="30"/>
+          <polygon id="XMLID_451_" style="fill:#DAE0E7;" points="335,290 425,290 425,90 380,80 335,90 	"/>
+          <rect id="XMLID_452_" x="335" y="30" style="fill:#3897FF;" width="90" height="60"/>
+          <polygon id="XMLID_453_" style="fill:#FFB739;" points="155,0 155,460 230,460 240,230 230,0 	"/>
+          <path id="XMLID_454_" style="fill:#F67A21;" d="M200,400c0,16.568,13.432,30,30,30l10-30l-10-30C213.431,370,200,383.432,200,400z"
+                  />
+          <polygon id="XMLID_455_" style="fill:#FFFFFF;" points="185,90 185,290 230,290 240,190 230,90 207.5,80 	"/>
+          <rect id="XMLID_458_" x="230" style="fill:#FB992D;" width="75" height="460"/>
+          <path id="XMLID_459_" style="fill:#BB4919;" d="M260,400c0-16.568-13.431-30-30-30v60C246.569,430,260,416.568,260,400z"/>
+          <polygon id="XMLID_460_" style="fill:#DAE0E7;" points="230,290 275,290 275,90 252.5,80 230,90 	"/>
+          <polygon id="XMLID_461_" style="fill:#8BC0FF;" points="230,30 185,30 185,90 230,90 240,60 	"/>
+          <rect id="XMLID_462_" x="230" y="30" style="fill:#3897FF;" width="45" height="60"/>
+  </g>
+</svg>

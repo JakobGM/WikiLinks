@@ -8,9 +8,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 
-from examiner.forms import VerifyExamForm
+from examiner.forms import ExamsSearchForm, VerifyExamForm
 from examiner.models import DocumentInfo, DocumentInfoSource, Pdf, PdfUrl
 from semesterpage.models import Course, Semester, StudyProgram
+from semesterpage.views import CourseAutocomplete
 
 
 DEFAULT_SEMESTER_PK = getattr(settings, 'DEFAULT_SEMESTER_PK', 1)
@@ -87,6 +88,38 @@ class VerifyView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         form.save(commit=True)
         return redirect(to='examiner:verify_random')
+
+
+class CourseWithExamsAutocomplete(CourseAutocomplete):
+    """Autocompletion view for courses with related exams."""
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(docinfos__isnull=False).distinct()
+
+
+class SearchView(FormView):
+    """View for course search."""
+
+    template_name = 'examiner/search.html'
+    form_class = ExamsSearchForm
+    http_method_names = ['get', 'post']
+
+    def form_valid(self, form):
+        """Redirect to exam archive for course."""
+        # Get the first element, because we use a multiple choice field for
+        # aesthetic reasons.
+        course = form.cleaned_data['course'][0]
+        return redirect(
+            to='examiner:course',
+            course_code=course.course_code,
+        )
+
+    def get_context_data(self, **kwargs):
+        """Add navigation bar content."""
+        context = super().get_context_data(**kwargs)
+        add_context(request=self.request, context=context)
+        return context
 
 
 def add_context(request, context):

@@ -10,8 +10,8 @@ import pytest
 pytestmark = pytest.mark.skipif(
     (
         'TRAVIS' in environ or
-        environ['LC_ALL'] != 'C' or
-        environ['PYTHONIOENCODING'] != 'UTF-8'
+        environ.get('LC_ALL') != 'C' or
+        environ.get('PYTHONIOENCODING') != 'UTF-8'
     ),
     reason='Travis does not support Tesseract 4.0 at this time.',
 )

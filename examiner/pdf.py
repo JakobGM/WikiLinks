@@ -16,7 +16,7 @@ OCR_ENABLED = True
 logger = logging.getLogger()
 
 
-if environ['LC_ALL'] != 'C' or environ['PYTHONIOENCODING'] != 'UTF-8':
+if environ.get('LC_ALL') != 'C' or environ.get('PYTHONIOENCODING') != 'UTF-8':
     logger.critical(
         'PDF OCR disabled! You need to set environment variables: '
         'export LC_ALL=C && export PYTHONIOENCODING=UTF-8'

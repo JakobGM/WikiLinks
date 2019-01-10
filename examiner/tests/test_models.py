@@ -416,7 +416,6 @@ class TestExamClassification:
         # But now we add a cover page and classify its content
         PdfPage.objects.create(text=text, pdf=pdf, number=0)
         pdf.refresh_from_db()
-        print(pdf.pages.first().text)
         assert pdf.classify() is True
 
         # And all metadata should be saved

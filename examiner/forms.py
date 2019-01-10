@@ -112,10 +112,15 @@ class VerifyExamForm(forms.ModelForm):
             exam_pdf, _ = DocumentInfoSource.objects.get_or_create(
                 document_info=docinfo,
                 pdf=pdf,
-                verified_by__isnull=False,
             )
             exam_pdf.verified_by.add(verifier)
             exam_pdf.save()
+
+        # Remove all unverified document infos for this PDF
+        DocumentInfoSource.objects.filter(
+            pdf=pdf,
+            verified_by__isnull=True,
+        ).delete()
 
 
 class ExamsSearchForm(forms.Form):

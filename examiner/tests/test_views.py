@@ -103,13 +103,16 @@ def test_verify_random_pdf_view(client, django_user_model):
         assert getattr(docinfo1, key) == value
         assert getattr(docinfo2, key) == value
 
-    # The two other existing relations remain
-    assert DocumentInfoSource.objects.filter(
+    # The two other unverified infos have now been removed
+    assert not DocumentInfoSource.objects.filter(
         verified_by__isnull=True,
-    ).count() == 2
+    ).exists()
 
     # And we have alltogether 3 DocumentInfo objects
     assert DocumentInfo.objects.count() == 3
+
+    # And only two through relations
+    assert DocumentInfoSource.objects.count() == 2
 
 
 @pytest.mark.django_db

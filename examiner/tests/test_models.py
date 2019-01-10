@@ -456,6 +456,18 @@ class TestExamClassification:
         pdf = Pdf.objects.get(id=pdf.id)
         assert pdf.exams.count() == 2
 
+        # If a PDF has already verified document info, classify should by a
+        # no-op.
+        DocumentInfoSource.objects.all().delete()
+        verified_exam_pdf = DocumentInfoSource.objects.create(
+            document_info=verified_exam,
+            pdf=pdf,
+        )
+        verified_exam_pdf.verified_by.add(user)
+        pdf.classify(save=True)
+        assert pdf.exams.count() == 1
+        assert pdf.exams.first() == verified_exam
+
     @pytest.mark.skipif('TRAVIS' in os.environ, reason='ASCII encoding error')
     @pytest.mark.django_db
     def test_classify_pdf_with_several_course_codes(self):

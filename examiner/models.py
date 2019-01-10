@@ -407,6 +407,16 @@ class Pdf(models.Model):
                 first_page = self.pages.first()
 
         assert first_page.number == 0
+
+        # Early return if this PDF has already a verified DocumentInfo
+        if (
+            DocumentInfoSource
+            .objects
+            .filter(pdf=self, verified_by__isnull=False)
+            .exists()
+        ):
+            return True
+
         pdf_parser = PdfParser(text=first_page.text)
 
         # All the document informations belonging to URLs which host this PDF

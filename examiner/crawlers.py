@@ -80,15 +80,10 @@ class MathematicalSciencesCourseCrawler:
                 continue
 
             soup = bs(response.content, 'html.parser')
-            patterns = r'(?:' + r'|'.join([
-                r'old exams',
-                r'gamle eksamensoppgaver',
-                r'eksamensoppgaver',
-                r'tidligere eksamener',
-                r'earlier exams',
-                r'old exam sets',
-                r'eksamenssett',
-            ]) + r')'
+            patterns = r'.*(?:' + r'|'.join([
+                r'exam',
+                r'eksam',
+            ]) + r').*'
             link = soup.find(
                 'a',
                 text=re.compile(patterns, re.IGNORECASE),
@@ -109,6 +104,10 @@ class MathematicalSciencesCourseCrawler:
         result = set()
 
         for exams_url in exams_urls:
+            if exams_url[-4:] == '.pdf':
+                # This is PDF so we can add it directly to the results
+                result.add(exams_url)
+                continue
             try:
                 response = requests.get(exams_url, timeout=2)
             except Exception:

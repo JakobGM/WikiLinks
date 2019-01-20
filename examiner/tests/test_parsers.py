@@ -345,6 +345,15 @@ ExamURLs = (
         language=Language.BOKMAL,
         probably_exam=False,
     ),
+    # ExamURL(  # TODO
+    #     url=r'http://www.math.ntnu.no/emner/TMA4215/2012h/ovinger/ov06/ov06.pdf',
+    #     code='TMA4215',
+    #     year=2012,
+    #     season=Season.AUTUMN,
+    #     solutions=True,
+    #     language=Language.BOKMAL,
+    #     probably_exam=False,
+    # ),
 )
 
 class TestExamURLParser:

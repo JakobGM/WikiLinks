@@ -1,0 +1,76 @@
+version: '3'
+
+services:
+  database:
+    image: postgres:10
+    container_name: database
+    expose:
+      - 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - postgres_backups:/pg_backups
+    environment:
+      - POSTGRES_USER=postgres
+      - POSGRES_PASSWORD=postgres
+      - TZ=Europe/Oslo
+      - LANG=en_US.UTF-8
+    networks:
+      - database_network
+
+  django:
+    container_name: django
+    env_file:
+      - .env
+    build: .
+    volumes:
+      - .:/code
+      - static_volume:/static
+      - media_volume:/media
+    depends_on:
+      - database
+    networks:
+      - nginx_network
+      - database_network
+
+  nginx:
+    image: linuxserver/letsencrypt
+    container_name: nginx
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - nginx_data:/config
+      - ./config/nginx/production.conf:/config/nginx/site-confs/default
+      - ./config/dns/digitalocean.ini:/config/dns-conf/digitalocean.ini
+      - static_volume:/static
+      - media_volume:/media
+    depends_on:
+      - django
+    networks:
+      - nginx_network
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - EMAIL=jakobgm@gmail.com
+      - URL=wikilinks.no
+      - EXTRA_DOMAINS=fysmat.no
+      - SUBDOMAINS=wildcard
+      - TZ=Europe/Oslo
+      - VALIDATION=dns
+      - DNSPLUGIN=digitalocean
+      - STAGING=false
+
+
+volumes:
+  postgres_data:
+  postgres_backups:
+  static_volume:
+  media_volume:
+  nginx_data:
+
+
+networks:
+  nginx_network:
+    driver: bridge
+  database_network:
+    driver: bridge

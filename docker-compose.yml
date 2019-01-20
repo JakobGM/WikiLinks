@@ -52,9 +52,8 @@ services:
       - PUID=1000
       - PGID=1000
       - EMAIL=jakobgm@gmail.com
-      - URL=wikilinks.no
-      - EXTRA_DOMAINS=fysmat.no
-      - SUBDOMAINS=wildcard
+      - URL=fysmat.no
+      - EXTRA_DOMAINS=wikilinks.no,arkiv.wikilinks.no,fysmat.wikilinks.no,eksamen.wikilinks.no,kyb.wikilinks.no,data.wikilinks.no
       - TZ=Europe/Oslo
       - VALIDATION=dns
       - DNSPLUGIN=digitalocean

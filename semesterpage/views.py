@@ -227,6 +227,7 @@ def new_course_url(request, course_pk: str) -> HttpResponse:
     course.save(update_fields=['homepage'])
     return redirect(course.homepage)
 
+
 @login_required
 def remove_course(request, course_pk: str) -> HttpResponse:
     """
@@ -238,13 +239,15 @@ def remove_course(request, course_pk: str) -> HttpResponse:
 
 
 class CourseAutocomplete(autocomplete.Select2QuerySetView):
+    LOGIN_REQUIRED = False
+
     def get_queryset(self):
         """
         Returns a queryset used for autocompletion, restricted based
         on the user input.
         """
         # Only let logged in users access all the course information
-        if not self.request.user.is_authenticated():
+        if self.LOGIN_REQUIRED and not self.request.user.is_authenticated():
             return Course.objects.none()
 
         qs = Course.objects.all()

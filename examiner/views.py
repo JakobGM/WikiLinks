@@ -94,6 +94,8 @@ class VerifyView(LoginRequiredMixin, FormView):
 class CourseWithExamsAutocomplete(CourseAutocomplete):
     """Autocompletion view for courses with related exams."""
 
+    LOGIN_REQUIRED = False
+
     def get_queryset(self):
         qs = super().get_queryset()
         return qs.filter(docinfos__isnull=False).distinct()

@@ -477,7 +477,7 @@ class TestExamClassification:
             Exsamen i TMA4000/10 og TIØ4000
             Dato: 11.08.99
             Løsningsforslag
-        """
+        """.encode('utf-8')
         content = ContentFile(text)
         pdf.file.save(content=content, name=sha1_hash + '.pdf', save=True)
         PdfPage.objects.create(text=text, pdf=pdf, number=0)

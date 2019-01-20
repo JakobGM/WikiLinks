@@ -266,7 +266,7 @@ ExamURLs = (
     ),
     ExamURL(
         url=r'https://wiki.math.ntnu.no/lib/exe/fetch.php?tok=9e4910&media=http%3A%2F%2Fwww.math.ntnu.no%2Femner%2FTMA4110%2Feksamen%2Fttm4115v15_ny.pdf',
-        code='TMA4110',
+        code='TTM4115',
         year=2015,
         season=Season.SPRING,
         solutions=False,

@@ -4,6 +4,33 @@ from typing import List, Optional, Tuple
 from django.utils.encoding import uri_to_iri
 
 
+COURSE_LETTERS = [
+    'BI',
+    'FI',
+    'HLS',
+    'IT',
+    'KJ',
+    'KULT',
+    'MA',
+    'MFEL',
+    'PSY',
+    'TBT',
+    'TDT',
+    'TFE',
+    'TFY',
+    'TGB',
+    'TIØ',
+    'TKT',
+    'TMA',
+    'TMM',
+    'TMT',
+    'TT',
+    'TTK',
+    'TTM',
+    'TTT',
+]
+
+
 class Season:
     """
     The season when the exam took place.
@@ -47,7 +74,7 @@ class ExamURLParser:
 
     :param url: Full URL pointing to http(s) hosted exam PDF file.
     """
-    COURSE_PATTERNS = r'(?:tma|tfy)_?\d\d\d\d'
+    COURSE_PATTERNS = r'(?:' + '|'.join(COURSE_LETTERS) + r') ?\d\d\d\d'
     AUTUM_SEASONS = (
         'h',
         'des',
@@ -434,16 +461,9 @@ SOLUTIONS_WORDS_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-COURSE_CODES = [
-    r'TMA ?\d\d\d\d',
-    r'MA ?\d\d\d\d',
-    r'TFY ?\d\d\d\d',
-    r'SIF ?\d\d\d\d',
-    r'TIØ ?\d\d\d\d',
-]
 COMBINING_COURSE = r'(?:/(\d{1,4}))?'   # e.g. TMA4123/24
 COURSE_CODES_PATTERN = re.compile(
-    r'((?:' + r'|'.join(COURSE_CODES) + r'))' + COMBINING_COURSE,
+    r'((?:' + r'|'.join(COURSE_LETTERS) + r') ?\d{3,4})' + COMBINING_COURSE,
     re.IGNORECASE,
 )
 

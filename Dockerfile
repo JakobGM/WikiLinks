@@ -33,6 +33,9 @@ RUN apk add --no-cache build-base jpeg-dev zlib-dev
 # Required for psycopg2
 RUN apk add --no-cache postgresql postgresql-dev
 
+# Required for PDF to TIFF conversion
+RUN apk add --no-cache ghostscript
+
 # Create working directory for application code
 RUN mkdir /code
 WORKDIR /code

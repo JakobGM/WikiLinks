@@ -163,7 +163,7 @@ class DvikanCrawler:
             soup = bs(response.content, 'html.parser')
             pdf_links = soup.find_all('a', href=re.compile(r'\.pdf$'))
             for pdf_link in pdf_links:
-                yield cls.BASE_URL + pdf_link.get('href')
+                yield course_url + pdf_link.get('href')
         return
 
     @staticmethod

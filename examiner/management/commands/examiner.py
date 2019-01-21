@@ -3,7 +3,7 @@ from django.db.models import Q
 
 from tqdm import tqdm
 
-from examiner.crawlers import MathematicalSciencesCrawler
+from examiner.crawlers import DvikanCrawler, MathematicalSciencesCrawler
 from examiner.models import Pdf, PdfUrl
 from examiner.parsers import PdfParser
 from examiner.pdf import OCR_ENABLED
@@ -82,8 +82,14 @@ class Command(BaseCommand):
 
         self.stdout.write(f'Crawling courses: {courses}')
         new_urls = 0
-        tma_crawlers = MathematicalSciencesCrawler(courses=courses)
-        for crawler in tma_crawlers:
+
+        crawlers = MathematicalSciencesCrawler(courses=courses)
+
+        # Add Dvikan crawler if all courses are being crawled
+        if course_code == 'ALL':
+            crawlers = (DvikanCrawler(), *crawlers)
+
+        for crawler in crawlers:
             self.stdout.write(self.style.SUCCESS(repr(crawler)))
             for url in crawler.pdf_urls():
                 exam_url, new = PdfUrl.objects.get_or_create(url=url)

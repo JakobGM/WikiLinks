@@ -1,5 +1,5 @@
 import re
-from typing import Iterable, List
+from typing import Iterable, List, Optional
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup as bs
@@ -128,3 +128,48 @@ class MathematicalSciencesCourseCrawler:
 
     def __bool__(self) -> bool:
         return self.has_content
+
+
+class DvikanCrawler:
+    """Crawler for for dvikan.no exam PDFs."""
+
+    BASE_URL = 'https://dvikan.no/gamle-ntnu-eksamener/'
+
+    @classmethod
+    def course_urls(cls) -> Iterable[str]:
+        """Get all course subfolders."""
+        response = cls.get(cls.BASE_URL)
+        if not response:
+            return []
+
+        soup = bs(response.content, 'html.parser')
+        links = soup.find_all('a')
+        return (
+            cls.BASE_URL + link.get('href')
+            for link
+            in links
+            if link.get('href') != 'https://dvikan.no'
+            and link.get('href', 'x')[-1] == '/'
+        )
+
+    @classmethod
+    def pdf_urls(cls) -> Iterable[str]:
+        """Get all hosted PDFs from dvikan.no/gamle-ntnu-eksamener."""
+        for course_url in cls.course_urls():
+            response = cls.get(course_url)
+            if not response:
+                continue
+
+            soup = bs(response.content, 'html.parser')
+            pdf_links = soup.find_all('a', href=re.compile(r'\.pdf$'))
+            for pdf_link in pdf_links:
+                yield cls.BASE_URL + pdf_link.get('href')
+        return
+
+    @staticmethod
+    def get(url: str) -> Optional[requests.models.Response]:
+        """Get URL content with exception safeguarding."""
+        try:
+            return requests.get(url, timeout=2)
+        except Exception:
+            return None

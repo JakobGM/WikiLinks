@@ -33,7 +33,6 @@ class ExamsView(ListView):
                 F('year').desc(nulls_last=True),
                 F('solutions').desc(),
             )
-            .filter(content_type=DocumentInfo.EXAM)
         )
         if course_code:
             docinfos = docinfos.filter(

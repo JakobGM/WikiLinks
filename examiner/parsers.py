@@ -7,6 +7,7 @@ from django.utils.encoding import uri_to_iri
 COURSE_LETTERS = [
     'BI',
     'FI',
+    'FY',
     'HLS',
     'IT',
     'KJ',

@@ -50,7 +50,7 @@ class VerifyExamForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_id = 'verify-form'
         self.helper.form_method = 'post'
-        self.helper.form_action = 'verify'
+        self.helper.form_action = reverse('examiner:verify_random')
 
         self.helper.layout = Layout(
             Fieldset(

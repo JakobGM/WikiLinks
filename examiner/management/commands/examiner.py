@@ -126,11 +126,15 @@ class Command(BaseCommand):
         successes = 0
         errors = 0
         for pdf in Pdf.objects.all():
-            classify_success = pdf.classify(
-                read=True,
-                allow_ocr=True,
-                save=True,
-            )
+            try:
+                classify_success = pdf.classify(
+                    read=True,
+                    allow_ocr=True,
+                    save=True,
+                )
+            except Exception:
+                classify_success = False
+
             if not classify_success:
                 errors += 1
                 self.stdout.write(self.style.ERROR(f'PDF classify error!'))

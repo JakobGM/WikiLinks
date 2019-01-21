@@ -354,6 +354,15 @@ ExamURLs = (
     #     language=Language.BOKMAL,
     #     probably_exam=False,
     # ),
+    ExamURL(
+        url=r'http://www.math.ntnu.no/emner/TMA4240/eksamen/lsf/eksJun15l.pdf',
+        code='TMA4240',
+        year=2015,
+        season=Season.SPRING,
+        solutions=True,
+        language=Language.BOKMAL,
+        probably_exam=True,
+    ),
 )
 
 class TestExamURLParser:

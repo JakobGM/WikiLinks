@@ -236,10 +236,10 @@ class ExamURLParser:
     @property
     def solutions(self) -> bool:
         solution_pattern = re.compile(
-            r'(lf|losning|loesning|loys|fasit|solution|sol[^a-zA-Z])',
+            r'(lf|lsf|losning|loesning|loys|fasit|solution|sol[^a-zA-Z])',
             re.IGNORECASE,
         )
-        solution = solution_pattern.findall(self.filename)
+        solution = solution_pattern.findall(self.parsed_url)
         if solution:
             return True
         return False

@@ -134,18 +134,21 @@ class DocumentInfoQueryset(models.QuerySet):
                 docinfo.language or 'Ukjent',
                 [],
             )
-            try:
-                url = DocumentInfoSource.objects.filter(
-                    document_info=docinfo,
-                    verified_by__isnull=False,
-                ).first().pdf.hosted_at.filter(dead_link=False).first()
-            except (AttributeError, DocumentInfoSource.DoesNotExist):
-                url = DocumentInfoSource.objects.filter(
-                    document_info=docinfo,
-                ).first().pdf.hosted_at.filter(dead_link=False).first()
+            for pdf in docinfo.pdfs.all():
+                url = pdf.hosted_at.filter(dead_link=False).first()
+                if url not in urls:
+                    urls.append(url)
 
-            if url not in urls:
-                urls.append(url)
+            # TODO: Make this type of logic work
+            # try:
+            #     url = DocumentInfoSource.objects.filter(
+            #         document_info=docinfo,
+            #         verified_by__isnull=False,
+            #     ).first().pdf.hosted_at.filter(dead_link=False).first()
+            # except (AttributeError, DocumentInfoSource.DoesNotExist):
+            #     url = DocumentInfoSource.objects.filter(
+            #         document_info=docinfo,
+            #     ).first().pdf.hosted_at.filter(dead_link=False).first()
 
         return organization
 

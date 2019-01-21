@@ -41,5 +41,19 @@
 </article>
 {% endfor %}
 
+{# Shout-out for the examiner app #}
+<article>
+<a class="kategori" href="{% url 'examiner:search' %}">
+  <img class="course-logo" src="{% static "examiner/img/examiner_logo.svg" %}" alt="eksamensarkiv">
+  <h2>Eksamener</h2></a>
+  <ul>
+    <li style="list-style-image: url('{% static "semesterpage/link_categories/" %}exams.svg');">
+      <a href="{% url 'examiner:search' %}">
+        WikiLinks eksamensarkiv
+        <span style="color: #2ECC40;"><i>NYTT!</i></span></a>
+    </li>
+  </ul>
+<ul>
+
 </div>
 {% endblock %}

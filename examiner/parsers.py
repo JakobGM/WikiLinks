@@ -344,7 +344,7 @@ class ExamURLParser:
             self._probably_exam = True
             return self._continuation
 
-        exam_pattern = re.compile(r'(?:eksam|exam)', re.IGNORECASE)
+        exam_pattern = re.compile(r'(?:eksam|exam|dvikan)', re.IGNORECASE)
         self._probably_exam = bool(re.search(exam_pattern, self.parsed_url))
         return self._probably_exam
 

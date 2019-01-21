@@ -381,6 +381,7 @@ BOKMAL_WORDS = [
     'eksamen',
     'løsning',
     'løsningsforslag',
+    'løsningsskisse',
     'oppgave',
     'faglig',
     'fra-til',
@@ -452,6 +453,7 @@ SOLUTIONS_WORDS = [
     r'LF',
     r'løsningsforslag',
     r'løysingsforslag',
+    r'løsningsskisse',
     r'løsning',
     r'solution',
     r'solutions',
@@ -609,6 +611,6 @@ class PdfParser:
             f'season={self.season} '
             f'language={self.language} '
             f'solutions={self.solutions} '
-            f'probably_exam={self.probably_exam}'
+            f'content_type={self.content_type}'
             '>'
         )

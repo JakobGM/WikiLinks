@@ -589,6 +589,25 @@ ExamPDFs = [
         language=Language.BOKMAL,
         content_type=DocumentInfo.EXAM,
     ),
+    ExamPDF(  # Contains specific solutions word 'Løsningsskisse'
+        pages=[
+            """
+            TMA4245 Statistikk Eksamen juni 2015
+            Norges teknisk-naturvitenskapelige universitet
+            Institutt for matematiske fag Løsningsskisse Oppgave 1 a)
+            På figuren er det vanskelig åse noen trend for
+            samsvarende verdier for de to variablene X og Y .
+            Variablene kan se ut som uavhengige. Derfor vil korrelasjon være
+            (tilnærmet) 0. p p EX ≈ 2, Var(X) ≈ 1, EY ≈ 0, Var(Y ) ≈ 1.
+            """
+        ],
+        course_codes=['TMA4245'],
+        year=2015,
+        season=Season.SPRING,
+        solutions=True,
+        language=Language.BOKMAL,
+        content_type=DocumentInfo.EXAM,
+    ),
 ]
 
 

@@ -2,27 +2,26 @@ from gettext import gettext as _
 
 from django.conf import settings
 from django.contrib import admin
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
-from django.core.mail import EmailMessage, mail_admins
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpRequest
 from django.shortcuts import redirect, render, reverse as django_reverse
-from django.urls import resolve
 
 from dal import autocomplete
 from rules.contrib.views import permission_required, objectgetter
-from subdomains.utils import reverse
 
-from kokekunster.settings import ADMINS, SERVER_EMAIL
 from dataporten.models import DataportenUser
 from .adapters import reconcile_dataporten_data
-from .admin import CourseAdmin
-from .models import Course, Options, Semester, StudyProgram
+from .models import Course, Semester, StudyProgram
 
-DEFAULT_STUDY_PROGRAM_SLUG = getattr(settings, 'DEFAULT_STUDY_PROGRAM_SLUG', 'fysmat')
+DEFAULT_STUDY_PROGRAM_SLUG = getattr(
+    settings,
+    'DEFAULT_STUDY_PROGRAM_SLUG',
+    'fysmat',
+)
 DEFAULT_SEMESTER_PK = getattr(settings, 'DEFAULT_SEMESTER_PK', 1)
+
 
 def homepage(request):
     """
@@ -44,18 +43,26 @@ def homepage(request):
         semester = Semester.objects.get(pk=semester_pk)
         return redirect(to=semester.get_absolute_url())
 
+
 def studentpage(request, homepage):
-    # NB! In the following view function, user and request.user is not necessarily
-    # the same user. This should become more clear in the next refactoring
+    # NB! In the following view function, user and request.user is not
+    # necessarily the same user. This should become more clear in the next
+    # refactoring.
     try:
         # The homepage is given by the (Feide) username
-        user = User.objects\
-                .select_related('options', 'contributor')\
-                .prefetch_related('options__self_chosen_courses__links')\
-                .get(username=homepage)
+        user = (
+            User
+            .objects
+            .select_related('options', 'contributor')
+            .prefetch_related('options__self_chosen_courses__links')
+            .get(username=homepage)
+        )
 
     except User.DoesNotExist:
-        raise Http404(_('Fant ingen studieprogram eller brukerside med navnet "%s"') % homepage)
+        raise Http404(
+            _('Fant ingen studieprogram eller brukerside med navnet "%s"')
+            % homepage
+        )
 
     if request.user.is_authenticated \
             and isinstance(request.user, DataportenUser) \
@@ -70,18 +77,23 @@ def studentpage(request, homepage):
     request.session['homepage'] = homepage
 
     return render(request, 'semesterpage/userpage-courses.html', {
-           'semester': user.options,
-           'courses': user.options.courses,
-           'study_programs': StudyProgram.objects.filter(published=True),
-           'calendar_name': get_calendar_name(request),
-           'user': request.user,
-           'header_text': f' / {user.username}',
-           'student_page': True,
-       }
-    )
+        'semester': user.options,
+        'courses': user.options.courses,
+        'study_programs': StudyProgram.objects.filter(published=True),
+        'calendar_name': get_calendar_name(request),
+        'user': request.user,
+        'header_text': f' / {user.username}',
+        'student_page': True,
+    })
 
 
-def semester_view(request, study_program, main_profile=None, semester_number=None, save_location=True):
+def semester_view(
+    request,
+    study_program,
+    main_profile=None,
+    semester_number=None,
+    save_location=True,
+):
     """
     Generates the link portal for a given semester in a given program code
     """
@@ -92,12 +104,21 @@ def semester_view(request, study_program, main_profile=None, semester_number=Non
             # This URL might refer to a userpage instead
             return studentpage(request, study_program)
         raise Http404(
-            _('%s. semester ved hovedprofilen "%s" knyttet til studieprogrammet "%s" eksisterer ikke')
-            % ((semester_number or 'Et'), main_profile or 'felles', study_program)
+            _(
+                '%s. semester '
+                'ved hovedprofilen "%s" '
+                'knyttet til studieprogrammet "%s" eksisterer ikke'
+            )
+            % (
+                (semester_number or 'Et'),
+                main_profile or 'felles',
+                study_program,
+            )
         )
 
     if save_location:
-        # Save the deliberate change of location by user in the session, as the semester has been found successfully
+        # Save the deliberate change of location by user in the session,
+        # as the semester has been found successfully
         request.session['semester_pk'] = semester.pk
         request.session['study_program_slug'] = semester.study_program.slug
 
@@ -165,6 +186,7 @@ def get_calendar_name(request):
     # Saved in session
     return request.session.get('calendar_name', None)
 
+
 def calendar(request, calendar_name):
     """
     Saves the users choice of calendarname and then redirects
@@ -174,6 +196,7 @@ def calendar(request, calendar_name):
         request.user.options.calendar_name = calendar_name
         request.user.options.save()
     return redirect(to='https://ntnu.1024.no/' + calendar_name)
+
 
 def admin_login(request: HttpRequest) -> HttpResponse:
     """
@@ -191,6 +214,7 @@ def admin_login(request: HttpRequest) -> HttpResponse:
         # The user has not yet performed the login
         return admin.site.login(request)
 
+
 def admin_course_history(request: HttpRequest, course_pk: str) -> HttpResponse:
     """
     Only allows superusers to view the history of a Course model object in the
@@ -205,6 +229,7 @@ def admin_course_history(request: HttpRequest, course_pk: str) -> HttpResponse:
         # Don't need to do anything overly clever here, as this is not a normal
         # use case at all.
         return redirect('/')
+
 
 @permission_required(
     'semesterpage.change_course',

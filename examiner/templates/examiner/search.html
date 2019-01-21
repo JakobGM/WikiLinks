@@ -59,6 +59,15 @@ function search() {
     </div>';
 
 }
+
+/* Force page reload when user hits back button */
+/* Prevents eternal reload screen */
+/* Taken from: https://codepen.io/derekjp/pen/Bguwz */
+$(window).bind("pageshow", function(event) {
+    if (event.originalEvent.persisted) {
+        window.location.reload();
+    }
+});
 </script>
 
 {% endblock %}

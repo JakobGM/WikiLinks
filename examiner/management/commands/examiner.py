@@ -45,6 +45,12 @@ class Command(BaseCommand):
             help='If GUI tools can be invoked by the command.',
         )
         parser.add_argument(
+            '--retry',
+            action='store_true',
+            dest='retry',
+            help='Retry earlier failed attempts',
+        )
+        parser.add_argument(
             'course_code',
             nargs='?',
             type=str,
@@ -54,12 +60,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         course_code = options['course_code'].upper()
+        retry = options['retry']
+
         if options['crawl']:
             self.crawl(course_code=course_code)
         if options['backup']:
             if not OCR_ENABLED:
                 raise CommandError('OCR dependencies not properly installed!')
-            self.backup(course_code=course_code)
+            self.backup(course_code=course_code, retry=retry)
         if options['classify']:
             if not OCR_ENABLED:
                 raise CommandError('OCR dependencies not properly installed!')
@@ -101,12 +109,12 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f'{new_urls} new URLs found!'))
 
-    def backup(self, course_code: str) -> None:
+    def backup(self, course_code: str, retry: bool) -> None:
         """Backup PDF URLs already scraped and saved in the database."""
         exam_urls = (
             PdfUrl.objects
             .filter(scraped_pdf__isnull=True)
-            .exclude(dead_link=True)
+            .exclude(dead_link=not retry)
         )
         if course_code != 'ALL':
             exam_urls = exam_urls.filter(
@@ -119,7 +127,7 @@ class Command(BaseCommand):
             if new:
                 new_backups += 1
                 self.stdout.write('[NEW]', ending='')
-            self.stdout.write(f'Backed up {repr(exam_url.exam)}')
+            self.stdout.write(f'Backed up {exam_url.url}')
 
         self.stdout.write(self.style.SUCCESS(
             f'{new_backups} new PDFs backed up!',

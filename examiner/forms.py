@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.helper import FormHelper
@@ -73,11 +74,11 @@ class VerifyExamForm(forms.ModelForm):
                 _('&check; Verifiser'),
                 css_class='btn btn-success btn-block',
             ),
-            Submit(
-                'trash',
-                _('✖ Slett'),
-                css_class='btn btn-danger btn-block',
-            ),
+            # Submit(
+            #     'trash',
+            #     _('✖ Slett'),
+            #     css_class='btn btn-danger btn-block',
+            # ),
         )
 
         # Change semester type radio button labels

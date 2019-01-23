@@ -1,7 +1,11 @@
+import logging
 import re
 from typing import List, Optional, Tuple
 
 from django.utils.encoding import uri_to_iri
+
+
+logger = logging.getLogger()
 
 
 COURSE_LETTERS = [
@@ -102,6 +106,11 @@ class ExamURLParser:
         self.parsed_filename = self.tokenize(
             uri_to_iri(self.parsed_url).rsplit('/')[-1],
         )
+
+        if url[:30] == 'https://www.ntnu.no/documents/':
+            # Special case for physics exam URL which is easy to parse
+            self.parse_physics_url()
+            return
 
         # First try to retrieve information from solely the filename
         self._year, self._season = self.find_date(string=self.parsed_filename)
@@ -236,14 +245,16 @@ class ExamURLParser:
 
     @property
     def solutions(self) -> bool:
+        if hasattr(self, '_solutions'):
+            return self._solutions
+
         solution_pattern = re.compile(
             r'(lf|lsf|losning|loesning|loys|fasit|solution|sol[^a-zA-Z])',
             re.IGNORECASE,
         )
         solution = solution_pattern.findall(self.parsed_url)
-        if solution:
-            return True
-        return False
+        self._solutions = bool(solution)
+        return self._solutions
 
     @property
     def continuation(self) -> bool:
@@ -347,6 +358,48 @@ class ExamURLParser:
         exam_pattern = re.compile(r'(?:eksam|exam|dvikan)', re.IGNORECASE)
         self._probably_exam = bool(re.search(exam_pattern, self.parsed_url))
         return self._probably_exam
+
+    def parse_physics_url(self) -> None:
+        """
+        Parse physics url.
+
+        Physics URL have the following (example) format:
+        <-e932-46f4-a190-b262bcbcdb9a/<id1>/<id2>/E-FY1001-14des2017.pdf/<id3>
+        Which is an *E*xam for FY1001 on the 14th of december, 2017
+
+        We can therefore hardcode parsing of such URLs. The exam is assumed
+        to be Norwegian by default.
+        """
+        # All such URLs represent Norwegian (Bokmål) exams
+        self._probably_exam = True
+        self._language = Language.BOKMAL
+
+        filename = self.url.split('/')[-2]
+        solution, course, date = filename.split('-')
+        self.code = course.upper()
+
+        if solution.upper() == 'E':
+            self._solutions = False
+        elif solution.upper() == 'L':
+            self._solutions = True
+        else:
+            logger.error(f'Could not parse solutions for url {self.url}')
+            self._solutions = False
+
+        try:
+            self._year = int(date[-8:-4])
+        except ValueError:
+            logger.error(f'Could not parse year for url {self.url}')
+            self._year = None
+
+        if 'des' in date or 'nov' in date or 'jan' in date:
+            self._season = Season.AUTUMN
+        elif 'apr' in date or 'mai' in date or 'jun' in date:
+            self._season = Season.AUTUMN
+        elif 'aug' in date:
+            self._season = Season.CONTINUATION
+        else:
+            logger.error(f'Could not parse season for url {self.url}')
 
     def __repr__(self) -> str:
         """Return code string representation of Exam URL object."""

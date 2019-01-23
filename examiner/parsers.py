@@ -107,10 +107,19 @@ class ExamURLParser:
             uri_to_iri(self.parsed_url).rsplit('/')[-1],
         )
 
+        parts = uri_to_iri(self.parsed_url).rsplit('/')
+        self.parsed_filename = self.tokenize(parts[-1])
+
+        # Check if filename is not at the end of the URL
+        if parts[-1][-4:].lower() != '.pdf':
+            for part in parts:
+                if part[-4:].lower() == '.pdf':
+                    self.parsed_filename = part
+
         if url[:30] == 'https://www.ntnu.no/documents/':
             # Special case for physics exam URL which is easy to parse
-            self.parse_physics_url()
-            return
+            if self.parse_physics_url():
+                return
 
         # First try to retrieve information from solely the filename
         self._year, self._season = self.find_date(string=self.parsed_filename)
@@ -264,7 +273,7 @@ class ExamURLParser:
             return self._continuation
 
         kont_pattern = re.compile(r'(kont|aug)', re.IGNORECASE)
-        kont = kont_pattern.findall(self.filename)
+        kont = kont_pattern.findall(self.parsed_filename)
         self._continuation = bool(kont)
         return self._continuation
 
@@ -359,7 +368,7 @@ class ExamURLParser:
         self._probably_exam = bool(re.search(exam_pattern, self.parsed_url))
         return self._probably_exam
 
-    def parse_physics_url(self) -> None:
+    def parse_physics_url(self) -> bool:
         """
         Parse physics url.
 
@@ -369,37 +378,61 @@ class ExamURLParser:
 
         We can therefore hardcode parsing of such URLs. The exam is assumed
         to be Norwegian by default.
+
+        :return: True if success, otherwise False.
         """
         # All such URLs represent Norwegian (Bokmål) exams
         self._probably_exam = True
         self._language = Language.BOKMAL
 
-        filename = self.url.split('/')[-2]
-        solution, course, date = filename.split('-')
+        filename = self.url.split('/')[-2].replace('.pdf', '')
+
+        # Sometimes tokens are seperated with '_' instead of '-'
+        splitter = '-' if '-' in filename else '_'
+        try:
+            solution, course, date, *language = filename.split(splitter)
+        except ValueError:
+            # Not properly formatted, fall back to ordinary parsing method
+            return False
+
         self.code = course.upper()
 
-        if solution.upper() == 'E':
+        if solution.upper() in ('E', 'TYPOS'):
             self._solutions = False
-        elif solution.upper() == 'L':
+        elif solution.upper() in ('L', 'EL'):
             self._solutions = True
         else:
             logger.error(f'Could not parse solutions for url {self.url}')
-            self._solutions = False
+            return False
 
         try:
-            self._year = int(date[-8:-4])
-        except ValueError:
+            self._year = int(re.search(r'(\d\d\d\d)', date).group(0))
+        except AttributeError:
             logger.error(f'Could not parse year for url {self.url}')
             self._year = None
 
-        if 'des' in date or 'nov' in date or 'jan' in date:
+        if 'des' in date or 'nov' in date or 'jan' in date or 'okt' in date:
             self._season = Season.AUTUMN
-        elif 'apr' in date or 'mai' in date or 'jun' in date:
-            self._season = Season.AUTUMN
-        elif 'aug' in date:
+        elif (
+            'apr' in date
+            or 'mai' in date
+            or 'jun' in date
+            or 'mar' in date
+            or 'feb' in date
+        ):
+            self._season = Season.SPRING
+        elif 'aug' in date or 'jul' in date:
             self._season = Season.CONTINUATION
         else:
             logger.error(f'Could not parse season for url {self.url}')
+
+        if language:
+            if 'eng' in language[0].lower():
+                self._language = Language.ENGLISH
+            else:
+                logger.error(f'Could not parse language reminder {language}')
+
+        return True
 
     def __repr__(self) -> str:
         """Return code string representation of Exam URL object."""

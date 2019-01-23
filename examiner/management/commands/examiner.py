@@ -3,7 +3,11 @@ from django.db.models import Q
 
 from tqdm import tqdm
 
-from examiner.crawlers import DvikanCrawler, MathematicalSciencesCrawler
+from examiner.crawlers import (
+    DvikanCrawler,
+    MathematicalSciencesCrawler,
+    PhysicsCrawler,
+)
 from examiner.models import Pdf, PdfUrl
 from examiner.parsers import PdfParser
 from examiner.pdf import OCR_ENABLED
@@ -93,9 +97,9 @@ class Command(BaseCommand):
 
         crawlers = MathematicalSciencesCrawler(courses=courses)
 
-        # Add Dvikan crawler if all courses are being crawled
+        # Add Dvikan/Physics crawlers if all courses are being crawled
         if course_code == 'ALL':
-            crawlers = (DvikanCrawler(), *crawlers)
+            crawlers = (PhysicsCrawler(), DvikanCrawler(), *crawlers)
 
         for crawler in crawlers:
             self.stdout.write(self.style.SUCCESS(repr(crawler)))

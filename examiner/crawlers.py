@@ -163,7 +163,46 @@ class DvikanCrawler:
             soup = bs(response.content, 'html.parser')
             pdf_links = soup.find_all('a', href=re.compile(r'\.pdf$'))
             for pdf_link in pdf_links:
-                yield course_url + pdf_link.get('href')
+                yield urljoin(course_url, pdf_link.get('href'))
+        return
+
+    @staticmethod
+    def get(url: str) -> Optional[requests.models.Response]:
+        """Get URL content with exception safeguarding."""
+        try:
+            return requests.get(url, timeout=10)
+        except Exception:
+            return None
+
+
+class PhysicsCrawler:
+    """Crawler for exams in the Physics Department exam archive."""
+
+    BASE_URL = 'https://www.ntnu.no/fysikk/eksamen'
+
+    @classmethod
+    def course_urls(cls) -> Iterable[str]:
+        """Get all physics courses hosted in the exam archive."""
+        response = cls.get(cls.BASE_URL)
+        if not response:
+            return []
+
+        soup = bs(response.content, 'html.parser')
+        links = soup.select('div.asset-abstract h3.asset-title a')
+        return (urljoin(cls.BASE_URL, link.get('href')) for link in links)
+
+    @classmethod
+    def pdf_urls(cls) -> Iterable[str]:
+        """Get all hosted PDFs from Physics exam archive for course."""
+        for course_url in cls.course_urls():
+            response = cls.get(course_url)
+            if not response:
+                continue
+
+            soup = bs(response.content, 'html.parser')
+            pdf_links = soup.find_all('a', href=re.compile(r'\.pdf'))
+            for pdf_link in pdf_links:
+                yield urljoin(cls.BASE_URL, pdf_link.get('href'))
         return
 
     @staticmethod

@@ -10,11 +10,6 @@ urlpatterns = [
         name='search',
     ),
     url(
-        r'^all$',
-        views.ExamsView.as_view(),
-        name='all_exams',
-    ),
-    url(
         r'^verify$',
         views.VerifyView.as_view(),
         name='verify_random',
@@ -23,6 +18,11 @@ urlpatterns = [
         r'^verify/(?P<sha1_hash>[0-9a-f]{40})$',
         views.VerifyView.as_view(),
         name='verify_pdf',
+    ),
+    url(
+        r'^course/$',
+        views.ExamsView.as_view(),
+        name='all_exams',
     ),
     url(
         r'^course/(?P<course_code>.+)$',

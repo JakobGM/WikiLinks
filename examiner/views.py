@@ -40,14 +40,12 @@ class ExamsView(ListView):
                 course_code__iexact=course_code.upper(),
             )
 
-        if self.kwargs.get('api'):
-            # Return serializable content for API view
-            organization = docinfos.organize(serializable=True)
-            return organization
-        else:
-            organization = docinfos.organize(serializable=False)
+        context = {'exam_courses': docinfos.organize()}
 
-        context = {'exam_courses': organization}
+        if self.kwargs.get('api'):
+            # Early return if this is the API view
+            return context['exam_courses']
+
         add_context(request=self.request, context=context)
         if course_code:
             context['header_text'] = f' / exams / ' + course_code

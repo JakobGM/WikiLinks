@@ -108,14 +108,18 @@ class ExamRelatedCourse(models.Model):
 
 
 class DocumentInfoQueryset(models.QuerySet):
-    def organize(self, serializable: bool = False):
-        """
-        Return dictionary representing QuerySet.
-
-        :param serializable: If True, the dictionary will only contain
-        serializable data instead of django model objects.
-        """
-        self = self.filter(pdfs__isnull=False).prefetch_related('course')
+    def organize(self):
+        """Return dictionary representing QuerySet."""
+        self = (
+            self
+            .filter(pdfs__isnull=False)
+            .prefetch_related(
+                'course',
+                'pdfs',
+                'pdfs__pages',
+                'pdfs__hosted_at',
+            )
+        )
 
         organization = {}
         for docinfo in self:
@@ -138,15 +142,20 @@ class DocumentInfoQueryset(models.QuerySet):
             key = 'solutions' if docinfo.solutions else 'exams'
             urls = semester[key].setdefault(
                 docinfo.language or 'Ukjent',
-                [],
+                {},
             )
             for pdf in docinfo.pdfs.all():
-                url = pdf.hosted_at.filter(dead_link=False).first()
-                if url not in urls:
-                    if serializable:
-                        urls.append(url.url)
-                    else:
-                        urls.append(url)
+                sha1_hash = pdf.sha1_hash
+                if sha1_hash in urls:
+                    continue
+
+                pdf_urls = pdf.hosted_at
+                pdf_dict = {
+                    'urls': list(pdf_urls.values_list('url', flat=True)),
+                    'filename': pdf_urls.first().filename,
+                    'text': pdf.text,
+                }
+                urls[sha1_hash] = pdf_dict
 
             # TODO: Make this type of logic work
             # try:
@@ -391,7 +400,7 @@ class Pdf(models.Model):
 
         Pages are separated by pagebreaks, i.e. '\f'.
         """
-        return '\f'.join([page.text for page in self.pages.order_by('number')])
+        return '\f'.join([page.text for page in self.pages.all()])
 
     def classify(
         self,

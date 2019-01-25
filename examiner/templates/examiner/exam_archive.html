@@ -101,15 +101,26 @@
     </td>
 
     <td>
-      {% for language, urls in exam_set.exams.items %}
+      {# Iterate over all the exam languages #}
+      {% for language, pdfs in exam_set.exams.items %}
+
+      {# Iterate over all the exam PDFs available for the category #}
+      {% for sha1, pdf in pdfs.items %}
+
+      {# First the main PDF for this exam #}
+      {% if forloop.first %}
       <div class="my-1" style="display: inline-block;">
+
+        {# Add hidden fix button #}
         <a
           type="button"
           class="btn btn-outline-success btn-sm mr-2 fix-button collapse multi-collapse"
-          href="{{ urls.0.scraped_pdf.get_absolute_url }}">
+          href="{% url 'examiner:verify_pdf' sha1 %}">
             Fiks
         </a>
-        <a href="{{ urls.0.url }}" target="_blank">
+
+        {# Link to the first PDF with filename #}
+        <a href="{{ pdf.urls.0 }}" target="_blank">
           {% if language == 'Engelsk' %}
           🇬🇧
           {% elif language == 'Nynorsk' %}
@@ -119,39 +130,58 @@
           {% else %}
           &nbsp;<i class="fa fa-question-circle" style="color:grey"></i>
           {% endif %}
-          {{ urls.0.filename | truncatechars:25 }}
+          {{ pdf.filename | truncatechars:25 }}
           {% if language == 'Nynorsk' %}
           <div style="color: silver; display: inline-block;">(nynorsk)</div>
           {% endif %}
         </a>
-      </div>
-      <div style="display:none;">{{ urls.0.scraped_pdf.text }}</div>
 
-      {% for alt_url in urls|slice:"1:" %}
-      {% if forloop.first %}
+      </div>
+
+      {# New line before alternative PDFs #}
+      {% elif forloop.counter == 2 %}
       <br>
       <i class="fa fa-external-link"></i>
       {% endif %}
 
-      <a href="{{ alt_url.url }}" title="{{ alt_url.filename }}" target="_blank">
+      {# Add we now add all the alternative PDFs with counters #}
+      {% if forloop.counter > 1 %}
+      <a href="{{ pdf.urls.0 }}" title="{{ pdf.filename }}" target="_blank">
           [{{ forloop.counter }}]
       </a>
+      {% endif %}
+
+      {# Add hidden text field for this PDF, used for searching #}
+      <div style="display:none;" class="text-content">{{ pdf.text }}</div>
+
       {% endfor %}
 
+      {# Break between each language #}
       <br>
       {% endfor %}
     </td>
 
     <td>
-    {% for language, urls in exam_set.solutions.items %}
+      {# Iterate over all the solution languages #}
+      {% for language, pdfs in exam_set.solutions.items %}
+
+      {# Iterate over all the PDFs available for the category #}
+      {% for sha1, pdf in pdfs.items %}
+
+      {# First the main PDF for the category #}
+      {% if forloop.first %}
       <div class="my-1" style="display: inline-block;">
+
+        {# Add hidden fix button #}
         <a
           type="button"
           class="btn btn-outline-success btn-sm mr-2 fix-button collapse multi-collapse"
-          href="{{ urls.0.scraped_pdf.get_absolute_url }}">
+          href="{% url 'examiner:verify_pdf' sha1 %}">
             Fiks
         </a>
-        <a href="{{ urls.0.url }}" target="_blank">
+
+        {# Link to the first PDF with filename #}
+        <a href="{{ pdf.urls.0 }}" target="_blank">
           {% if language == 'Engelsk' %}
           🇬🇧
           {% elif language == 'Nynorsk' %}
@@ -161,28 +191,35 @@
           {% else %}
           &nbsp;<i class="fa fa-question-circle" style="color:grey"></i>
           {% endif %}
-          <i>{{ urls.0.filename | truncatechars:25 }}</i>
+          <i>{{ pdf.filename | truncatechars:25 }}</i>
           {% if language == 'Nynorsk' %}
           <div style="color: silver; display: inline-block;">(nynorsk)</div>
           {% endif %}
         </a>
+
       </div>
-      <div style="display:none;">{{ urls.0.scraped_pdf.text }}</div>
 
-        {% for alt_url in urls|slice:"1:" %}
-        {% if forloop.first %}
-        <br>
-        <i class="fa fa-external-link"></i>
-        {% endif %}
-
-        <a href="{{ alt_url.url }}" title="{{ alt_url.filename }}" target="_blank">
-            [{{ forloop.counter }}]
-        </a>
-        {% endfor %}
-
-      </a>
+      {# New line before alternative PDFs #}
+      {% elif forloop.counter == 2 %}
       <br>
-    {% endfor %}
+      <i class="fa fa-external-link"></i>
+      {% endif %}
+
+      {# Add we now add all the alternative PDFs with counters #}
+      {% if forloop.counter > 1 %}
+      <a href="{{ pdf.urls.0 }}" title="{{ pdf.filename }}" target="_blank">
+          [{{ forloop.counter }}]
+      </a>
+      {% endif %}
+
+      {# Add hidden text field for this PDF, used for searching #}
+      <div style="display:none;">{{ pdf.text }}</div>
+
+      {% endfor %}
+
+      {# Break between languages #}
+      <br>
+      {% endfor %}
     </td>
   </tr>
   {% endfor %}

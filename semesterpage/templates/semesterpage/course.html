@@ -1,7 +1,6 @@
 {% load rules static %}
 
 {% has_perm 'semesterpage.change_course' user course as can_edit_course %}
-<article id="article-{{ course.pk }}">
   <a class="kategori" onclick="courseLogoClickEvent('{{ course.homepage }}', {{ can_edit_course|yesno:"true,false" }}, '{{ course.url }}', {{ course.pk }})">
   {% if course.logo %}
     <img class="course-logo" src="{{ course.logo.url }}">
@@ -50,4 +49,3 @@
 {% endif %}
 
 </ul>
-</article>

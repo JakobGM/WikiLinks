@@ -37,8 +37,11 @@
   crossorigin="anonymous">
 
 {% for course_code, course_content in exam_courses.items %}
-<div class="course container" style="overflow-x: scroll;">
+<div class="course container-fluid" style="overflow-x: scroll;">
+<div class="row"> {# all the content is in one row #}
+<div class="col"></div> {# empty left column #}
 
+<div class="col-7"> {# center content #}
 <h1 class="mx-auto text-center mt-5" style="font-size: 3em;">
   {{ course_code }}
   {% if course_content.nick_name %}
@@ -227,7 +230,19 @@
 </table>
 {% endfor %}
 
-</div>
+</div> {# center table column #}
+
+<div class="col" style="padding-top: 19em;">
+  <div class="card w-75 d-none d-xl-block mx-auto" id="course-card">
+    <div class="card-body">
+      <div class="content">
+        {% include "semesterpage/course.html" %}
+      </div> {# content #}
+    </div> {# card-body #}
+  </div> {# card #}
+</div> {# right column #}
+
+</div> {# row #}
 {% endblock %}
 
 {% block end %}
@@ -294,6 +309,16 @@ tr a:not(.btn) {
 }
 tr a:visited:not(.btn) {
   color: black;
+}
+.card a {
+  color: black;
+}
+
+/* Mutate margins in order to look nice within a BS4 card */
+div .content {
+  margin-top: -0.7em;
+  margin-left: 1em;
+  margin-bottom: -1.5em;
 }
 </style>
 {% endblock %}

@@ -220,7 +220,7 @@ class DocumentInfo(models.Model):
         blank=True,
         choices=[
             (1, 'Vår'),
-            (2, 'Kontinuasjonseksamen'),
+            (2, 'Kont'),
             (3, 'Høst'),
             (None, 'Ukjent'),
         ],

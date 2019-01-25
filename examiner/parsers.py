@@ -53,7 +53,7 @@ class Season:
         if name == cls.SPRING:
             return 'Vår'
         elif name == cls.CONTINUATION:
-            return 'Kontinuasjonseksamen'
+            return 'Kont'
         elif name == cls.AUTUMN:
             return 'Høst'
         else:

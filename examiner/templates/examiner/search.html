@@ -73,6 +73,9 @@ $(window).bind("pageshow", function(event) {
         window.location.reload();
     }
 });
+
+/* Select search input on site load */
+$(document).ready(function() {$(".select2-search__field")[0].focus()})
 </script>
 
 {% endblock %}

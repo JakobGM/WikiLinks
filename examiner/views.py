@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.db.models import F
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
@@ -39,7 +40,14 @@ class ExamsView(ListView):
                 course_code__iexact=course_code.upper(),
             )
 
-        context = {'exam_courses': docinfos.organize()}
+        if self.kwargs.get('api'):
+            # Return serializable content for API view
+            organization = docinfos.organize(serializable=True)
+            return organization
+        else:
+            organization = docinfos.organize(serializable=False)
+
+        context = {'exam_courses': organization}
         add_context(request=self.request, context=context)
         if course_code:
             context['header_text'] = f' / exams / ' + course_code
@@ -50,6 +58,16 @@ class ExamsView(ListView):
             context['header_text'] = ' / exams'
 
         return context
+
+    def get(self, request, *args, **kwargs):
+        if self.kwargs.get('api'):
+            # Hacky override for API version of this view
+            self.object_list = self.get_queryset()
+            organization = self.get_context_data()
+            return JsonResponse(organization)
+
+        # Normal template response
+        return super().get(request, *args, **kwargs)
 
 
 class VerifyView(LoginRequiredMixin, FormView):

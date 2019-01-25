@@ -108,7 +108,13 @@ class ExamRelatedCourse(models.Model):
 
 
 class DocumentInfoQueryset(models.QuerySet):
-    def organize(self):
+    def organize(self, serializable: bool = False):
+        """
+        Return dictionary representing QuerySet.
+
+        :param serializable: If True, the dictionary will only contain
+        serializable data instead of django model objects.
+        """
         self = self.filter(pdfs__isnull=False).prefetch_related('course')
 
         organization = {}
@@ -137,7 +143,10 @@ class DocumentInfoQueryset(models.QuerySet):
             for pdf in docinfo.pdfs.all():
                 url = pdf.hosted_at.filter(dead_link=False).first()
                 if url not in urls:
-                    urls.append(url)
+                    if serializable:
+                        urls.append(url.url)
+                    else:
+                        urls.append(url)
 
             # TODO: Make this type of logic work
             # try:

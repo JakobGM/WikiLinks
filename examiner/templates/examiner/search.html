@@ -16,11 +16,16 @@
 
 
 {% block content %}
-<div class="container text-center py-5" id="search-content">
+<div class="container text-center pt-5" id="search-content">
   <img src="{% static "examiner/img/examiner_logo.svg" %}" alt="eksamensarkiv">
   <h1 class="my-2" style="font-size: 3em; font-weight: bold;">
     Eksamensarkiv
   </h1>
+  <h4 id="exam-count" style="color: grey;">
+    <i>
+    {{ exam_count }} eksamener
+    </i>
+  </h4>
 
   <div class="my-5">
     {% crispy form %}

@@ -137,6 +137,7 @@ class SearchView(FormView):
         """Add navigation bar content."""
         context = super().get_context_data(**kwargs)
         add_context(request=self.request, context=context)
+        context['exam_count'] = Pdf.objects.count()
         return context
 
 

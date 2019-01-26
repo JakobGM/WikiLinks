@@ -400,7 +400,13 @@ class Course(LinkList):
         return reverse('admin:%s_%s_change' % info, args=(self.pk,))
 
     def get_absolute_url(self):
-        if self.semesters.exists():
+        if self.docinfos.exists():
+            # Redirect to exam archive for this course, if exams exist
+            return reverse(
+                'examiner:course',
+                kwargs={'course_code': self.course_code},
+            )
+        elif self.semesters.exists():
             return self.semesters.all()[0].get_absolute_url()
         else:
             try:

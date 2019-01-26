@@ -1,0 +1,55 @@
+{# Iterate over all the PDFs available for the category #}
+{# Requires context variables: pdfs, language #}
+{% for sha1, pdf in pdfs.items %}
+
+{# First the main PDF for the category #}
+{% if forloop.first %}
+<div class="my-1" style="display: inline-block;">
+
+  {# Add hidden fix button #}
+  <a
+    type="button"
+    class="btn btn-outline-success btn-sm mr-2 fix-button collapse multi-collapse"
+    href="{% url 'examiner:verify_pdf' sha1 %}">
+      Fiks
+  </a>
+
+  {# Link to the first PDF with filename #}
+  <a href="{{ pdf.urls.0 }}" target="_blank">
+    {% if language == 'Engelsk' %}
+    🇬🇧
+    {% elif language == 'Nynorsk' %}
+    🇳🇴
+    {% elif language == 'Bokmål' %}
+    🇳🇴
+    {% else %}
+    &nbsp;<i class="fa fa-question-circle" style="color:grey"></i>
+    {% endif %}
+    <i>{{ pdf.filename | truncatechars:25 }}</i>
+    {% if language == 'Nynorsk' %}
+    <div style="color: silver; display: inline-block;">(nynorsk)</div>
+    {% endif %}
+  </a>
+
+</div>
+
+{# New line before alternative PDFs #}
+{% elif forloop.counter == 2 %}
+<br>
+<i class="fa fa-external-link"></i>
+{% endif %}
+
+{# Add we now add all the alternative PDFs with counters #}
+{% if forloop.counter > 1 %}
+<a href="{{ pdf.urls.0 }}" title="{{ pdf.filename }}" target="_blank">
+    [{{ forloop.counter }}]
+</a>
+{% endif %}
+
+{# Add hidden text field for this PDF, used for searching #}
+<div style="display:none;">{{ pdf.text }}</div>
+
+{% endfor %}
+
+{# Break between languages #}
+<br>

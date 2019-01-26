@@ -33,16 +33,10 @@
 
 </div>
 
-{# New line before alternative PDFs #}
-{% elif forloop.counter == 2 %}
-<br>
-<i class="fa fa-external-link"></i>
-{% endif %}
-
 {# Add we now add all the alternative PDFs with counters #}
-{% if forloop.counter > 1 %}
-<a href="{{ pdf.urls.0 }}" title="{{ pdf.filename }}" target="_blank">
-    [{{ forloop.counter }}]
+{% elif forloop.counter > 1 %}
+<a href="{{ pdf.urls.0 }}" title="{{ pdf.filename }}" target="_blank" class="badge badge-secondary" style="color: white; vertical-align: text-bottom;">
+    {{ forloop.counter }}
 </a>
 {% endif %}
 

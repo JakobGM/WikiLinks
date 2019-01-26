@@ -4,18 +4,18 @@
 
 {# First the main PDF for the category #}
 {% if forloop.first %}
-<div class="my-1" style="display: inline-block;">
 
-  {# Add hidden fix button #}
-  <a
-    type="button"
-    class="btn btn-outline-success btn-sm mr-2 fix-button collapse multi-collapse"
-    href="{% url 'examiner:verify_pdf' sha1 %}">
-      Fiks
-  </a>
+{# Add hidden fix button #}
+<a
+  type="button"
+  class="btn btn-outline-success btn-sm mr-2 fix-button collapse multi-collapse"
+  href="{% url 'examiner:verify_pdf' sha1 %}">
+  Fiks
+</a>
 
-  {# Link to the first PDF with filename #}
-  <a href="{{ pdf.urls.0 }}" target="_blank">
+{# Link to the first PDF with filename #}
+<a href="{{ pdf.urls.0 }}" target="_blank" style="display: inline-block; height: 100%; min-width: 20rem;" class="mainLanguageLink">
+  <div class="my-1 mainLanguageLink mr-2" style="display: inline-block;">
     {% if language == 'Engelsk' %}
     🇬🇧
     {% elif language == 'Nynorsk' %}
@@ -29,15 +29,27 @@
     {% if language == 'Nynorsk' %}
     <div style="color: silver; display: inline-block;">(nynorsk)</div>
     {% endif %}
-  </a>
-
-</div>
+  </div>
+</a>
 
 {# Add we now add all the alternative PDFs with counters #}
 {% elif forloop.counter > 1 %}
-<a href="{{ pdf.urls.0 }}" title="{{ pdf.filename }}" target="_blank" class="badge badge-secondary" style="color: white; vertical-align: text-bottom;">
-    {{ forloop.counter }}
-</a>
+
+{# Open secondary link div #}
+{% if forloop.counter == 2 %}
+<div style="display: inline-block;">
+  <i class="fa fa-external-link"></i>
+{% endif %}
+
+  <a href="{{ pdf.urls.0 }}" title="{{ pdf.filename }}" target="_blank" class="badge badge-secondary" style="color: white; vertical-align: text-top;">
+      {{ forloop.counter }}
+  </a>
+
+{# Close secondary link div #}
+{% if forloop.last %}
+</div>
+{% endif %}
+
 {% endif %}
 
 {# Add hidden text field for this PDF, used for searching #}

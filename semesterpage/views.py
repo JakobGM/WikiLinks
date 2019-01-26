@@ -39,6 +39,10 @@ def homepage(request):
             args=(request.session.get('homepage'),)
         ))
     else:
+        # Redirect to exam archive if first visit
+        return redirect(to='examiner:search')
+
+        # Old behaviour left here for now
         semester_pk = request.session.get('semester_pk', DEFAULT_SEMESTER_PK)
         semester = Semester.objects.get(pk=semester_pk)
         return redirect(to=semester.get_absolute_url())

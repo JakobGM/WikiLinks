@@ -100,11 +100,13 @@ class VerifyExamForm(forms.ModelForm):
         docinfo = self.instance
         data = self.cleaned_data
 
-        courses = data.pop('courses')
+        # Save to self in order to use this in VerifyView.form_valid
+        self.courses = data.pop('courses')
+
         pdf = data.pop('pdf')
         verifier = data.pop('verifier')
 
-        for course in courses:
+        for course in self.courses:
             docinfo, _ = DocumentInfo.objects.get_or_create(
                 course=course,
                 course_code=course.course_code,

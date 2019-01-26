@@ -103,6 +103,11 @@ class VerifyView(LoginRequiredMixin, FormView):
     @transaction.atomic
     def form_valid(self, form):
         form.save(commit=True)
+        courses = form.courses
+        if courses.exists():
+            # Redirect to first course exam archive view
+            course_code = courses.first().course_code
+            return redirect(to='examiner:course', course_code=course_code)
         return redirect(to='examiner:verify_random')
 
 

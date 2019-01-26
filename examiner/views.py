@@ -143,6 +143,11 @@ class SearchView(FormView):
         context = super().get_context_data(**kwargs)
         add_context(request=self.request, context=context)
         context['exam_count'] = Pdf.objects.count()
+        context['course_count'] = (
+            DocumentInfoSource
+            .objects.distinct('document_info__course_code')
+            .count()
+        )
         return context
 
 

@@ -23,8 +23,8 @@ SECRET_KEY = 'fc4_hb-wi32l^c&qpx6!m)o*xd(4ga$13(ese#pfj#pjxnmt0p'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ['USER'],
-        'USER': os.environ['USER'],
+        'NAME': 'koku_db',
+        'USER': 'koku_user',
         'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '',

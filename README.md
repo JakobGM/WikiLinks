@@ -89,13 +89,13 @@ add the command line utilities to your path.
 Run `./manage.py migrate`.
 
 ### Load a production data dump
-In the following instructions, `$USER` refers to your computer's username,
-which can be found by writing `echo $USER` in your terminal.
 
-Run `psql` and enter the `$USER` database. Run the following commands:
+Run `psql -d kokudb -U postgres` in order to enter the postgresql shell within
+the Wikilinks database.
+
 ```
 CREATE ROLE koku_user;
-GRANT ALL PRIVILEGES ON DATABASE $USER TO koku_user;
+GRANT ALL PRIVILEGES ON DATABASE koku_db TO koku_user;
 ```
 
 Receive the db and media dump from @JakobGM and put them in the `tmp` folder
@@ -117,8 +117,73 @@ stylelint "**/*.css"
 ```
 
 ## Production:
+
 ### Necessary cronjob for automatic backups
+
 ```
 SHELL=/bin/bash
 */5 * * * * source /home/jakobgm/kokekunster/koku_env/bin/activate && set -a && source /home/jakobgm/.pam_environment && set +a && /home/jakobgm/kokekunster/koku_env/bin/python /home/jakobgm/kokekunster/manage.py runcrons &> /home/jakobgm/kokekunster/backup.log
+```
+
+
+### Manual retrieval of production data dumps
+
+#### Media directory
+
+Copy the media directory out from the Django docker container.
+
+```
+docker cp -r <django_image_id>:/media <vps_target_directory>
+```
+
+Copy the media directory to your local media directory.
+
+```
+scp wikilinks.no/<vps_target_directory> /path/to/wikilinks/repo/media
+```
+
+#### Postgres database
+
+Create a production database dump in production.
+
+```
+docker exec 03ee pg_dump -U postgres postgres -O -x -F t > sql_dump.tar
+```
+
+Copy the dump to your local machine.
+
+```
+scp -r wikilinks.no:/path/to/sql_dump.tar .
+```
+
+Delete and restore the Wikilinks database to make sure it is clean.
+
+```
+dropdb koku_db -U postgres
+createdb koku_db -U postgres
+```
+
+Remove the public schema from the database, as the dump will create
+it.
+
+```
+DROP SCHEMA public;
+```
+
+Temporarily grant superuser privileges to the database user.
+
+```
+ALTER ROLE koku_user WITH SUPERUSER;
+```
+
+Import the database.
+
+```
+pg_restore -d koku_db sql_dump.tar -U koku_user --role=koku_user --no-owner --single-transaction --exit-on-error
+```
+
+Remove superuser privileges from the database user.
+
+```
+ALTER ROLE koku_user WITH NOSUPERUSER;
 ```

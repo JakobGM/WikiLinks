@@ -151,6 +151,7 @@ class DocumentInfoQueryset(models.QuerySet):
 
                 pdf_urls = pdf.hosted_at
                 pdf_dict = {
+                    'backup_url': pdf.file.url,
                     'urls': list(pdf_urls.values_list('url', flat=True)),
                     'filename': pdf_urls.first().filename,
                     'text': pdf.text,

@@ -71,4 +71,4 @@ typed-ast==1.0.4          # via mypy
 ukpostcodeparser==1.1.1   # via faker
 urllib3==1.22             # via dropbox, requests
 webencodings==0.5.1       # via html5lib
-werkzeug==0.12.2
+werkzeug==0.15.3

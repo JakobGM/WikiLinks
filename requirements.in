@@ -1,4 +1,4 @@
-django==1.11.2
+django==2.2.24
 django-dbbackup
 django-admin-sortable2
 django-autoslug
